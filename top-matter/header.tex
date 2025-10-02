@@ -10,4 +10,10 @@
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
-    
+\ifsubmission
+    \newcommand{\todo}[1]{}
+    \newcommand{\ff}[1]{}
+\else
+    \newcommand{\todo}[1]{{\textcolor{red}{[TODO: #1]}}}
+    \newcommand{\ff}[1]{{\textcolor{violet}{[francesca: #1]}}}
+\fi

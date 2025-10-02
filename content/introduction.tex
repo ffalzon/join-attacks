@@ -3,9 +3,6 @@
 
 \subsection{Prior Work}
 
-Guo et al. \cite{Guo22}, who presented two intersection-recovery attacks 
-against the Private Set Intersection Cardinality (PSI-CA) and Private Set Intersection Sum (PSI-SUM) functionalities.
-This was followed up in 2024 by Jiang et al. \cite{AnonPSI} with more proposals of attacks 
-against the same functionalities,
-some of which improve on Guo et al.'s and some of which are new. Most recently, Falzon and Tang \cite{U:FalTan25} proposed a series of attacks against Google's Private Join and Compute (PCJ) functionality~\cite{PJC}, which takes as input two key-value stores and computes the inner product of the values whose keys lie in the intersection. 
-They use a variety of techniques including combinatorial approaches, maximum likelihood estimation and techniques borrowed from signal processing.
+The study of attacks on set-operation functionalities was initiated by Guo et al.~\cite{USENIX:GHLWJL22}, who presented two intersection-recovery attacks against the Private Set Intersection Cardinality (PSI-CA) and Private Set Intersection Sum (PSI-SUM) functionalities. This line of work was extended in 2024 by Jiang et al.~\cite{NDSS:JiaDuYan24}, who introduced additional attacks on the same functionalities, including improvements over Guo et al.’s attack. Most recently, Falzon and Tang \cite{USENIX:FalTan25} proposed a series of attacks on Google’s Private Join and Compute (PCJ) functionality~\cite{AC:LPRST21}, which takes as input two key-value stores and computes the inner product of the values associated with intersecting keys. Their techniques draw on a range of approaches, including combinatorial methods, maximum-likelihood estimation, and tools from signal processing.
+
+\todo{also cite~\cite{USENIX:ZinCaoGre23}}

@@ -1,7 +1,12 @@
 \documentclass[compsoc,conference,a4paper,10pt,times]{IEEEtran}
 \IEEEoverridecommandlockouts
+
+\newif\ifsubmission
+\submissionfalse
+
 \input{top-matter/header.tex}
 \input{top-matter/macros.tex}
+
 
 \begin{document}
 
@@ -30,7 +35,7 @@ MPC
 Thanks!
 
 \bibliographystyle{IEEEtran}
-\bibliography{abbrev3,crypto,references}
+\bibliography{cryptobib/abbrev3,cryptobib/crypto,references}
 
 
 \appendices
