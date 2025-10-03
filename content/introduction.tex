@@ -1,24 +1,11 @@
 \section{Introduction}
 
-\cite{USENIX:DZBC25,USENIX:TBZCC25,USENIX:JSZG24, USENIX:ZCLZL23,USENIX:JSZDG22,CCS:GNBT25,CCS:ZCLPHW24, CCS:TCLZ23,ASIACCS:CSSW25,ASIACCS:BlaAgu12,AC:LiuGao23,AC:KRTW19,PoPETS:GaoNguTri24,
-ACNS:Frikken07,C:KisSon05}
-
-%https://www.usenix.org/system/files/sec22-jia.pdf
-%  For example, it can be used for cyber
-% risk assessment and management. Specifically, “Individual
-% blacklists today suffer from several drawbacks that limit their
-% accuracy in malicious source identification. ... Aggregating
-% blacklists
-% PSU can be employed
-% to compute the union of cancer patients of different hospitals
-% while hiding the identities of the patients who had cancer
-% treatment at multiple hospitals, which involves patient privacy.
-% Also, it can be used for privacy-preserving aggregation of
-% network traffic statistics [4], merger of two Internet providers
-% without revealing the information of their existing networks
-% [3], and private database supporting full join [19]. 
+There is a long line of work on Private Set Union (PSU), where two or more parties---each holding a set---jointly compute the union of their sets without revealing anything beyond the result~\cite{USENIX:DZBC25,USENIX:TBZCC25,USENIX:JSZG24, USENIX:ZCLZL23,USENIX:JSZDG22,CCS:GNBT25,CCS:ZCLPHW24, CCS:TCLZ23,ASIACCS:CSSW25,ASIACCS:BlaAgu12,AC:LiuGao23,AC:KRTW19,PoPETS:GaoNguTri24,
+ACNS:Frikken07,C:KisSon05}. PSU has been proposed for use in numerous use-cases, including the private aggregation of IP block lists~\cite{USENIX:JSZDG22,AC:KRTW19}, hospital data~\cite{USENIX:JSZDG22}, and network traffic data~\cite{USENIX:BSMD10}, as well as supporting full private joins over databases~\cite{AC:KRTW19}. 
 
 \subsection{Prior Work}
+
+\heading{Join Protocols.} 
 
 \heading{Attacks.} The study of attacks against set-operation functionalities was initiated by Guo et al.~\cite{USENIX:GHLWJL22}, who presented two intersection-recovery attacks against the Private Set Intersection Cardinality (PSI-CA) and Private Set Intersection Sum (PSI-SUM) functionalities. This work was extended by Jiang et al.~\cite{NDSS:JiaDuYan24}, who introduced additional attacks on the same functionalities, including improvements over Guo et al.’s attack. Most recently, Falzon and Tang \cite{USENIX:FalTan25} proposed a series of attacks on Google’s Private Join and Compute (PCJ) functionality~\cite{AC:LPRST21}, which takes as input two key-value stores and computes the inner product of the values associated with intersecting keys. Their techniques draw on a range of approaches, including combinatorial methods, maximum-likelihood estimation, and tools from signal processing.
 
