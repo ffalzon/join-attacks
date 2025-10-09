@@ -1,21 +1,34 @@
 \begin{table*}[h!]
 \centering
 \renewcommand{\arraystretch}{1.1}
-\begin{tabular}{l c c c c c}
+\begin{tabular}{c c c c c c c}
 \toprule
-\textbf{Functionality} & \textbf{Protocol} & \textbf{Input Parties No.} & \textbf{Model}  & \textbf{Delegated} & \textbf{Multi-key} \\
+\textbf{Functionality} & \textbf{SOTA Protocols} & \textbf{Attacks} &  \textbf{Recovery Goal}  & \textbf{\# Queries} & \textbf{Adaptive}  \\
 \midrule
-Join (Union) & PMC & 2 & Semi-honest &   &   \\
-Join (Union) & MK-PMC & 2 & Semi-honest &   &    \\
-Join (Union) \& Secret Share Associated Data & PS3I & 2 & Semi-honest &   &   \\
-PSI-Sum (Sum Associated Data in Intersection) & PJC & 2 & Semi-honest  &  &    \\
-PSI \& Secret Share Associated Data & Circuit-PSI & 2 & Semi-honest  &  &    \\
-PSI-CA (Count Items in Intersection) & Catalic & 2 & Semi-honest &   &   \\
-Join and Select Statements & DB Joins & 2 & Semi-honest  &  &    \\
-Join (Left-Join) \& Secret Share Associated Data & DPMC & $T + 1$ &   &  &    \\
-Join (Left-Join) \& Secret Share Associated Data & D$_s$PMC & $T + 1$ &   &  &    \\
+\multirow{2}{*}{PSI-Sum}  & \multirow{2}{*}{PJC~\cite{EuroSP:IKNPSS20,AC:LPRST21}} 
+       & Jiang et al.~\cite{NDSS:JiaDuYan24} &  Intersection &  &  \\ \cline{3-6}
+    &  & Falzon \& Tang~\cite{USENIX:FalTan25} &  Key-value  &  &  \\
+\hline
+\hline
+\multirow{3}{*}{PSI-Cardinality}  & \multirow{3}{*}{\shortstack{PJC~\cite{EuroSP:IKNPSS20,AC:LPRST21}\\Catalic~\cite{AC:DuoPhaTri20}}} 
+       & Guo et al.~\cite{USENIX:GHLWJL22} &   &  & \\ \cline{3-6}
+    &  & Jiang et al.~\cite{NDSS:JiaDuYan24} &   &   &  \\ \cline{3-6}
+    &  & Falzon \& Tang~\cite{USENIX:FalTan25} &  $T\cap Y$  &  &   \\
+\hline
+\hline
+PSI-Inner-Product & PJC~\cite{AC:LPRST21}  & Falzon \& Tang~\cite{USENIX:FalTan25} & Key-value  & 2 &   \\
+\hline
+Join (Union) & PMC~\cite{PMC},  MK-PMC~\cite{MKPMC}  & \textbf{This work} & Intersection  & 2 &   \\
+%Join (Union) \& Secret Share Associated Data & PS$^3$I & 2 & $T\cap Y$  &  &   \\
+%\hline
+% Join (Left-Join) \& Secret Share Associated Data & DPMC &  \textbf{This work}  &  Input-mal. &  & \\
+% Join (Left-Join) \& Secret Share Associated Data & D$_s$PMC & \textbf{This work}  & Input-mal.  &   & \\
 \bottomrule
 \end{tabular}
-\caption{An Overview of PSI Functionalities and their corresponding attacks.}
+\vspace{3mm}
+\caption{An overview of PSI functionalities and their corresponding attacks. Each attack operates in the input-malicious model, where the adversary behaves honestly according to the protocol specification but may provide maliciously chosen inputs. Let $T$ be the target set of values that the adversary wishes to learn, and $Y$ be the other party's input.}
 \label{tab:protocol_comparison}
 \end{table*}
+
+
+
