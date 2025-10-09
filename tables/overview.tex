@@ -1,0 +1,21 @@
+\begin{table*}[h!]
+\centering
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{l c c c c c}
+\toprule
+\textbf{Functionality} & \textbf{Protocol} & \textbf{Input Parties No.} & \textbf{Model}  & \textbf{Delegated} & \textbf{Multi-key} \\
+\midrule
+Join (Union) & PMC & 2 & Semi-honest &   &   \\
+Join (Union) & MK-PMC & 2 & Semi-honest &   &    \\
+Join (Union) \& Secret Share Associated Data & PS3I & 2 & Semi-honest &   &   \\
+PSI-Sum (Sum Associated Data in Intersection) & PJC & 2 & Semi-honest  &  &    \\
+PSI \& Secret Share Associated Data & Circuit-PSI & 2 & Semi-honest  &  &    \\
+PSI-CA (Count Items in Intersection) & Catalic & 2 & Semi-honest &   &   \\
+Join and Select Statements & DB Joins & 2 & Semi-honest  &  &    \\
+Join (Left-Join) \& Secret Share Associated Data & DPMC & $T + 1$ &   &  &    \\
+Join (Left-Join) \& Secret Share Associated Data & D$_s$PMC & $T + 1$ &   &  &    \\
+\bottomrule
+\end{tabular}
+\caption{An Overview of PSI Functionalities and their corresponding attacks.}
+\label{tab:protocol_comparison}
+\end{table*}
