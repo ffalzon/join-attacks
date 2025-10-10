@@ -1,34 +1,26 @@
 \begin{table*}[h!]
 \centering
 \renewcommand{\arraystretch}{1.1}
-\begin{tabular}{c c c c c c c}
+\begin{tabular}{r c c c c c c c}
 \toprule
-\textbf{Functionality} & \textbf{SOTA Protocols} & \textbf{Attacks} &  \textbf{Recovery Goal}  & \textbf{\# Queries} & \textbf{Adaptive}  \\
+\textbf{Attacks} & \textbf{Functionality} &  \textbf{Recovery Goal}  & \textbf{\# Queries} & \textbf{Approx.} & \textbf{Adaptive} & \textbf{Aux. Data} \\
 \midrule
-\multirow{2}{*}{PSI-Sum}  & \multirow{2}{*}{PJC~\cite{EuroSP:IKNPSS20,AC:LPRST21}} 
-       & Jiang et al.~\cite{NDSS:JiaDuYan24} &  Intersection &  &  \\ \cline{3-6}
-    &  & Falzon \& Tang~\cite{USENIX:FalTan25} &  Key-value  &  &  \\
+Guo et al.~\cite{USENIX:GHLWJL22} & PSI-CA & Intersection &  &  & \checkmark &  \\ 
 \hline
+Jiang et al.~\cite{NDSS:JiaDuYan24} & PSI-CA & Intersection &  &  &  \checkmark & \\ 
+Jiang et al.~\cite{NDSS:JiaDuYan24} & PSI-CA & Intersection &  & \checkmark &  \checkmark & \\ 
+Jiang et al.~\cite{NDSS:JiaDuYan24} & PSI-Sum & Intersection &   &  &  \checkmark& \\
 \hline
-\multirow{3}{*}{PSI-Cardinality}  & \multirow{3}{*}{\shortstack{PJC~\cite{EuroSP:IKNPSS20,AC:LPRST21}\\Catalic~\cite{AC:DuoPhaTri20}}} 
-       & Guo et al.~\cite{USENIX:GHLWJL22} &   &  & \\ \cline{3-6}
-    &  & Jiang et al.~\cite{NDSS:JiaDuYan24} &   &   &  \\ \cline{3-6}
-    &  & Falzon \& Tang~\cite{USENIX:FalTan25} &  $T\cap Y$  &  &   \\
+Falzon \& Tang~\cite{USENIX:FalTan25} & \multirow{4}{*}{PJC~\cite{AC:LPRST21}}  & Key-value  & $O(k \log n)$ &  &  \checkmark &  \\
+Falzon \& Tang~\cite{USENIX:FalTan25} &    & Key-value  & -- & \checkmark &   &  \\
+Falzon \& Tang~\cite{USENIX:FalTan25} &   & Key-value  & $2s$ &  &   &  \\
+Falzon \& Tang~\cite{USENIX:FalTan25} &    & Key-value  & $\Theta(s \log(n/s))$ & \checkmark  &   &  \\
 \hline
-\hline
-PSI-Inner-Product & PJC~\cite{AC:LPRST21}  & Falzon \& Tang~\cite{USENIX:FalTan25} & Key-value  & 2 &   \\
-\hline
-Join (Union) & PMC~\cite{PMC},  MK-PMC~\cite{MKPMC}  & \textbf{This work} & Intersection  & 2 &   \\
-%Join (Union) \& Secret Share Associated Data & PS$^3$I & 2 & $T\cap Y$  &  &   \\
-%\hline
-% Join (Left-Join) \& Secret Share Associated Data & DPMC &  \textbf{This work}  &  Input-mal. &  & \\
-% Join (Left-Join) \& Secret Share Associated Data & D$_s$PMC & \textbf{This work}  & Input-mal.  &   & \\
+\textbf{This work} & PSU & Intersection  & 2 &  &   &  \\
+\textbf{This work} & PSU-CA & Intersection  & 2 &  &  \checkmark &  \\
 \bottomrule
 \end{tabular}
 \vspace{3mm}
 \caption{An overview of PSI functionalities and their corresponding attacks. Each attack operates in the input-malicious model, where the adversary behaves honestly according to the protocol specification but may provide maliciously chosen inputs. Let $T$ be the target set of values that the adversary wishes to learn, and $Y$ be the other party's input.}
 \label{tab:protocol_comparison}
 \end{table*}
-
-
-
