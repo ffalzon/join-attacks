@@ -1,0 +1,45 @@
+# Crypto Bib
+cryptobib
+
+# LaTex
+*.aux
+*.glo
+*.idx
+*.log
+*.toc
+*.ist
+*.acn
+*.acr
+*.alg
+*.bbl
+*.blg
+*.dvi
+*.glg
+*.gls
+*.ilg
+*.ind
+*.lof
+*.lot
+*.maf
+*.mtc
+*.mtc1
+*-blx.bib
+*.nav
+*.run.xml
+*.snm
+*.out
+*.pdf
+*.synctex.gz
+*.synctex*
+*.fdb_latexmk
+*.fls
+*.thm
+*.DS_Store
+*.brf
+.directory
+_minted*
+*.rubbercache
+Thumbs.db*
+
+# VSCode
+.vscode
