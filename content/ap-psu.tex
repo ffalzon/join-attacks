@@ -1,0 +1,21 @@
+\section{Additional Content for PSU and PSU-CA Attacks}
+
+\begin{figure}
+	\begin{pchstack}[boxed, center]
+		\procedure[linenumbering]{$\PSUattack^{\PSU(\cdot, Y)}(X)$}{
+			\text{Partition $X$ into $X_1, X_2$} \\
+			Z_1 \gets \PSU(X_1, Y) \\
+			Z_2 \gets \PSU(X_2, Y) \\
+			Z \gets Z_1 \cup Z_2 \\
+			D_Y \gets Z \setminus X \\
+			D_{X_1} \gets X_1 \setminus Z_2 \pccomment{\Cref{prop:PSU_comp_partial_difference}} \\
+			D_{X_2} \gets X_2 \setminus Z_1 \pccomment{\Cref{prop:PSU_comp_partial_difference}} \\
+			D_X \gets D_{X_1} \cup D_{X_2} \pccomment{\Cref{prop:PSU_difference_distributes}} \\
+			S \gets Z \setminus D_Y \setminus D_X \pccomment{\Cref{eqn:PSU_basis}}\\
+			\pcreturn S
+		}
+	\end{pchstack}
+	\caption{Intersection-recovery attack \PSU attack with oracle access to $\PSU(\cdot, Y)$ for a fixed $Y$. 
+	Note that $Y$ is part of the oracle and unknown to the adversary.}
+	\label{fig:PSU_attack}
+\end{figure}
