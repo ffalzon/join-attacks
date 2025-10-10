@@ -3,21 +3,25 @@
 \renewcommand{\arraystretch}{1.1}
 \begin{tabular}{r c c c c c c c}
 \toprule
-\textbf{Attacks} & \textbf{Functionality} &  \textbf{Recovery Goal}  & \textbf{\# Queries} & \textbf{Approx.} & \textbf{Adaptive} & \textbf{Aux. Data} \\
+\textbf{Attacks} & \textbf{Functionality} &  \textbf{Recovery Goal}  & \textbf{\# Queries} & \textbf{Approx.} & \textbf{Adaptive} & \textbf{Auxiliary Data} \\
 \midrule
 Guo et al.~\cite{USENIX:GHLWJL22} & PSI-CA & Intersection &  &  & \checkmark &  \\ 
 \hline
 Jiang et al.~\cite{NDSS:JiaDuYan24} & PSI-CA & Intersection &  &  &  \checkmark & \\ 
 Jiang et al.~\cite{NDSS:JiaDuYan24} & PSI-CA & Intersection &  & \checkmark &  \checkmark & \\ 
-Jiang et al.~\cite{NDSS:JiaDuYan24} & PSI-Sum & Intersection &   &  &  \checkmark& \\
+Jiang et al.~\cite{NDSS:JiaDuYan24} & PSI-Sum~\cite{EuroSP:IKNPSS20} & Intersection &   &  &  \checkmark& \\
 \hline
 Falzon \& Tang~\cite{USENIX:FalTan25} & \multirow{4}{*}{PJC~\cite{AC:LPRST21}}  & Key-value  & $O(k \log n)$ &  &  \checkmark &  \\
-Falzon \& Tang~\cite{USENIX:FalTan25} &    & Key-value  & -- & \checkmark &   &  \\
-Falzon \& Tang~\cite{USENIX:FalTan25} &   & Key-value  & $2s$ &  &   &  \\
+Falzon \& Tang~\cite{USENIX:FalTan25} &    & Key-value  & -- & \checkmark &   & Value Distribution \\
+Falzon \& Tang~\cite{USENIX:FalTan25} &   & Key-value  & $2k$ &  &   & Intersection size $k$ \\
 Falzon \& Tang~\cite{USENIX:FalTan25} &    & Key-value  & $\Theta(s \log(n/s))$ & \checkmark  &   &  \\
 \hline
-\textbf{This work} & PSU & Intersection  & 2 &  &   &  \\
-\textbf{This work} & PSU-CA & Intersection  & 2 &  &  \checkmark &  \\
+\textbf{This work} (Sec.~\ref{sec:psu-attack}) & PSU & Intersection  & 2 &  &   &  \\
+\textbf{This work} (Sec.~\ref{sec:psu-ca-attack}) & PSU-CA & Intersection  & add bound &  &  \checkmark &  \\
+\textbf{This work} & \multirow{4}{*}{MK-PMC~\cite{MKPMC}} &  Max-Set Recon. & 1 &  &  \checkmark &  \\
+\textbf{This work} &  & Max-Set Recon.  & 1 &  &  \checkmark &  \\
+\textbf{This work} &  & Max-Set Recon.  & 1 &  &  \checkmark &  \\
+\textbf{This work} &  & Max-Set Recon.  & 1 &  &  \checkmark &  \\
 \bottomrule
 \end{tabular}
 \vspace{3mm}
