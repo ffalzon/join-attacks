@@ -6,6 +6,8 @@
 There is a long line of work on Private Set Union (PSU), where two or more parties---each holding a set---jointly compute the union of their sets without revealing anything beyond the result~\cite{USENIX:DZBC25,USENIX:TBZCC25,USENIX:JSZG24, USENIX:ZCLZL23,USENIX:JSZDG22,CCS:GNBT25,CCS:ZCLPHW24, CCS:TCLZ23,ASIACCS:CSSW25,ASIACCS:BlaAgu12,AC:LiuGao23,AC:KRTW19,PoPETS:GaoNguTri24,
 ACNS:Frikken07,C:KisSon05}. PSU has been proposed for use in numerous use-cases, including the private aggregation of IP block lists~\cite{USENIX:JSZDG22,AC:KRTW19}, hospital data~\cite{USENIX:JSZDG22}, and network traffic data~\cite{USENIX:BSMD10}, as well as supporting full private joins over databases~\cite{AC:KRTW19}. 
 
+% However, there is a close relationship between the cardinalities of the union and the intersection of two sets, thus raising the question whether existing intersection recovery attacks against PSI-CA (e.g.,~\cite{USENIX:GHLWJL22,NDSS:JiaDuYan24,USENIX:FalTan25}) can be modified to work against PSU-CA. \ff{maybe move this paragraph up to intro}.
+
 \subsection{Prior Work}
 
 \heading{Join Protocols.} 
