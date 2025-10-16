@@ -1,27 +1,27 @@
 \begin{table*}[h!]
 \centering
 \renewcommand{\arraystretch}{1.1}
-\begin{tabular}{r c c c c c c c}
+\begin{tabular}{r c c c c c c c c}
 \toprule
-\textbf{Attacks} & \textbf{Functionality} &  \textbf{Recovery Goal}  & \textbf{\# Queries} & \textbf{Approx.} & \textbf{Adaptive} & \textbf{Auxiliary Data} \\
+\textbf{Attacks} & \textbf{Functionality} & \textbf{$\calA$'s Input} & \textbf{Recovery Goal}  & \textbf{\# Queries} & \textbf{Approx.} & \textbf{Adaptive} & \textbf{Auxiliary Data} \\
 \midrule
-Guo et al.~\cite{USENIX:GHLWJL22} & PSI-CA & Intersection &  &  & \checkmark &  \\ 
+Guo et al.~\cite{USENIX:GHLWJL22} & PSI-CA & $\{v_i\}_i$ & Intersection &  &  & \checkmark &  \\ 
 \hline
-Jiang et al.~\cite{NDSS:JiaDuYan24} & PSI-CA & Intersection &  &  &  \checkmark & \\ 
-Jiang et al.~\cite{NDSS:JiaDuYan24} & PSI-CA & Intersection &  & \checkmark &  \checkmark & \\ 
-Jiang et al.~\cite{NDSS:JiaDuYan24} & PSI-Sum~\cite{EuroSP:IKNPSS20} & Intersection &   &  &  \checkmark& \\
+Jiang et al.~\cite{NDSS:JiaDuYan24} & PSI-CA & $\{v_i\}_i$  &Intersection &  &  &  \checkmark & \\ 
+Jiang et al.~\cite{NDSS:JiaDuYan24} & PSI-CA & $\{v_i\}_i$ &Intersection &  & \checkmark &  \checkmark & \\ 
+Jiang et al.~\cite{NDSS:JiaDuYan24} & PSI-Sum~\cite{EuroSP:IKNPSS20} & $\{(k_i, v_i)\}_i$ &Intersection &   &  &  \checkmark& \\
 \hline
-Falzon \& Tang~\cite{USENIX:FalTan25} & \multirow{4}{*}{PJC~\cite{AC:LPRST21}}  & Key-value  & $O(k \log n)$ &  &  \checkmark &  \\
-Falzon \& Tang~\cite{USENIX:FalTan25} &    & Key-value  & -- & \checkmark &   & Value Distribution \\
-Falzon \& Tang~\cite{USENIX:FalTan25} &   & Key-value  & $2k$ &  &   & Intersection size $k$ \\
-Falzon \& Tang~\cite{USENIX:FalTan25} &    & Key-value  & $\Theta(s \log(n/s))$ & \checkmark  &   &  \\
+Falzon \& Tang~\cite{USENIX:FalTan25} & \multirow{4}{*}{PJC~\cite{AC:LPRST21}}  &  $\{(k_i, v_i)\}_i$ & Key-value  & $O(k \log n)$ &  &  \checkmark &  \\
+Falzon \& Tang~\cite{USENIX:FalTan25} &   &  $\{(k_i, v_i)\}_i$  & Key-value  & -- & \checkmark &   & Value Distribution \\
+Falzon \& Tang~\cite{USENIX:FalTan25} &   &  $\{(k_i, v_i)\}_i$  &Key-value  & $2k$ &  &   & Intersection size $k$ \\
+Falzon \& Tang~\cite{USENIX:FalTan25} &   &   $\{(k_i, v_i)\}_i$  &Key-value  & $\Theta(s \log(n/s))$ & \checkmark  &   &  \\
 \hline
-\textbf{This work} (Sec.~\ref{sec:psu-attack}) & PSU & Intersection  & 2 &  &   &  \\
-\textbf{This work} (Sec.~\ref{sec:psu-ca-attack}) & PSU-CA & Intersection  & add bound &  &  \checkmark &  \\
-\textbf{This work} & \multirow{4}{*}{MK-PMC~\cite{MKPMC}} &  Max-Set Recon. & 1 &  &  \checkmark &  \\
-\textbf{This work} &  & Max-Set Recon.  & 1 &  &  \checkmark &  \\
-\textbf{This work} &  & Max-Set Recon.  & 1 &  &  \checkmark &  \\
-\textbf{This work} &  & Max-Set Recon.  & 1 &  &  \checkmark &  \\
+\textbf{This work} (\S\ref{sec:psu-attack}) & PSU & $\{v_i\}_i$ &Intersection  & 2 &  &   &  \\
+\textbf{This work} (\S\ref{sec:psu-ca-attack}) & PSU-CA & $\{v_i\}_i$  &Intersection  & add bound &  &  \checkmark &  \\
+\textbf{This work} & \multirow{4}{*}{MK-PMC~\cite{MKPMC}} & & Max-Set Recon. & 1 &  &  \checkmark &  \\
+\textbf{This work} &  &  & Max-Set Recon.  & 1 &  &  \checkmark &  \\
+\textbf{This work} & &  & Max-Set Recon.  & 1 &  &  \checkmark &  \\
+\textbf{This work} &  & & Max-Set Recon.  & 1 &  &  \checkmark &  \\
 \bottomrule
 \end{tabular}
 \vspace{3mm}
