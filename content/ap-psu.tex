@@ -1,51 +1,51 @@
 \section{Additional Content for PSU and PSU-CA Attacks}
 
-\begin{figure}
-	\begin{pchstack}[boxed, center]
-		\procedure[linenumbering]{$\PSUattack^{\PSU(\cdot, Y)}(X)$}{
-			\text{Partition $X$ into $X_1, X_2$} \\
-			Z_1 \gets \PSU(X_1, Y) \\
-			Z_2 \gets \PSU(X_2, Y) \\
-			Z \gets Z_1 \cup Z_2 \\
-			D_Y \gets Z \setminus X \\
-			D_{X_1} \gets X_1 \setminus Z_2 \pccomment{\Cref{prop:PSU_comp_partial_difference}} \\
-			D_{X_2} \gets X_2 \setminus Z_1 \pccomment{\Cref{prop:PSU_comp_partial_difference}} \\
-			D_X \gets D_{X_1} \cup D_{X_2} \pccomment{\Cref{prop:PSU_difference_distributes}} \\
-			S \gets Z \setminus D_Y \setminus D_X \pccomment{\Cref{eqn:PSU_basis}}\\
-			\pcreturn S
-		}
-	\end{pchstack}
-	\caption{Intersection-recovery attack \PSU attack with oracle access to $\PSU(\cdot, Y)$ for a fixed $Y$. 
-	Note that $Y$ is part of the oracle and unknown to the adversary.}
-	\label{fig:PSU_attack}
-\end{figure}
+% \begin{figure}
+% 	\begin{pchstack}[boxed, center]
+% 		\procedure[linenumbering]{$\PSUattack^{\PSU(\cdot, Y)}(X)$}{
+% 			\text{Partition $X$ into $X_1, X_2$} \\
+% 			Z_1 \gets \PSU(X_1, Y) \\
+% 			Z_2 \gets \PSU(X_2, Y) \\
+% 			Z \gets Z_1 \cup Z_2 \\
+% 			D_Y \gets Z \setminus X \\
+% 			D_{X_1} \gets X_1 \setminus Z_2 \pccomment{\cref{prop:PSU_comp_partial_difference}} \\
+% 			D_{X_2} \gets X_2 \setminus Z_1 \pccomment{\cref{prop:PSU_comp_partial_difference}} \\
+% 			D_X \gets D_{X_1} \cup D_{X_2} \pccomment{\cref{prop:PSU_difference_distributes}} \\
+% 			S \gets Z \setminus D_Y \setminus D_X \pccomment{\cref{eqn:PSU_basis}}\\
+% 			\pcreturn S
+% 		}
+% 	\end{pchstack}
+% 	\caption{Intersection-recovery attack \PSU attack with oracle access to $\PSU(\cdot, Y)$ for a fixed $Y$. 
+% 	Note that $Y$ is part of the oracle and unknown to the adversary.}
+% 	\label{fig:PSU_attack}
+% \end{figure}
 
-\subsection{Proof of \Cref{prop:PSUCA_comp_m}}\label{ap:PSUCA_comp_m}
+% \subsection{Proof of \Cref{prop:PSUCA_comp_m}}\label{ap:PSUCA_comp_m}
 
-\begin{proof}
-	Let $n = |X|$, $n_1 = |X_1|$, and $n_2 = |X_2|$. By definition, $X_1$ contains exactly $n - n_1$ fewer elements than $X$, and $X_1 \cap Y$ contains $z - z_1 \leq n - n_1$ fewer elements than $X \cap Y$.
-	Thus, exactly $d := (n - n_1) - (z - z_1)$ 
-	elements of $X \setminus X_1$ must be contained in $Y$, that is, $|(X\setminus X_1) \cap Y| = d$.
-	Since $X_1$ and $X_2$ form a partition of $X$, we have $X\setminus X_1 = X_2$ and $n-n_1 = n_2$
-	and, thus, $|X_2 \cap Y| = d$. Then,
-	\begin{equation*}
-		\begin{split}
-			z_2 & = |X_2 \cup Y| \\
-			& = |X_2| + |Y| - |X_2 \cap Y| \\
-			& = n_2 + |Y| - ((n-n_1) - (z - z_1)) \\
-			& = n_2 + |Y| - (n_2 - (z - z_1)) \\
-			& = |Y| + (z - z_1)
-		\end{split}
-	\end{equation*}
-	Reordering terms concludes the proof.
-\end{proof}
+% \begin{proof}
+% 	Let $n = |X|$, $n_1 = |X_1|$, and $n_2 = |X_2|$. By definition, $X_1$ contains exactly $n - n_1$ fewer elements than $X$, and $X_1 \cap Y$ contains $z - z_1 \leq n - n_1$ fewer elements than $X \cap Y$.
+% 	Thus, exactly $d := (n - n_1) - (z - z_1)$ 
+% 	elements of $X \setminus X_1$ must be contained in $Y$, that is, $|(X\setminus X_1) \cap Y| = d$.
+% 	Since $X_1$ and $X_2$ form a partition of $X$, we have $X\setminus X_1 = X_2$ and $n-n_1 = n_2$
+% 	and, thus, $|X_2 \cap Y| = d$. Then,
+% 	\begin{equation*}
+% 		\begin{split}
+% 			z_2 & = |X_2 \cup Y| \\
+% 			& = |X_2| + |Y| - |X_2 \cap Y| \\
+% 			& = n_2 + |Y| - ((n-n_1) - (z - z_1)) \\
+% 			& = n_2 + |Y| - (n_2 - (z - z_1)) \\
+% 			& = |Y| + (z - z_1)
+% 		\end{split}
+% 	\end{equation*}
+% 	Reordering terms concludes the proof.
+% \end{proof}
 
-\subsection{Proof of \Cref{thm:psica-to-psuca}}\label{ap:psica-to-psuca}
+% \subsection{Proof of \Cref{thm:psica-to-psuca}}\label{ap:psica-to-psuca}
 
-\begin{proof}
-	We provide a concrete construction of \bdv{} for any \adv{} in \cref{fig:PSUCA_generic}.
-	Correctness of \bdv{} follows directly from \cref{eqn:union_intersect_cardinalities} and \cref{prop:PSUCA_comp_m}.
-	Clearly, \bdv{} makes three PSU-CA evaluations on lines~\ref{lin:PSUCA_generic_1}~-~\ref{lin:PSUCA_generic_3} and one for every \PSICA{} query made by \adv{}.
-	Since determining $m$ and translating union cardinalities to intersection cardinalities only involves simple integer arithmetic, 
-	\bdv{} has a similar runtime to \adv{}.
-\end{proof}
+% \begin{proof}
+% 	We provide a concrete construction of \bdv{} for any \adv{} in \cref{fig:PSUCA_generic}.
+% 	Correctness of \bdv{} follows directly from \cref{eqn:union_intersect_cardinalities} and \cref{prop:PSUCA_comp_m}.
+% 	Clearly, \bdv{} makes three PSU-CA evaluations on lines~\ref{lin:PSUCA_generic_1}~-~\ref{lin:PSUCA_generic_3} and one for every \PSICA{} query made by \adv{}.
+% 	Since determining $m$ and translating union cardinalities to intersection cardinalities only involves simple integer arithmetic, 
+% 	\bdv{} has a similar runtime to \adv{}.
+% \end{proof}

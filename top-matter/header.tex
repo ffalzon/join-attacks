@@ -1,37 +1,24 @@
-\usepackage{cite}
-\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\let\Bbbk\relax
+\usepackage{bbm}
+\usepackage{amsmath,amsthm}
+\usepackage{bbding}
 \usepackage{algorithmic}
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{multirow}
-\usepackage{textcomp}
 \usepackage{bmpsize}
 \usepackage{xcolor}
 \usepackage{lipsum}
 \usepackage{xspace}
-\usepackage[colorlinks=true,urlcolor=black]{hyperref}
 
-\usepackage{cleveref}
-\Crefname{section}{Section}{Sections}
-\Crefname{subsection}{Section}{Sections}
-\Crefname{figure}{Figure}{Figures}
-\Crefname{table}{Table}{Tables}
-\Crefname{prop}{Prop.}{Propositions}
-\Crefname{theorem}{Theorem}{Theorems}
-\Crefname{lemma}{Lemma}{Lemmas}
-\Crefname{equation}{Eq.}{Equations}
-\creflabelformat{equation}{#2#1#3}
+%\usepackage[colorlinks=true,urlcolor=black]{hyperref}
 
-\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
-    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+\usepackage{etoolbox}
 
-\ifsubmission
-    \newcommand{\todo}[1]{}
-    \newcommand{\ff}[1]{}
-\else
-    \newcommand{\todo}[1]{{\textcolor{red}{[TODO: #1]}}}
-    \newcommand{\ff}[1]{{\textcolor{violet}{[francesca: #1]}}}
-\fi
+
+\newcommand{\todo}[1]{{\textcolor{red}{[TODO: #1]}}}
+\newcommand{\ff}[1]{{\textcolor{violet}{[francesca: #1]}}}
+
 \usepackage[adversary,
             lambda,
             landau,
