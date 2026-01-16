@@ -8,11 +8,21 @@ ACNS:Frikken07,C:KisSon05}. PSU has been proposed for use in numerous use-cases,
 
 % However, there is a close relationship between the cardinalities of the union and the intersection of two sets, thus raising the question whether existing intersection recovery attacks against PSI-CA (e.g.,~\cite{USENIX:GHLWJL22,NDSS:JiaDuYan24,USENIX:FalTan25}) can be modified to work against PSU-CA. \ff{maybe move this paragraph up to intro}.
 
-\subsection{Prior Work}
+\subsection{Contributions}
 
-\heading{Join Protocols.} 
 
-\heading{Attacks.} The study of attacks against set-operation functionalities was initiated by Guo et al.~\cite{USENIX:GHLWJL22}, who presented two intersection-recovery attacks against the Private Set Intersection Cardinality (PSI-CA) and Private Set Intersection Sum (PSI-SUM) functionalities. This work was extended by Jiang et al.~\cite{NDSS:JiaDuYan24}, who introduced additional attacks on the same functionalities, including improvements over Guo et al.’s attack. Most recently, Falzon and Tang \cite{USENIX:FalTan25} proposed a series of attacks on Google’s Private Join and Compute (PCJ) functionality~\cite{AC:LPRST21}, which takes as input two key-value stores and computes the inner product of the values associated with intersecting keys. Their techniques draw on a range of approaches, including combinatorial methods, maximum-likelihood estimation, and tools from signal processing.
+\subsection{Related Work} 
 
-\todo{also cite~\cite{USENIX:ZinCaoGre23}}
+\subsubsection{Protocols.} 
+The seminal works of Freedman, Nissim, and Pinkas~\cite{EC:FreNisPin04} and
+Agrawal, Evfimievski, and Srikant~\cite{SIGMOD:AgrEvfSri03} laid the foundations for modern private set intersection and private database operations.
+Kissner and Song~\cite{C:KisSon05} introduced a framework for privacy-preserving set operations, including union, intersection, and element reduction. Since then, a long line of work has proposed protocols for both PSI (e.g.,\cite{C:PRTY19,USENIX:PinSchZoh14, CCS:CheLaiRin17, CCS:DonCheWen13, FC:DeCTsu10, ASIACCS:Kerschbaum12, CCS:RosTri21, C:ChaMia20}) and PSU (e.g.,~\cite{USENIX:DZBC25,USENIX:TBZCC25,USENIX:JSZG24,USENIX:ZCLZL23,USENIX:JSZDG22,CCS:GNBT25,CCS:ZCLPHW24,CCS:TCLZ23}).
+More recent constructions extend PSI to support private computation over payloads associated with intersecting values, such as the sum~\cite{EUROSP:IKNPSSRSY20} and inner product~\cite{ASIACCS:CHIKT23,AC:LPRST21}.
+
+Protocols supporting computations on tables as inputs have also been proposed. Buddhavarapu et al.~\cite{PMC} proposed two protocols: (i) Private-ID, which computes a set of pseudorandom universal identifiers corresponding to the records in the union of the parties’ inputs, and (ii) PS$^3$I, which outputs secret shares of the matched records. Subsequent work extends Private-ID to support multi-key datasets~\cite{MKPMC} and to enable delegation of the computation to an untrusted third party~\cite{PoPETS:MMTSBC24}.
+
+Mohassel et al.~\cite{CCS:MohRinRos20} proposed a protocol for SQL-like join and select queries and whose inputs and outputs can be secret shared between the parties. Similarly, IDCloak~\cite{IDCloak} privately computes an $n$-party join and outputs secret shares of the result. Asharov et al.~\cite{CCS:AHKNPT23} proposed the first protocols that support JOIN and GROUP-BY (i.e., aggregation) operations and are secure against malicious adversaries. Most recently, Lehmann et al.~\cite{PoPETS:LehMouSid26} described a protocol that enables multiple parties to provide a receiver with the inner joins over their respective datasets. 
+
+\subsubsection{Attacks.} The study of attacks against set-operation functionalities was initiated by Guo et al.~\cite{USENIX:GHLWJL22}, who presented two intersection-recovery attacks against the Private Set Intersection Cardinality (PSI-CA) and Private Set Intersection Sum (PSI-SUM) functionalities. This work was extended by Jiang et al.~\cite{NDSS:JiaDuYan24}, who introduced new attacks on the same functionalities that required fewer queries. Most recently, Falzon and Tang \cite{USENIX:FalTan25} proposed a series of attacks on Google’s Private Join and Compute (PCJ) functionality~\cite{AC:LPRST21}, which takes as input two key-value stores and computes the inner product of the values associated with intersecting keys. Their techniques draw on a range of approaches, including combinatorial methods, maximum-likelihood estimation, and tools from signal processing.
+In another line of work, Zinkus et al.~\cite{USENIX:ZinCaoGre23} describe an approach for automatically quantifying the leakage for a given functionality. 
 
