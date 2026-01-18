@@ -8,6 +8,11 @@ ACNS:Frikken07,C:KisSon05}. PSU has been proposed for use in numerous use-cases,
 
 % However, there is a close relationship between the cardinalities of the union and the intersection of two sets, thus raising the question whether existing intersection recovery attacks against PSI-CA (e.g.,~\cite{USENIX:GHLWJL22,NDSS:JiaDuYan24,USENIX:FalTan25}) can be modified to work against PSU-CA. \ff{maybe move this paragraph up to intro}.
 
+
+
+\ff{incorporate this someowhere in the introduction, potentially}
+The original work~\cite{MKPMC} provides a proof sketch arguing security against a semi-honest adversary. However, several subtleties are not fully addressed, including repeated identifiers in the inputs and certain syntactic inconsistencies. Moreover, the protocol reveals additional information beyond simply the matched identifiers: party $C$ learns a renamed and shuffled copy of the two input sets, enabling it to infer the matching pattern between them. To address this, we separate the intended functionality (i.e., what we wish to compute) from the additional leakage (i.e., information that may also be inferred, such as set sizes).
+
 \subsection{Contributions}
 
 

@@ -1,1 +1,338 @@
 \section{Preliminaries}
+
+
+\subsection{The MK-PrivateID Functionality}
+\label{sec:MK-PID}
+
+The Multi-Key PrivateID (MK-PrivateID) protocol~\cite{MKPMC} extends the single-key PrivateID protocol~\cite{PMC} to support matching on multiple identifiers. In this two-party setting, a Company $C$ and a Partner $P$ each hold a table of records (e.g., user data such as names or email addresses). The protocol outputs universal identifiers (UIDs) such that matching records receive the same UID, while unmatched records receive distinct UIDs, enabling further downstream computation over the associated data.
+
+The original work~\cite{MKPMC} provides a proof sketch for security against a semi-honest adversary, together with a functionality description. However, we observe that the specified functionality reveals more information than the intended computation. Accordingly, we separate the intended functionality (i.e., what is computed) from the additional leakage (i.e., information that may also be inferred, such as set sizes).
+
+
+
+
+\subsubsection{Functionality}
+\label{sec:mkpmc_functionality}
+We start by presenting a formal description of the intended MKPM functionality formally (Figure~\ref{fig:MKPM}). It involves two parties, a \emph{Company} $C$ and a \emph{Partner} $P$, each holding a set of records as input. Let $\calI$ denote the universe of identifiers (e.g., email addresses, phone numbers, IP addresses), and let $\lambda \in \NN$ be the maximum number of identifiers per record. Party $C$ holds
+\[
+\calC := \{\, \bc_i = (c_{i,1}, \ldots, c_{i,n_i}) \mid i \in [n]\,\},
+\]
+and party $P$ holds
+\[
+\calP := \{\, \bp_j = (p_{j,1}, \ldots, p_{j,m_j}) \mid j \in [m],\; m_j \le \lambda \,\},
+\]
+where all identifiers are elements of $\calI$.
+
+The functionality takes $\calC$ and 
+$\calP$ as inputs from the respective parties and then applies a random permutation. The records of $\calC$ are permuted while preserving the order of identifiers within each record, whereas in $\calP$ both the records and the identifiers within each record are permuted. We denote the resulting collections by $\calC'$ and $\calP'$, respectively.\footnote{Although sets are unordered, the implementation~\cite{PIDRepo} treats inputs as ordered lists of records; we follow the authors of~\cite{MKPMC} in adopting this terminology.}
+
+The core of the functionality is the record-matching procedure $\match$ (Figure~\ref{fig:match_logic}), which takes the shuffled inputs $\calC'$ and $\calP'$. Each record in $\calC'$ (resp., $\calP'$) is matched with at most one record in $\calP'$ (resp., $\calC'$). The procedure iterates over identifier positions in $\calC'$. For each position $j$, it scans all records $p_k \in \calP'$ and matches $p_k$ to the first record $c_i \in \calC'$ whose $j$-th identifier appears in $p_k$, i.e.,
+\[
+\exists \ell \text{ such that } p_k[\ell] = c_i[j],
+\]
+where $i$ is minimal. By processing identifiers in this order, $\match$ prioritizes identifiers that occur earlier in the records of $\calC'$.
+This allows party $C$ to implicitly define an identifier priority, for example by placing more reliable identifiers earlier in its records.
+
+\ff{edited until here}
+The matching logic assigns a unique random identifier from some space $\G$ to every pair of matched records, 
+as well as one to each unmatched record in \calC{} and \calP{}; we denote the set of these unique identifies by \UID{}.
+Moreover, \match{} constructs two maps $M_C: \UID \to \calC \cup \{\bot\}$ and $M_P: \UID \to \calP \cup \{\bot\}$, 
+which map the uids in \UID{} to the corresponding records in $\calC$ and $\calP$ or $\bot$
+if the uid belongs to an unmatched record of the other party.
+The set \UID{} and map \MC{} are then sent to party $C$.
+Analogously, $P$ receives \UID{} and \MP{}.
+That is, the two parties receive a common set of universal identifiers, 
+along with a map linking the uids to their original records 
+or $\bot$ if the uid was assigned to an unmatched record of the other party's set.  
+
+% \begin{figure}
+% 	\begin{tcolorbox}[colback=white,arc=0mm, width=14cm]
+% 	\begin{description}
+% 		\item[\textbf{Parameters:}] Two parties, $C$ and $P$, set sizes $n, m\in \N$ and
+% 		record lengths $n_i, m_j \in \N$ for $i\in[n]$ and $j\in[m]$.
+% 		\item[Functionality $\MKPM(\calC, \calP)$ \fbox{$\LMKPM(\calC, \calP)$}~:] \hfill \begin{enumerate}
+% 			\item Receive the input from party $C$: $\calC = \{c_i \setdsc i \in [n]\}$.
+% 			\item Receive the input from party $P$: $\calP = \{p_i \setdsc i \in [m]\}$.
+% 			\item Sample $\pi_C \sample \Perms[[n]]$ and $\pi_P \sample \Perms[[m]]$.
+% 			\item Let $\calC' := \{c'_i \setdsc i \in [n]\}$, where $c'_i := c_{\pi_C(i)}$.
+% 			\item Let $\calP' := \{p'_i \setdsc i \in [m]\}$, where $p'_i := p_{\pi_P(i)}$.
+% 			\item Shuffle the identifiers in $p'_i$ for all $i \in [m]$.
+% 			\item Compute $\UID, \MC, \MP \gets \match(\calC', \calP')$ (\cref{fig:match_logic}).
+% 		\end{enumerate}
+% 		\item[] \hfill \\
+% 		\vspace{-1cm}
+% 		\begin{tcolorbox}[arc=0mm, colback=white, boxrule=0.4pt, width=11.5cm]%[colframe=black, 
+% 							% boxrule=0.5pt, 
+% 							% colback=white, 
+% 							% arc=0mm,
+% 							% enhanced, 
+% 							% parbox=false,
+% 							% width=10cm, % extend to right margin,
+%                       		% boxsep=6pt,left=6pt,right=6pt]
+% 			\begin{enumerate}[leftmargin=0.3cm]
+% 				\addtocounter{enumi}{7}
+% 				\item Sample $f_C, f_P \sample \InjFuncs[\Ispace,\; \G]$.
+% 				\item Compute $\leak_\calC^C := \{(f_C(c'_i[1]), \dots, f_C(c'_i[n_i])) \setdsc i \in [n]\}$.
+% 				\item Compute $\leak_\calP^C := \{(f_C(p'_i[1]), \dots, f_C(p'_i[m_i])) \setdsc i \in [m]\}$.
+% 				\item Sample $\pi \sample \Perms[[n]]$.
+% 				\item Let $\calC'' := \{c''_i \setdsc i \in [n]\}$, where $c''_i := c_{\pi(i)}$.
+% 				\item Compute $\leak_\calC^P := \{(f_P(c''_i[1]), \dots, f_P(c''_i[n_i])) \setdsc i \in [n]\}$.
+% 			\end{enumerate}
+% 		\end{tcolorbox}
+% 		\item[]\hfill \\ 
+% 			\vspace{-1cm}
+% 			\begin{enumerate}[leftmargin=0.8cm]
+% 			\addtocounter{enumi}{13}
+% 			\item Output:\hfill \begin{itemize}
+% 					\item Send $\UID, \MC$ \fbox{$,\left(\leak_\calC^C, \leak_\calP^C\right)$} to $C$.
+% 					\item Send $\UID, \MP$ \fbox{$,\leak_\calC^P$} to $P$.
+% 			\end{itemize}
+% 		\end{enumerate}
+% 	\end{description}
+% 	\end{tcolorbox}
+% 	\caption{Multi-Key Private Matching functionality $\MKPM(\calC, \calP)$.
+% 	Extensions to $\MKPM$ to obtain the functionality that includes the protocol leakage, 
+% 	$\LMKPM(\calC, \calP)$,
+% 	are \fbox{boxed}.
+% 	The record matching logic \match{} is defined in \cref{fig:match_logic}.}
+% 	\label{fig:MKPM}
+% \end{figure}
+
+% \begin{figure}
+% 	\begin{pchstack}[boxed, center]
+% 		\procedure[linenumbering, skipfirstln]{$\match(\calC, \calP)$}{ 
+% 			\pclinecomment{Recall that $\calC = \{c_1, \dots, c_n\}, \calP = \{p_1, \dots, p_n\}$} \\
+% 			\text{Initialize empty maps $\MC$ and $\MP$.} \\
+% 			\text{Initialize empty set $\UID$.} \\
+% 			\mathsf{matched}^{\calC} \gets (\bot)^n; \; \mathsf{matched}^{\calP} \gets (\bot)^m \\
+% 			n_{max} \gets \max_{c\in\calC} |c| \pcskipln\\
+% 			\pclinecomment{Match Records} \\
+% 			\pcfor j = 1, \dots, n_{max} \pcdo \\
+% 			\t	\pcfor k = 1, \dots, m \pcdo \label{lin:match_loop_V}\\
+% 			\t	\t 	\pcif \mathsf{matched}^{\calP}[k] = \top \pcthen \pccontinue \\
+% 			\t	\t	\pcfor i = 1, \dots, n \pcdo \\
+% 			\t	\t	\t	\pcif \mathsf{matched}^\calC[i] = \top \lor |c_i| < j \pcthen \pccontinue\\
+% 			\t	\t	\t	\pcfor \ell = 1, \dots, |p_i| \pcdo \\
+% 			\t	\t	\t	\t	\pcif c_i[j] = p_k[\ell] \pcthen \label{lin:match_common_uid} \\
+% 			\t	\t	\t	\t	\t	\uid \sample \G \setminus \UID \\
+% 			\t	\t	\t	\t	\t	\UID \gets \UID \cup \{\uid\} \\
+% 			\t	\t	\t	\t	\t	\MC[\uid] \gets c_i \\
+% 			\t	\t	\t	\t	\t	\MP[\uid] \gets p_k \\
+% 			\t	\t	\t	\t	\t	\mathsf{matched}^\calC[i] \gets \top; \;\mathsf{matched}^\calP[k] \gets \top \pcskipln\\
+% 			\pclinecomment{Assign uids to unmatched records} \\
+% 			\pcfor i = 1, \dots, n \\
+% 			\t 	\pcif \mathsf{matched}^C[i] = \bot \pcthen \label{lin:match_unmatched_C_uid} \\
+% 			\t	\t	\uid \sample \G \setminus \UID \\
+% 			\t	\t	\UID \gets \UID \cup \{\uid\} \\
+% 			\t	\t	\MC[\uid] \gets c_i \\
+% 			\t	\t	\MP[\uid] \gets \bot \\
+% 			\pcfor i = 1, \dots, m \\
+% 			\t 	\pcif \mathsf{matched}^P[i] = \bot \pcthen \label{lin:match_unmatched_P_uid} \\
+% 			\t	\t	\uid \sample \G \setminus \UID \\
+% 			\t	\t	\UID \gets \UID \cup \{\uid\} \\
+% 			\t	\t	\MC[\uid] \gets \bot \\
+% 			\t	\t	\MP[\uid] \gets p_i \\
+% 			\pcreturn \UID, \MC, \MP
+% 		}
+% 	\end{pchstack}
+% 	\caption{Record matching logic used in MK-PrivateID.}\label{fig:match_logic}\label{fig:leakC}\label{fig:leakP}
+% \end{figure}
+
+% \textbf{Leakage.}
+% The \MKPM{} functionality we show in \cref{fig:MKPM} describes the desired computational task to be carried out by MK-PrivateID.
+% As mentioned before, MK-PrivateID leaks further information about its inputs, which is not part of the desired output,
+% but results from a tradeoff in the protocol design in favor of higher efficiency.
+% To formalize this leakage pattern, 
+% we provide the extended functionality $\LMKPM$ in the same figure. The corresponding additions are boxed.
+% We distinguish between the leakage observed by $C$ and that observed by $P$.
+
+% The leakage observed by party $C$ simply consists of a renamed copy of the shuffled sets $\calC'$ and $\calP'$.
+% That is, we sample an injective random function $f_C : \Ispace{} \to \G$, which we call a "hiding function",
+% and then hide the identifiers of $\calC'$ and $\calP'$ by evaluating them under $f_C$.
+% $C$ observes these hidden sets.
+
+% The leakage observed by $P$ consists only of a hidden copy of \calC{}.
+% However, first the records of \calC{} are shuffled in the same manner as in the functionality, 
+% but with fresh randomness. This yields a set $\calC''$.
+% After that, a new hiding function $f_P : \Ispace{} \to \G$ is sampled and used to hide the identifiers in $\calC''$.
+% $P$ observes this hidden and re-shuffled copy of $\calC$.
+
+% \section{Threat Model}
+% \label{sec:threat_model}
+% All functionalities and protocols we analyze in this work, i.e., \PSU, \PSUCA, \MKPM, and $\LMKPM$, 
+% involve two parties and take two inputs. Let $F$ denote any one of these functionalities.
+% We generally assume that one of the two parties, the victim, behaves honestly and has a static protocol input, 
+% meaning it does not change in the course of the attack.
+% The other party is assumed to be \emph{input-malicious}, i.e.,
+% it must follow the protocol specification honestly, but can (1) evaluate $F$ arbitrarily often
+% and (2) choose its own inputs adaptively.
+% In other words, if $V$ denotes the static victim set, 
+% the attacker is given some target set $T$ and oracle access to $F(\cdot, V)$
+% and tries to infer as much information about $V$ as possible. 
+% The attacker's exact goal depends on the functionality we attack;
+% we formalize the different recovery goals in the following sections.
+
+% Note that we purposefully assume that the attacker is given some target set and 
+% make no assumptions on how this target set is constructed.
+% As an immediate example, it may just contain some company's user data, 
+% which would also be used as input in honest protocol executions, 
+% but is then abused by a rogue employee to infer information about the victim's input.
+% However, we should also consider other scenarios, where a malicious actor constructs the target set to obtain
+% specific information about the victim's data.
+% For instance, the attacker could choose all phone numbers of a specific area code 
+% or all email addresses of some domain as its target set and check for the overlap 
+% between these identifiers and the victim's data.
+% Not making any assumptions on the origin of the target set 
+% allows us to cover a broad range of such scenarios.
+
+% \subsection{Intersection Recovery}\label{sec:IR_goal}
+% A common goal in the literature analyzing PSI-related functionalities \cite{Guo22,AnonPSI}, especially PSI-CA and PSI-SUM,
+% is to recover the intersection of the protocol inputs. 
+% We adopt this goal for our attacks against PSU and PSU-CA.
+
+% \begin{definition}[Intersection Recovery]
+% 	Let $F$ be either the \PSU{} or the \PSUCA{} functionality and let $X$ and $Y$ be two sets.
+% 	An adversary $\adv$ provided with the target set $X$ and oracle access to $F(\cdot, Y)$
+% 	achieves \textbf{intersection recovery} if it outputs $X \cap Y$.
+% \end{definition}
+
+% \subsection{Intersection Recovery in the Multi-Key Setting}\label{sec:MK_IR_goals}
+% Given that the MKPM functionality operates on sets of records, 
+% intersection recovery as we introduced it above would entail
+% recovering the set of records that appear in both input sets.
+% However, in real-world scenarios, it is rather unlikely that two records match exactly
+% and we can expect the intersection between the inputs in the traditional sense to be small, or even empty.
+% We therefore generalize the intersection recovery attack goal to the multi-key setting,
+% which results in two new attack goals.
+% From now on the target and victim sets are sets of records, which we denote by \setT{} and \setV{} respectively.
+
+% \subsubsection{Recovering Matched Records}\label{sec:MRR_goal}
+% Given that the matching logic used in MK-PrivateID (see \cref{fig:match_logic}) 
+% pairs records and assigns the the same uid to two matched records and separate uids to unmatched ones, 
+% one can think of \match{} as computing a pseudo-union of records,
+% whereby a record in the victim set and a record in the target set are considered equal 
+% if they are assigned the same uid by the matching logic.
+% Recovering the corresponding pseudo-intersection 
+% -- the records of the attacker's target set which are matched with some record in the victim set --
+% seems a natural generalization of the intersection recovery goal we introduced above.
+% However, since \setT{} and \setV{} are shuffled before the matching step, 
+% the matching logic does not consistently pair the same records across multiple protocol invocations with the same inputs.
+% In fact, even the number of matched records may fluctuate.
+% This not only makes such an attack goal hard to formalize, 
+% but also greatly complicates proving the correctness of the attacks aiming to achieve said goal. 
+
+% However, we can relax the notion of such a pseudo-intersection to
+% include all records of the target set which share at least one identifier with some record in the victim set,
+% that is, all records that could potentially be matched by the matching logic.
+% We call these records \emph{matchable records} and the attacker's goal shall be to find 
+% all matchable records its target set. We formalize this using the following notation: 
+% $$\setT \sqcap \setV := \{t \in \setT \setdsc \exists v \in \setV\; \exists j, \ell \in \N : t[j] = v[\ell]\}$$
+% Note that in contrast to the standard set intersection, 
+% $\setT \sqcap \setV$ is not commutative.
+% In particular, $\setT \sqcap \setV$ is a subset of $\setT$, but not necessarily of $\setV$.
+% We use this attack goal in the context of analyzing the \MKPM{} functionality (without leakage).
+
+% \begin{definition}[Matchable Record Recovery]\label{def:matchable_records_recovery}
+% 	Let \setT{} and \setV{} be two sets of records.
+% 	An adversary $\adv$ provided with the target set $\setT$ and oracle access to $\MKPM(\cdot, \setV)$
+% 	achieves \textbf{Matchable Record Recovery} (MRR) if it outputs $\setT \sqcap \setV$.
+% \end{definition}
+
+% Note that MRR does not require the attacker to reconstruct any explicit identifiers or records of the victim set.
+% Nevertheless, this information can be sensitive and should not be easily recoverable,
+% as the mere information that at least one identifier of some user occurs in another organization's data set 
+% can be detrimental to the privacy of said user. 
+% We expect the authors of MK-PrivateID to share our view, 
+% as they highlight specific precautions against leaking this information in their protocol design.
+
+% \subsubsection{Recovering Matched Identifiers}\label{sec:IIR_goal}
+% As elaborated above, only recovering records from the victim set that exactly match some record in the target set
+% is unlikely to yield satisfactory results.
+% However, this is not necessary if one does not care about whole records and simply wants to 
+% determine which identifiers of the target set also occur in the victim set.
+% Our second generalization of intersection recovery captures exactly this:
+% the attacker shall determine the set of identifiers that occur in both the target set and the victim set.
+
+% Recall that for any set of records \setX{}, we denote the set of identifiers that occur in \setX{} with $\Ispace{\setX}$.
+% The attack goal we outlined above therefore corresponds to recovering the set $\Ispace{\setT} \cap \Ispace{\setV}$.
+% This goal is achieved by our first attack that considers the additional information leaked by MK-PrivateID.
+% We therefore state the its definition using the extended functionality \LMKPM{}.
+
+% \begin{definition}[Identifier Intersection Recovery]\label{def:IR_goal}
+% 	Let \setT{} and \setV{} be two sets of records.
+% 	An adversary $\adv$ provided with \setT{} and oracle access to $\LMKPM(\cdot, \setV)$
+% 	achieves \textbf{Identifier Intersection Recovery} (IIR) if it outputs $\Ispace{\setT} \cap \Ispace{\setV}$.
+% \end{definition}
+
+% \subsection{Maximum Set Reconstruction}\label{sec:MR_goal}
+% The IIR attack goal we defined in the previous section already recovers a lot of information about the victim set.
+% However, it ignores that the identifiers in the protocol inputs are arranged in records. 
+% Moreover, some identifiers may occur in multiple records within the same set.
+% This is neither prohibited by the specification of MK-PrivateID, nor is it unlikely to occur in real-world applications. 
+% For instance, multiple devices behind the same Network Address Translation (NAT) device share the same public IP address.
+% Additionally recovering this information may allow an attacker to learn a lot about the affected users
+% such as where and with whom they live or which people they share devices with.
+
+% Our strongest attack goal therefore consists of recovering as much information about the victim set as possible
+% given the information contained in the target set.
+% In other words, the attacker's goal shall be to reconstruct the records of the victim set
+% such that the reconstructed records contain at least all identifiers which also occur in the attacker's target set.
+% We call this \textbf{Maximum Set Reconstruction}. See \cref{fig:prel_recon_example_MR} for a small example.
+% This is closely related to the \emph{data recovery} attack goal that is commonly prevalent
+% in the literature on encrypted databases \cite{fuller2017sok}. 
+% As was the case with IIR, we define maximum reconstruction with respect to the $\LMKPM$ functionality,
+% which includes the information that is additionally leaked by MK-PrivateID.
+
+% \begin{definition}[Maximum Set Reconstruction]\label{def:max_recons}
+% 	Let \setT{} and \setV{} be two sets of records.
+% 	An adversary $\adv$, 
+% 	provided \setT{} as well as oracle access to the extended MKPM functionality $\LMKPM(\cdot, \setV)$,
+% 	achieves \textbf{maximum set reconstruction} (MSR) of \setV{} with respect to \setT{}
+% 	if it outputs a multiset of records \recVT{} such that
+% 	% $\Ispace{\recVT} \subseteq \Ispace{\setT}$ and 
+% 	there exists an injective mapping $\varphi: \recVT \to \setV$ such that
+% 	\begin{enumerate}
+% 		\item For all $v^* \in \recVT$ and all $\id \in v^*$ we have $\id \in \varphi(v^*)$.
+% 		\item For all $v^* \in \recVT$ 
+% 		and all $\id \in\varphi(v^*)$ we have if $\id \in \Ispace{\setT}$ 
+% 		then $\id \in v^*$.
+% 		\item For all $v \in \setV$, if there is some $\id \in v$ 
+% 		with $\id \in \Ispace{\setT}$ then $v \in \varphi\left(\recVT\right)$. 
+% 	\end{enumerate} 
+% \end{definition}
+
+% We require injectivity of $\varphi$ in order to ensure that each $v^* \in \recVT$
+% corresponds to exactly one $v \in \setV$.
+% Condition one describes per-record soundness, 
+% i.e., every identifier in some reconstructed record 
+% actually occurs in the corresponding original record.    
+% Condition two captures $\Ispace{\setT}$-restricted per-record completeness,
+% mandating that every reconstructed record
+% contains all identifiers from its original record that are also in $\Ispace{\setT}$.
+% And finally, condition three is an $\Ispace{\setT}$-restricted global completeness variant. 
+% Namely, it requires that all records which contain an identifier from $\Ispace{\setT}$
+% are (at least partially) reconstructed.
+
+% Note that our definition of MSR does not require that multiple instantiations 
+% of the same identifier within one record are reconstructed as such.
+% We find this acceptable, as this is unlikely to occur in realistic scenarios.
+% Moreover, our attacks that achieve MSR actually recover this as well.
+
+% Furthermore, we do not require the order of identifiers within records to match between \setV{} and \recVT.
+% This is mainly due to technical reasons, 
+% namely, the fact that the identifiers within records of \setV{} are randomly shuffled.
+% However, in real-world use cases these identifiers will often be 
+% syntactically clearly distinguishable attributes 
+% like email addresses, phone numbers and IP addresses, 
+% which allows for a later reconstruction (or at least re-alignment) 
+% of the identifier order within the reconstructed records.
+
+% \begin{figure}
+% 	\centering
+% 		\input{chapters/figures/reconstruction_example.tex}
+% 	\caption{Simple reconstruction example. 
+% 	The sets \setT{} and \setV{} are displayed in \ref{fig:prel_recon_example_C} and \ref{fig:prel_recon_example_P}, 
+% 	a maximum reconstruction of \setV{} w.r.t. \setT{} in \ref{fig:prel_recon_example_MR} 
+% 	.}%
+% 	\label{fig:prel_recon_example}%
+% \end{figure}
