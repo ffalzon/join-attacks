@@ -12,7 +12,7 @@ The original work~\cite{MKPMC} provides a proof sketch for security against a se
 
 \subsubsection{Functionality}
 \label{sec:mkpmc_functionality}
-We start by presenting a formal description of the intended MKPM functionality. It involves two parties, a \emph{Company} $C$ and a \emph{Partner} $P$, each holding a set of records as input. Let $\calI$ denote the universe of identifiers (e.g., email addresses, phone numbers, IP addresses), and let $\lambda \in \NN$ be the maximum number of identifiers per record. Party $C$ holds
+We start by presenting a formal description of the intended functionality $\calF_{\MKPM{}}$. It involves two parties, a \emph{Company} $C$ and a \emph{Partner} $P$, each holding a set of records as input. Let $\calI$ denote the universe of identifiers (e.g., email addresses, phone numbers, IP addresses), and let $\lambda \in \NN$ be the maximum number of identifiers per record. Party $C$ holds
 \[
 \calC := \{\bc_i = (c_{i,1}, \ldots, c_{i,n_i}) \mid i \in [n]\},
 \]
@@ -88,29 +88,27 @@ The detailed description of $\calF_{\MKPM}$ can be found in Figure~\ref{fig:MKPM
     }
 	\caption{The Multi-Key Private Matching functionality $\MKPM(\calC, \calP)$.
 	Extensions to $\MKPM$ to obtain the functionality that includes the protocol leakage \protect\dbox{$\LMKPM(\calC, \calP)$} are boxed.
-	The record matching logic \match{} is defined in Figure~\ref{fig:match_logic}.}
-	\label{fig:MKPM}
+	The record matching logic \match{} is defined in Figure~\ref{fig:match_logic}.\label{fig:MKPM}}
 \end{figure}
 
 
 \subsubsection{Leakage.}
-% The \MKPM{} functionality we show in \cref{fig:MKPM} describes the desired computational task to be carried out by MK-PrivateID.
-% As mentioned before, MK-PrivateID leaks further information about its inputs, which is not part of the desired output,
-% but results from a tradeoff in the protocol design in favor of higher efficiency.
-% To formalize this leakage pattern, 
-% we provide the extended functionality $\LMKPM$ in the same figure. The corresponding additions are boxed.
-% We distinguish between the leakage observed by $C$ and that observed by $P$.
+\ff{edited until here}
+In favor of higher efficiency, MK-PrivateID leaks additional information which we capture with an extended ``leaky'' functionality $\calF_{\LMKPM{}}$. 
+We distinguish between the leakage observed by $C$ and that observed by $P$.
 
-% The leakage observed by party $C$ simply consists of a renamed copy of the shuffled sets $\calC'$ and $\calP'$.
-% That is, we sample an injective random function $f_C : \Ispace{} \to \G$, which we call a "hiding function",
-% and then hide the identifiers of $\calC'$ and $\calP'$ by evaluating them under $f_C$.
-% $C$ observes these hidden sets.
+The leakage observed by party $C$ simply consists of a renamed copy of the shuffled sets $\calC'$ and $\calP'$.
+That is, we sample an injective random function $f_C : \Ispace{} \to \calG$, which we call a "hiding function",
+and then hide the identifiers of $\calC'$ and $\calP'$ by evaluating them under $f_C$.
+$C$ observes these hidden sets.
 
-% The leakage observed by $P$ consists only of a hidden copy of \calC{}.
-% However, first the records of \calC{} are shuffled in the same manner as in the functionality, 
-% but with fresh randomness. This yields a set $\calC''$.
-% After that, a new hiding function $f_P : \Ispace{} \to \G$ is sampled and used to hide the identifiers in $\calC''$.
-% $P$ observes this hidden and re-shuffled copy of $\calC$.
+The leakage observed by $P$ consists only of a hidden copy of \calC{}.
+However, first the records of \calC{} are shuffled in the same manner as in the functionality, 
+but with fresh randomness. This yields a set $\calC''$.
+After that, a new hiding function $f_P : \Ispace{} \to \calG$ is sampled and used to hide the identifiers in $\calC''$.
+$P$ observes this hidden and re-shuffled copy of $\calC$.
+
+The pseudocode can be found in Figure~\ref{fig:MKPM} with the additional leakage contained in a dashed boxed.
 
 % \section{Threat Model}
 % \label{sec:threat_model}
