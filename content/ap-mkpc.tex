@@ -1,0 +1,41 @@
+\section{MKPC Supplementary Content}\label{ap:mkpc}
+
+\begin{figure}[H]
+	\begin{pchstack}[boxed, center]
+		\procedure[linenumbering, skipfirstln]{$\match(\calC, \calP)$}{ 
+			\pclinecomment{Recall that $\calC = \{c_1, \dots, c_n\}, \calP = \{p_1, \dots, p_n\}$} \\
+			\text{Initialize empty maps $\MC$ and $\MP$.} \\
+			\text{Initialize empty set $\UID$.} \\
+			\mathsf{matched}^{\calC} \gets (\bot)^n; \; \mathsf{matched}^{\calP} \gets (\bot)^m \\
+			n_{max} \gets \max_{c\in\calC} |c| \pcskipln\\
+			\pclinecomment{Match Records} \\
+			\pcfor j = 1, \dots, n_{max} \pcdo \\
+			\t	\pcfor k = 1, \dots, m \pcdo \label{lin:match_loop_V}\\
+			\t	\t 	\pcif \mathsf{matched}^{\calP}[k] = \top \pcthen \pccontinue \\
+			\t	\t	\pcfor i = 1, \dots, n \pcdo \\
+			\t	\t	\t	\pcif \mathsf{matched}^\calC[i] = \top \lor |c_i| < j \pcthen \pccontinue\\
+			\t	\t	\t	\pcfor \ell = 1, \dots, |p_i| \pcdo \\
+			\t	\t	\t	\t	\pcif c_i[j] = p_k[\ell] \pcthen \label{lin:match_common_uid} \\
+			\t	\t	\t	\t	\t	\uid \sample \calG \setminus \UID \\
+			\t	\t	\t	\t	\t	\UID \gets \UID \cup \{\uid\} \\
+			\t	\t	\t	\t	\t	\MC[\uid] \gets c_i \\
+			\t	\t	\t	\t	\t	\MP[\uid] \gets p_k \\
+			\t	\t	\t	\t	\t	\mathsf{matched}^\calC[i] \gets \top; \;\mathsf{matched}^\calP[k] \gets \top \pcskipln\\
+			\pclinecomment{Assign uids to unmatched records} \\
+			\pcfor i = 1, \dots, n \\
+			\t 	\pcif \mathsf{matched}^C[i] = \bot \pcthen \label{lin:match_unmatched_C_uid} \\
+			\t	\t	\uid \sample \calG \setminus \UID \\
+			\t	\t	\UID \gets \UID \cup \{\uid\} \\
+			\t	\t	\MC[\uid] \gets c_i \\
+			\t	\t	\MP[\uid] \gets \bot \\
+			\pcfor i = 1, \dots, m \\
+			\t 	\pcif \mathsf{matched}^P[i] = \bot \pcthen \label{lin:match_unmatched_P_uid} \\
+			\t	\t	\uid \sample \calG \setminus \UID \\
+			\t	\t	\UID \gets \UID \cup \{\uid\} \\
+			\t	\t	\MC[\uid] \gets \bot \\
+			\t	\t	\MP[\uid] \gets p_i \\
+			\pcreturn \UID, \MC, \MP
+		}
+	\end{pchstack}
+	\caption{Record matching logic used in MK-PrivateID. \label{fig:match_logic}}
+\end{figure}

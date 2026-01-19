@@ -4,141 +4,96 @@
 \subsection{The MK-PrivateID Functionality}
 \label{sec:MK-PID}
 
-The Multi-Key PrivateID (MK-PrivateID) protocol~\cite{MKPMC} extends the single-key PrivateID protocol~\cite{PMC} to support matching on multiple identifiers. In this two-party setting, a Company $C$ and a Partner $P$ each hold a table of records (e.g., user data such as names or email addresses). The protocol outputs universal identifiers (UIDs) such that matching records receive the same UID, while unmatched records receive distinct UIDs, enabling further downstream computation over the associated data.
+The Multi-Key PrivateID (MK-PrivateID) protocol~\cite{MKPMC} extends the single-key PrivateID protocol~\cite{PMC} to support matching on multiple identifiers. In this two-party setting, a Company $C$ and a Partner $P$ each hold a table of records, where each record contains multiple identifiers (e.g., names or email addresses). The matching logic aims to produce a one-to-one correspondence between records held by $C$ and $P$ such that each matched pair shares at least one identifier.
 
-The original work~\cite{MKPMC} provides a proof sketch for security against a semi-honest adversary, together with a functionality description. However, we observe that the specified functionality reveals more information than the intended computation. Accordingly, we separate the intended functionality (i.e., what is computed) from the additional leakage (i.e., information that may also be inferred, such as set sizes).
+MK-PrivateID’s strength lies in handling one-to-many and many-to-one matches i.e., when a record from one party shares identifiers with multiple records from the other. The protocol resolves many-to-one matches using a ranked, deterministic join, and resolves one-to-many matches randomly. Each party outputs a mapping of universal identifiers (UIDs) to their records such that matching records are assigned the same UID, while unmatched records receive distinct UIDs. These UIDs enable further downstream computation over the associated data. Figure~\ref{fig:matching-logic} illustrates an example input featuring a one-to-many match (Fig.~\ref{fig:match}) that is resolved to a one-to-one correspondence, along with the resulting output (Fig.~\ref{fig:match-output}).
 
-
-
+The original work~\cite{MKPMC} provides a proof sketch for security against a semi-honest adversary, along with a functionality description. However, we observe that the specified functionality leaks more information than intended. We therefore distinguish the intended functionality---which computes the set of UIDs and the mapping of UIDs to records ($\calF_{\MKPM{}}$)---from the real functionality ($\calF_{\LMKPM{}}$), which additionally leaks the entire bipartite graph of all matches. Returning to our example, given the tables in Figure~\ref{fig:match}, $\calF_{\MKPM{}}$ outputs only the maps and UID sets shown in Figure~\ref{fig:match-output}, whereas $\calF_{\LMKPM{}}$ additionally leaks to Party $C$ a graph isomorphic to that comprising the green and red edges in Figure~\ref{fig:match}.
 
 \subsubsection{Functionality}
 \label{sec:mkpmc_functionality}
-We start by presenting a formal description of the intended MKPM functionality formally (Figure~\ref{fig:MKPM}). It involves two parties, a \emph{Company} $C$ and a \emph{Partner} $P$, each holding a set of records as input. Let $\calI$ denote the universe of identifiers (e.g., email addresses, phone numbers, IP addresses), and let $\lambda \in \NN$ be the maximum number of identifiers per record. Party $C$ holds
+We start by presenting a formal description of the intended MKPM functionality. It involves two parties, a \emph{Company} $C$ and a \emph{Partner} $P$, each holding a set of records as input. Let $\calI$ denote the universe of identifiers (e.g., email addresses, phone numbers, IP addresses), and let $\lambda \in \NN$ be the maximum number of identifiers per record. Party $C$ holds
 \[
-\calC := \{\, \bc_i = (c_{i,1}, \ldots, c_{i,n_i}) \mid i \in [n]\,\},
+\calC := \{\bc_i = (c_{i,1}, \ldots, c_{i,n_i}) \mid i \in [n]\},
 \]
 and party $P$ holds
 \[
-\calP := \{\, \bp_j = (p_{j,1}, \ldots, p_{j,m_j}) \mid j \in [m],\; m_j \le \lambda \,\},
+\calP := \{\bp_k = (p_{k,1}, \ldots, p_{k,m_k}) \mid k \in [m]\},
 \]
 where all identifiers are elements of $\calI$.
 
 The functionality takes $\calC$ and 
 $\calP$ as inputs from the respective parties and then applies a random permutation. The records of $\calC$ are permuted while preserving the order of identifiers within each record, whereas in $\calP$ both the records and the identifiers within each record are permuted. We denote the resulting collections by $\calC'$ and $\calP'$, respectively.\footnote{Although sets are unordered, the implementation~\cite{PIDRepo} treats inputs as ordered lists of records; we follow the authors of~\cite{MKPMC} in adopting this terminology.}
 
-The core of the functionality is the record-matching procedure $\match$ (Figure~\ref{fig:match_logic}), which takes the shuffled inputs $\calC'$ and $\calP'$. Each record in $\calC'$ (resp., $\calP'$) is matched with at most one record in $\calP'$ (resp., $\calC'$). The procedure iterates over identifier positions in $\calC'$. For each position $j$, it scans all records $p_k \in \calP'$ and matches $p_k$ to the first record $c_i \in \calC'$ whose $j$-th identifier appears in $p_k$, i.e.,
+The core of the protocol is the record-matching procedure $\match$ (the detailed pseudocode can be found in Appendix~\ref{ap:mkpc}), which takes shuffled inputs $\calC'$ and $\calP'$. Each record in $\calC'$ (resp., $\calP'$) is matched with at most one record in $\calP'$ (resp., $\calC'$). For each identifier position $j$ in $\calC'$, $\match$ scans all $p_k \in \calP'$ and matches $p_k$ to the first $c_i \in \calC'$ whose $j$-th identifier appears in $p_k$:
 \[
 \exists \ell \text{ such that } p_k[\ell] = c_i[j],
 \]
-where $i$ is minimal. By processing identifiers in this order, $\match$ prioritizes identifiers that occur earlier in the records of $\calC'$.
-This allows party $C$ to implicitly define an identifier priority, for example by placing more reliable identifiers earlier in its records.
+where $i$ is minimal. By processing identifiers in this order, Party $C$ can prioritize matching on identifiers that are less likely to change. For example, matching on a social security number yields higher-quality results than matching on a phone number, which is more likely to change.
 
-\ff{edited until here}
-The matching logic assigns a unique random identifier from some space $\G$ to every pair of matched records, 
-as well as one to each unmatched record in \calC{} and \calP{}; we denote the set of these unique identifies by \UID{}.
-Moreover, \match{} constructs two maps $M_C: \UID \to \calC \cup \{\bot\}$ and $M_P: \UID \to \calP \cup \{\bot\}$, 
-which map the uids in \UID{} to the corresponding records in $\calC$ and $\calP$ or $\bot$
-if the uid belongs to an unmatched record of the other party.
-The set \UID{} and map \MC{} are then sent to party $C$.
-Analogously, $P$ receives \UID{} and \MP{}.
-That is, the two parties receive a common set of universal identifiers, 
-along with a map linking the uids to their original records 
-or $\bot$ if the uid was assigned to an unmatched record of the other party's set.  
+The matching logic assigns a unique identifier from a space $\calG$ to every pair of matched records, as well as to each unmatched record in $\calC$ and $\calP$; we denote the resulting set of identifiers by $\UID$. The procedure also constructs two maps, $M_C: \UID \to \calC \cup \{\bot\}$ and $M_P: \UID \to \calP \cup \{\bot\}$, which link each UID to its corresponding record in $\calC$ or $\calP$, or to $\bot$ if it corresponds to an unmatched record of the other party. Party $C$ receives $\UID$ and $M_C$, while $P$ receives $\UID$ and $M_P$. Both parties obtain a common set of universal identifiers along with a mapping from each UID to their local records or $\bot$ for unmatched records.
 
-% \begin{figure}
-% 	\begin{tcolorbox}[colback=white,arc=0mm, width=14cm]
-% 	\begin{description}
-% 		\item[\textbf{Parameters:}] Two parties, $C$ and $P$, set sizes $n, m\in \N$ and
-% 		record lengths $n_i, m_j \in \N$ for $i\in[n]$ and $j\in[m]$.
-% 		\item[Functionality $\MKPM(\calC, \calP)$ \fbox{$\LMKPM(\calC, \calP)$}~:] \hfill \begin{enumerate}
-% 			\item Receive the input from party $C$: $\calC = \{c_i \setdsc i \in [n]\}$.
-% 			\item Receive the input from party $P$: $\calP = \{p_i \setdsc i \in [m]\}$.
-% 			\item Sample $\pi_C \sample \Perms[[n]]$ and $\pi_P \sample \Perms[[m]]$.
-% 			\item Let $\calC' := \{c'_i \setdsc i \in [n]\}$, where $c'_i := c_{\pi_C(i)}$.
-% 			\item Let $\calP' := \{p'_i \setdsc i \in [m]\}$, where $p'_i := p_{\pi_P(i)}$.
-% 			\item Shuffle the identifiers in $p'_i$ for all $i \in [m]$.
-% 			\item Compute $\UID, \MC, \MP \gets \match(\calC', \calP')$ (\cref{fig:match_logic}).
-% 		\end{enumerate}
-% 		\item[] \hfill \\
-% 		\vspace{-1cm}
-% 		\begin{tcolorbox}[arc=0mm, colback=white, boxrule=0.4pt, width=11.5cm]%[colframe=black, 
-% 							% boxrule=0.5pt, 
-% 							% colback=white, 
-% 							% arc=0mm,
-% 							% enhanced, 
-% 							% parbox=false,
-% 							% width=10cm, % extend to right margin,
-%                       		% boxsep=6pt,left=6pt,right=6pt]
-% 			\begin{enumerate}[leftmargin=0.3cm]
-% 				\addtocounter{enumi}{7}
-% 				\item Sample $f_C, f_P \sample \InjFuncs[\Ispace,\; \G]$.
-% 				\item Compute $\leak_\calC^C := \{(f_C(c'_i[1]), \dots, f_C(c'_i[n_i])) \setdsc i \in [n]\}$.
-% 				\item Compute $\leak_\calP^C := \{(f_C(p'_i[1]), \dots, f_C(p'_i[m_i])) \setdsc i \in [m]\}$.
-% 				\item Sample $\pi \sample \Perms[[n]]$.
-% 				\item Let $\calC'' := \{c''_i \setdsc i \in [n]\}$, where $c''_i := c_{\pi(i)}$.
-% 				\item Compute $\leak_\calC^P := \{(f_P(c''_i[1]), \dots, f_P(c''_i[n_i])) \setdsc i \in [n]\}$.
-% 			\end{enumerate}
-% 		\end{tcolorbox}
-% 		\item[]\hfill \\ 
-% 			\vspace{-1cm}
-% 			\begin{enumerate}[leftmargin=0.8cm]
-% 			\addtocounter{enumi}{13}
-% 			\item Output:\hfill \begin{itemize}
-% 					\item Send $\UID, \MC$ \fbox{$,\left(\leak_\calC^C, \leak_\calP^C\right)$} to $C$.
-% 					\item Send $\UID, \MP$ \fbox{$,\leak_\calC^P$} to $P$.
-% 			\end{itemize}
-% 		\end{enumerate}
-% 	\end{description}
-% 	\end{tcolorbox}
-% 	\caption{Multi-Key Private Matching functionality $\MKPM(\calC, \calP)$.
-% 	Extensions to $\MKPM$ to obtain the functionality that includes the protocol leakage, 
-% 	$\LMKPM(\calC, \calP)$,
-% 	are \fbox{boxed}.
-% 	The record matching logic \match{} is defined in \cref{fig:match_logic}.}
-% 	\label{fig:MKPM}
-% \end{figure}
+The detailed description of $\calF_{\MKPM}$ can be found in Figure~\ref{fig:MKPM}.
 
-% \begin{figure}
-% 	\begin{pchstack}[boxed, center]
-% 		\procedure[linenumbering, skipfirstln]{$\match(\calC, \calP)$}{ 
-% 			\pclinecomment{Recall that $\calC = \{c_1, \dots, c_n\}, \calP = \{p_1, \dots, p_n\}$} \\
-% 			\text{Initialize empty maps $\MC$ and $\MP$.} \\
-% 			\text{Initialize empty set $\UID$.} \\
-% 			\mathsf{matched}^{\calC} \gets (\bot)^n; \; \mathsf{matched}^{\calP} \gets (\bot)^m \\
-% 			n_{max} \gets \max_{c\in\calC} |c| \pcskipln\\
-% 			\pclinecomment{Match Records} \\
-% 			\pcfor j = 1, \dots, n_{max} \pcdo \\
-% 			\t	\pcfor k = 1, \dots, m \pcdo \label{lin:match_loop_V}\\
-% 			\t	\t 	\pcif \mathsf{matched}^{\calP}[k] = \top \pcthen \pccontinue \\
-% 			\t	\t	\pcfor i = 1, \dots, n \pcdo \\
-% 			\t	\t	\t	\pcif \mathsf{matched}^\calC[i] = \top \lor |c_i| < j \pcthen \pccontinue\\
-% 			\t	\t	\t	\pcfor \ell = 1, \dots, |p_i| \pcdo \\
-% 			\t	\t	\t	\t	\pcif c_i[j] = p_k[\ell] \pcthen \label{lin:match_common_uid} \\
-% 			\t	\t	\t	\t	\t	\uid \sample \G \setminus \UID \\
-% 			\t	\t	\t	\t	\t	\UID \gets \UID \cup \{\uid\} \\
-% 			\t	\t	\t	\t	\t	\MC[\uid] \gets c_i \\
-% 			\t	\t	\t	\t	\t	\MP[\uid] \gets p_k \\
-% 			\t	\t	\t	\t	\t	\mathsf{matched}^\calC[i] \gets \top; \;\mathsf{matched}^\calP[k] \gets \top \pcskipln\\
-% 			\pclinecomment{Assign uids to unmatched records} \\
-% 			\pcfor i = 1, \dots, n \\
-% 			\t 	\pcif \mathsf{matched}^C[i] = \bot \pcthen \label{lin:match_unmatched_C_uid} \\
-% 			\t	\t	\uid \sample \G \setminus \UID \\
-% 			\t	\t	\UID \gets \UID \cup \{\uid\} \\
-% 			\t	\t	\MC[\uid] \gets c_i \\
-% 			\t	\t	\MP[\uid] \gets \bot \\
-% 			\pcfor i = 1, \dots, m \\
-% 			\t 	\pcif \mathsf{matched}^P[i] = \bot \pcthen \label{lin:match_unmatched_P_uid} \\
-% 			\t	\t	\uid \sample \G \setminus \UID \\
-% 			\t	\t	\UID \gets \UID \cup \{\uid\} \\
-% 			\t	\t	\MC[\uid] \gets \bot \\
-% 			\t	\t	\MP[\uid] \gets p_i \\
-% 			\pcreturn \UID, \MC, \MP
-% 		}
-% 	\end{pchstack}
-% 	\caption{Record matching logic used in MK-PrivateID.}\label{fig:match_logic}\label{fig:leakC}\label{fig:leakP}
-% \end{figure}
+\begin{figure*}[t]
+    \centering
+    \subfloat[\label{fig:match}The inputs from Party $C$ (left) and Party $P$ (right).]%
+    {
+    \includegraphics[clip, trim=0cm -1.1cm 0cm 0cm,width=1.34\columnwidth]{figures/match.pdf}} 
+    \quad
+    \subfloat[\label{fig:match-output}The outputs from Parties $C$ (left) and $P$ (right).]%
+    {
+    \includegraphics[width=0.66\columnwidth]{figures/match-output.pdf}}
+    \caption{
+    Example inputs (a) and outputs (b) of the $\MKPM$ protocol. In (a) we depict a one-to-many match (red edges): Party $C$’s User 1 matches Party $P$’s User 1 on email and Party $P$’s User 2 on phone. The conflict is resolved randomly, yielding a one-to-one mapping in which $C$’s User 1 and $P$’s User 1 share the same UID, 2093, while $P$’s User 2 is assigned UID 9349. Party $C$’s User 2 matches only $P$’s User 3 on email (green edge) and thus are assigned UID 3042. Both parties learn their local UID mappings and the universe of UIDs.
+    \label{fig:matching-logic}}
+\end{figure*}
 
-% \textbf{Leakage.}
+
+\begin{figure}
+    \fbox{%
+    \begin{minipage}[t]{0.98\columnwidth}
+		\textbf{Parameters:} Two parties, $C$ and $P$, set sizes $n, m\in \NN$ and
+		record lengths $n_i, m_j \in \NN$ for $i\in[n]$ and $j\in[m]$.\\
+		\textbf{Functionality} $\MKPM(\calC, \calP)$ \dbox{$\LMKPM(\calC, \calP)$}~: 
+        %%%
+        \begin{enumerate}
+			\item Receive the input from party $C$: $\calC = \{c_i \dots i \in [n]\}$.
+			\item Receive the input from party $P$: $\calP = \{p_i \dots i \in [m]\}$.
+			\item Sample $\pi_C \sample \Perms[[n]]$ and $\pi_P \sample \Perms[[m]]$.
+			\item Let $\calC' := \{c'_i \dots i \in [n]\}$, where $c'_i := c_{\pi_C(i)}$.
+			\item Let $\calP' := \{p'_i \dots i \in [m]\}$, where $p'_i := p_{\pi_P(i)}$.
+			\item Shuffle the identifiers in $p'_i$ for all $i \in [m]$.
+			\item Compute $\UID, \MC, \MP \gets \match(\calC', \calP')$ (Figure \ref{fig:match_logic}).
+		\end{enumerate}
+        \begin{adjustbox}{minipage=0.98\textwidth,precode=\dbox}
+        \begin{enumerate}
+				\addtocounter{enumi}{7}
+				\item  $f_C, f_P \sample \InjFuncs[\Ispace,\; \calG]$.
+				\item  $\leak_\calC^C := \{(f_C(c'_i[1]), \dots, f_C(c'_i[n_i])) \dots i \in [n]\}$.
+				\item  $\leak_\calP^C := \{(f_C(p'_i[1]), \dots, f_C(p'_i[m_i])) \dots i \in [m]\}$.
+				\item  $\pi \sample \Perms[[n]]$.
+				\item  $\calC'' := \{c''_i \dots i \in [n]\}$, where $c''_i := c_{\pi(i)}$.
+				\item  $\leak_\calC^P := \{(f_P(c''_i[1]), \dots, f_P(c''_i[n_i])) \dots i \in [n]\}$.
+			\end{enumerate}
+		\end{adjustbox}
+			\begin{enumerate}
+			\addtocounter{enumi}{13}
+			\item Output:\hfill \begin{itemize}
+					\item Send $\UID, \MC$ \dbox{$,\left(\leak_\calC^C, \leak_\calP^C\right)$} to $C$.
+					\item Send $\UID, \MP$ \dbox{$,\leak_\calC^P$} to $P$.
+			\end{itemize}
+		\end{enumerate}
+    \end{minipage}
+    }
+	\caption{The Multi-Key Private Matching functionality $\MKPM(\calC, \calP)$.
+	Extensions to $\MKPM$ to obtain the functionality that includes the protocol leakage \protect\dbox{$\LMKPM(\calC, \calP)$} are boxed.
+	The record matching logic \match{} is defined in Figure~\ref{fig:match_logic}.}
+	\label{fig:MKPM}
+\end{figure}
+
+
+\subsubsection{Leakage.}
 % The \MKPM{} functionality we show in \cref{fig:MKPM} describes the desired computational task to be carried out by MK-PrivateID.
 % As mentioned before, MK-PrivateID leaks further information about its inputs, which is not part of the desired output,
 % but results from a tradeoff in the protocol design in favor of higher efficiency.
