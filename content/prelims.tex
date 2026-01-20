@@ -114,31 +114,11 @@ $P$ observes the hidden and re-shuffled set $\calC''$.
 The pseudocode can be found in Figure~\ref{fig:MKPM} with the additional leakage contained in a dashed boxed.
 
 \subsection{Recovery Goals}
-% \label{sec:threat_model}
-% All functionalities and protocols we analyze in this work, i.e., \PSU, \PSUCA, \MKPM, and $\LMKPM$, 
-% involve two parties and take two inputs. Let $F$ denote any one of these functionalities.
-% We generally assume that one of the two parties, the victim, behaves honestly and has a static protocol input, 
-% meaning it does not change in the course of the attack.
-% The other party is assumed to be \emph{input-malicious}, i.e.,
-% it must follow the protocol specification honestly, but can (1) evaluate $F$ arbitrarily often
-% and (2) choose its own inputs adaptively.
-% In other words, if $V$ denotes the static victim set, 
-% the attacker is given some target set $T$ and oracle access to $F(\cdot, V)$
-% and tries to infer as much information about $V$ as possible. 
-% The attacker's exact goal depends on the functionality we attack;
-% we formalize the different recovery goals in the following sections.
+\label{sec:recovery-goals}
 
+Throughout this work, we consider a setting with two parties, where one party (the \emph{victim}) behaves honestly and holds a fixed, static input, while the other party is \emph{input-malicious}. The malicious party follows the protocol specification but may evaluate the functionality arbitrarily many times and adaptively choose its own inputs. 
+The adversary is given some target set $T$ and oracle access to $\calF(\cdot, Y)$ and tries to infer as much information about $Y$ with respect to $T$ as possible. The adversary’s precise objective depends on the targeted functionality, which we specify below.
 
-% As an immediate example, it may just contain some company's user data, 
-% which would also be used as input in honest protocol executions, 
-% but is then abused by a rogue employee to infer information about the victim's input.
-% However, we should also consider other scenarios, where a malicious actor constructs the target set to obtain
-% specific information about the victim's data.
-% For instance, the attacker could choose all phone numbers of a specific area code 
-% or all email addresses of some domain as its target set and check for the overlap 
-% between these identifiers and the victim's data.
-% Not making any assumptions on the origin of the target set 
-% allows us to cover a broad range of such scenarios.
 
 % \begin{definition}[Intersection Recovery]
 % 	Let $F$ be either the \PSU{} or the \PSUCA{} functionality and let $X$ and $Y$ be two sets.
@@ -214,75 +194,52 @@ The pseudocode can be found in Figure~\ref{fig:MKPM} with the additional leakage
 % 	achieves \textbf{Identifier Intersection Recovery} (IIR) if it outputs $\Ispace{\setT} \cap \Ispace{\setV}$.
 % \end{definition}
 
-% \subsection{Maximum Set Reconstruction}\label{sec:MR_goal}
-% The IIR attack goal we defined in the previous section already recovers a lot of information about the victim set.
-% However, it ignores that the identifiers in the protocol inputs are arranged in records. 
-% Moreover, some identifiers may occur in multiple records within the same set.
-% This is neither prohibited by the specification of MK-PrivateID, nor is it unlikely to occur in real-world applications. 
-% For instance, multiple devices behind the same Network Address Translation (NAT) device share the same public IP address.
-% Additionally recovering this information may allow an attacker to learn a lot about the affected users
-% such as where and with whom they live or which people they share devices with.
+\subsubsection{Maximum Set Reconstruction}\label{sec:MR_goal}
+Our strongest attack goal is to recover as much information as possible about the victim’s input, given a target set of records $T$.
+Specifically, the adversary aims to reconstruct all victim records that contain at least one identifier appearing in $T$. We refer to this goal as \emph{Maximum Set Reconstruction} (MSR).
+See Figure~\ref{fig:maximum-reconstruction-example} for an illustration.
 
-% Our strongest attack goal therefore consists of recovering as much information about the victim set as possible
-% given the information contained in the target set.
-% In other words, the attacker's goal shall be to reconstruct the records of the victim set
-% such that the reconstructed records contain at least all identifiers which also occur in the attacker's target set.
-% We call this \textbf{Maximum Set Reconstruction}. See \cref{fig:prel_recon_example_MR} for a small example.
-% This is closely related to the \emph{data recovery} attack goal that is commonly prevalent
-% in the literature on encrypted databases \cite{fuller2017sok}. 
-% As was the case with IIR, we define maximum reconstruction with respect to the $\LMKPM$ functionality,
-% which includes the information that is additionally leaked by MK-PrivateID.
+\begin{definition}[Maximum Set Reconstruction]\label{def:max_recons}
+	Let $T$ and $Y$ be sets of records. An adversary $\adv$, given $T$ and oracle access to the functionality $\calF_{\LMKPM}(\cdot, Y)$, achieves \textbf{maximum set reconstruction (MSR)} of $Y$ with respect to $T$ if it outputs a multiset $R_Y$ for which there exists an injective mapping $\varphi : R_Y \to Y$ such that
+	\begin{enumerate}
+		\item For all $y^* \in R_Y$ and all $\id \in y^*$ we have $\id \in \varphi(y^*)$.
+		\item For all $y^* \in R_Y$ 
+		and all $\id \in\varphi(y^*)$ we have if $\id \in \Ispace{T}$ 
+		then $\id \in y^*$.
+		\item For all $y \in Y$, if there is some $\id \in y$ 
+		with $\id \in \Ispace{T}$ then $y \in \varphi\left(R_Y\right)$. 
+	\end{enumerate} 
+\end{definition}
 
-% \begin{definition}[Maximum Set Reconstruction]\label{def:max_recons}
-% 	Let \setT{} and \setV{} be two sets of records.
-% 	An adversary $\adv$, 
-% 	provided \setT{} as well as oracle access to the extended MKPM functionality $\LMKPM(\cdot, \setV)$,
-% 	achieves \textbf{maximum set reconstruction} (MSR) of \setV{} with respect to \setT{}
-% 	if it outputs a multiset of records \recVT{} such that
-% 	% $\Ispace{\recVT} \subseteq \Ispace{\setT}$ and 
-% 	there exists an injective mapping $\varphi: \recVT \to \setV$ such that
-% 	\begin{enumerate}
-% 		\item For all $v^* \in \recVT$ and all $\id \in v^*$ we have $\id \in \varphi(v^*)$.
-% 		\item For all $v^* \in \recVT$ 
-% 		and all $\id \in\varphi(v^*)$ we have if $\id \in \Ispace{\setT}$ 
-% 		then $\id \in v^*$.
-% 		\item For all $v \in \setV$, if there is some $\id \in v$ 
-% 		with $\id \in \Ispace{\setT}$ then $v \in \varphi\left(\recVT\right)$. 
-% 	\end{enumerate} 
-% \end{definition}
+Injectivity of $\varphi$ ensures that each $y^* \in R_Y$ corresponds to exactly one $y \in Y$.
+Condition~(1) enforces per-record soundness, i.e., every identifier in a reconstructed record
+appears in the corresponding original record.
+Condition~(2) captures $\Ispace{T}$-restricted per-record completeness i.e., each reconstructed record contains all identifiers from its original record that also appear in $\Ispace{T}$.
+Finally, Condition~(3) enforces $\Ispace{T}$-restricted global completeness i.e., all records
+containing an identifier from $\Ispace{T}$ are at least partially reconstructed.
 
-% We require injectivity of $\varphi$ in order to ensure that each $v^* \in \recVT$
-% corresponds to exactly one $v \in \setV$.
-% Condition one describes per-record soundness, 
-% i.e., every identifier in some reconstructed record 
-% actually occurs in the corresponding original record.    
-% Condition two captures $\Ispace{\setT}$-restricted per-record completeness,
-% mandating that every reconstructed record
-% contains all identifiers from its original record that are also in $\Ispace{\setT}$.
-% And finally, condition three is an $\Ispace{\setT}$-restricted global completeness variant. 
-% Namely, it requires that all records which contain an identifier from $\Ispace{\setT}$
-% are (at least partially) reconstructed.
-
-% Note that our definition of MSR does not require that multiple instantiations 
-% of the same identifier within one record are reconstructed as such.
-% We find this acceptable, as this is unlikely to occur in realistic scenarios.
-% Moreover, our attacks that achieve MSR actually recover this as well.
 
 % Furthermore, we do not require the order of identifiers within records to match between \setV{} and \recVT.
-% This is mainly due to technical reasons, 
-% namely, the fact that the identifiers within records of \setV{} are randomly shuffled.
+% This is mainly due to the fact that the identifiers within records of \setV{} are randomly shuffled.
 % However, in real-world use cases these identifiers will often be 
 % syntactically clearly distinguishable attributes 
 % like email addresses, phone numbers and IP addresses, 
 % which allows for a later reconstruction (or at least re-alignment) 
 % of the identifier order within the reconstructed records.
-
-% \begin{figure}
-% 	\centering
-% 		\input{chapters/figures/reconstruction_example.tex}
-% 	\caption{Simple reconstruction example. 
-% 	The sets \setT{} and \setV{} are displayed in \ref{fig:prel_recon_example_C} and \ref{fig:prel_recon_example_P}, 
-% 	a maximum reconstruction of \setV{} w.r.t. \setT{} in \ref{fig:prel_recon_example_MR} 
-% 	.}%
-% 	\label{fig:prel_recon_example}%
-% \end{figure}
+\begin{figure}[t]
+    \centering
+    \subfloat[\label{fig:target-set-example}Target set $T$.]%
+    {
+    \includegraphics[width=0.29\columnwidth]{figures/target-set.pdf}} 
+    \quad
+	\subfloat[\label{fig:victim-set-example}Victim set $Y$.]%
+    {
+    \includegraphics[width=0.294\columnwidth]{figures/victim-set.pdf}} 
+    \quad
+    \subfloat[\label{fig:max-recon-output} Max recon. ]%
+    {
+    \includegraphics[width=0.195\columnwidth]{figures/max-recon.pdf}}
+    \caption{
+    A maximum reconstruction $R_Y$. Each matched record in $Y$ corresponds to exactly one record in $R_Y$, and all identifiers shared between the matched record and the target set $T$ appear in the corresponding record $R_Y$.
+    \label{fig:maximum-reconstruction-example}}
+\end{figure}
