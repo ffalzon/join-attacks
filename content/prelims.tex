@@ -6,9 +6,9 @@
 
 The Multi-Key PrivateID (MK-PrivateID) protocol~\cite{MKPMC} extends the single-key PrivateID protocol~\cite{PMC} to support matching on multiple identifiers. In this two-party setting, a Company $C$ and a Partner $P$ each hold a table of records, where each record contains multiple identifiers (e.g., names or email addresses). The matching logic aims to produce a one-to-one correspondence between records held by $C$ and $P$ such that each matched pair shares at least one identifier.
 
-MK-PrivateID’s strength lies in handling one-to-many and many-to-one matches i.e., when a record from one party shares identifiers with multiple records from the other. The protocol resolves many-to-one matches using a ranked, deterministic join, and resolves one-to-many matches randomly. Each party outputs a mapping of universal identifiers (UIDs) to their records such that matching records are assigned the same UID, while unmatched records receive distinct UIDs. These UIDs enable further downstream computation over the associated data. Figure~\ref{fig:matching-logic} illustrates an example input featuring a one-to-many match (Fig.~\ref{fig:match}) that is resolved to a one-to-one correspondence, along with the resulting output (Fig.~\ref{fig:match-output}).
+MK-PrivateID’s strength lies in handling one-to-many and many-to-one matches i.e., when a record from one party shares identifiers with multiple records from the other. The protocol resolves many-to-one matches using a ranked, deterministic join, and resolves one-to-many matches randomly. Each party outputs a mapping of universal identifiers (UIDs) to their records such that matching records are assigned the same UID, while unmatched records receive distinct UIDs. These UIDs enable further downstream computation over the associated data. Figure~\ref{fig:matching-logic-example} illustrates an example input featuring a one-to-many match (Fig.~\ref{fig:match-input}) that is resolved to a one-to-one correspondence, along with the resulting output (Fig.~\ref{fig:match-output}).
 
-The original work~\cite{MKPMC} provides a proof sketch for security against a semi-honest adversary, along with a functionality description. However, we observe that the specified functionality leaks more information than intended. We therefore distinguish the intended functionality---which computes the set of UIDs and the mapping of UIDs to records ($\calF_{\MKPM{}}$)---from the real functionality ($\calF_{\LMKPM{}}$), which additionally leaks the entire bipartite graph of all matches. Returning to our example, given the tables in Figure~\ref{fig:match}, $\calF_{\MKPM{}}$ outputs only the maps and UID sets shown in Figure~\ref{fig:match-output}, whereas $\calF_{\LMKPM{}}$ additionally leaks to Party $C$ a graph isomorphic to that comprising the green and red edges in Figure~\ref{fig:match}.
+The original work~\cite{MKPMC} provides a proof sketch for security against a semi-honest adversary, along with a functionality description. However, we observe that the specified functionality leaks more information than intended. We therefore distinguish the intended functionality---which computes the set of UIDs and the mapping of UIDs to records ($\calF_{\MKPM{}}$)---from the real functionality ($\calF_{\LMKPM{}}$), which additionally leaks the entire bipartite graph of all matches. Returning to our example, given the tables in Figure~\ref{fig:match-input}, $\calF_{\MKPM{}}$ outputs only the maps and UID sets shown in Figure~\ref{fig:match-output}, whereas $\calF_{\LMKPM{}}$ additionally leaks to Party $C$ a graph isomorphic to that comprising the green and red edges in Figure~\ref{fig:match-input}.
 
 \subsubsection{Functionality}
 \label{sec:mkpmc_functionality}
@@ -37,16 +37,16 @@ The detailed description of $\calF_{\MKPM}$ can be found in Figure~\ref{fig:MKPM
 
 \begin{figure*}[t]
     \centering
-    \subfloat[\label{fig:match}The inputs from Party $C$ (left) and Party $P$ (right).]%
+    \subfloat[\label{fig:match-input}The inputs from Parties $C$ (left) and $P$ (right).]%
     {
-    \includegraphics[clip, trim=0cm -1.1cm 0cm 0cm,width=1.34\columnwidth]{figures/match.pdf}} 
+    \includegraphics[clip, trim=0cm -1.1cm 0cm 0cm,width=1.34\columnwidth]{figures/match-input.pdf}} 
     \quad
-    \subfloat[\label{fig:match-output}The outputs from Parties $C$ (left) and $P$ (right).]%
+    \subfloat[\label{fig:match-output}The outputs to Parties $C$ (left) and $P$ (right).]%
     {
     \includegraphics[width=0.66\columnwidth]{figures/match-output.pdf}}
     \caption{
     Example inputs (a) and outputs (b) of the $\MKPM$ protocol. In (a) we depict a one-to-many match (red edges): Party $C$’s User 1 matches Party $P$’s User 1 on email and Party $P$’s User 2 on phone. The conflict is resolved randomly, yielding a one-to-one mapping in which $C$’s User 1 and $P$’s User 1 share the same UID, 2093, while $P$’s User 2 is assigned UID 9349. Party $C$’s User 2 matches only $P$’s User 3 on email (green edge) and thus are assigned UID 3042. Both parties learn their local UID mappings and the universe of UIDs.
-    \label{fig:matching-logic}}
+    \label{fig:matching-logic-example}}
 \end{figure*}
 
 
@@ -55,14 +55,14 @@ The detailed description of $\calF_{\MKPM}$ can be found in Figure~\ref{fig:MKPM
     \begin{minipage}[t]{0.98\columnwidth}
 		\textbf{Parameters:} Two parties, $C$ and $P$, set sizes $n, m\in \NN$ and
 		record lengths $n_i, m_j \in \NN$ for $i\in[n]$ and $j\in[m]$.\\
-		\textbf{Functionality} $\MKPM(\calC, \calP)$ \dbox{$\LMKPM(\calC, \calP)$}~: 
+		\textbf{Functionality} $\calF_{\MKPM}(\calC, \calP)$ \dbox{$\calF_{\LMKPM}(\calC, \calP)$}~: 
         %%%
         \begin{enumerate}
-			\item Receive the input from party $C$: $\calC = \{c_i \dots i \in [n]\}$.
-			\item Receive the input from party $P$: $\calP = \{p_i \dots i \in [m]\}$.
+			\item Receive the input from party $C$: $\calC = \{c_i \setdsc i \in [n]\}$.
+			\item Receive the input from party $P$: $\calP = \{p_i \setdsc i \in [m]\}$.
 			\item Sample $\pi_C \sample \Perms[[n]]$ and $\pi_P \sample \Perms[[m]]$.
-			\item Let $\calC' := \{c'_i \dots i \in [n]\}$, where $c'_i := c_{\pi_C(i)}$.
-			\item Let $\calP' := \{p'_i \dots i \in [m]\}$, where $p'_i := p_{\pi_P(i)}$.
+			\item Let $\calC' := \{c'_i \setdsc i \in [n]\}$, where $c'_i := c_{\pi_C(i)}$.
+			\item Let $\calP' := \{p'_i \setdsc i \in [m]\}$, where $p'_i := p_{\pi_P(i)}$.
 			\item Shuffle the identifiers in $p'_i$ for all $i \in [m]$.
 			\item Compute $\UID, \MC, \MP \gets \match(\calC', \calP')$ (Figure \ref{fig:match_logic}).
 		\end{enumerate}
@@ -73,7 +73,7 @@ The detailed description of $\calF_{\MKPM}$ can be found in Figure~\ref{fig:MKPM
 				\item  $\leak_\calC^C := \{(f_C(c'_i[1]), \dots, f_C(c'_i[n_i])) \dots i \in [n]\}$.
 				\item  $\leak_\calP^C := \{(f_C(p'_i[1]), \dots, f_C(p'_i[m_i])) \dots i \in [m]\}$.
 				\item  $\pi \sample \Perms[[n]]$.
-				\item  $\calC'' := \{c''_i \dots i \in [n]\}$, where $c''_i := c_{\pi(i)}$.
+				\item  $\calC'' := \{c''_i \setdsc i \in [n]\}$, where $c''_i := c_{\pi(i)}$.
 				\item  $\leak_\calC^P := \{(f_P(c''_i[1]), \dots, f_P(c''_i[n_i])) \dots i \in [n]\}$.
 			\end{enumerate}
 		\end{adjustbox}
@@ -86,31 +86,34 @@ The detailed description of $\calF_{\MKPM}$ can be found in Figure~\ref{fig:MKPM
 		\end{enumerate}
     \end{minipage}
     }
-	\caption{The Multi-Key Private Matching functionality $\MKPM(\calC, \calP)$.
-	Extensions to $\MKPM$ to obtain the functionality that includes the protocol leakage \protect\dbox{$\LMKPM(\calC, \calP)$} are boxed.
-	The record matching logic \match{} is defined in Figure~\ref{fig:match_logic}.\label{fig:MKPM}}
+	\caption{The Multi-Key Private Matching functionality $\calF_{\MKPM}(\calC, \calP)$. The additional steps of the leakage-aware functionality $\calF_{\LMKPM}(\calC, \calP)$ are shown in \protect\dbox{dashed boxes}.
+	The record-matching procedure \match{} is defined in Figure~\ref{fig:match_logic}.}
+\label{fig:MKPM}
 \end{figure}
 
 
 \subsubsection{Leakage.}
-\ff{edited until here}
 In favor of higher efficiency, MK-PrivateID leaks additional information which we capture with an extended ``leaky'' functionality $\calF_{\LMKPM{}}$. 
 We distinguish between the leakage observed by $C$ and that observed by $P$.
 
-The leakage observed by party $C$ simply consists of a renamed copy of the shuffled sets $\calC'$ and $\calP'$.
-That is, we sample an injective random function $f_C : \Ispace{} \to \calG$, which we call a "hiding function",
-and then hide the identifiers of $\calC'$ and $\calP'$ by evaluating them under $f_C$.
-$C$ observes these hidden sets.
+The leakage to party $C$ consists of a renamed copy of the shuffled sets $\calC'$ and 
+$\calP'$. Concretely, we sample an injective random function $f_C:\Ispace{}\to\calG$, referred to as a hiding function, and apply it to all identifiers in $\calC'$ and 
+$\calP'$. Party $C$ observes the resulting hidden sets.
 
-The leakage observed by $P$ consists only of a hidden copy of \calC{}.
-However, first the records of \calC{} are shuffled in the same manner as in the functionality, 
-but with fresh randomness. This yields a set $\calC''$.
-After that, a new hiding function $f_P : \Ispace{} \to \calG$ is sampled and used to hide the identifiers in $\calC''$.
-$P$ observes this hidden and re-shuffled copy of $\calC$.
+Equivalently, the leakage to $C$ can be viewed as a bipartite graph $G = (V_C \cup V_P, E)$, where $V_C$ corresponds to the records in $\calC'$ and
+$V_P$ corresponds to the records in $\calP'$. An edge $(c_i, p_k) \in E$ exists if and only if the records
+$c_i \in \calC'$ and $p_k \in \calP'$ share at least one identifier. Further note that, because the identifier order within records of $\calC'$ is preserved, the matching process induces a priority ordering over edges, determined by the position of shared identifiers within records of $\calC'$.
+
+
+Although the procedure $\match$ computes only a partial matching in $G$, such that each vertex is matched to at most one
+vertex in the other vertex set, party $C$ still learns the full graph $G$.
+
+The leakage observed by $P$ consists only of a hidden copy of $\calC$. The records of $\calC$ with fresh randomness, yielding a set $\calC''$. Then, a new hiding function $f_P : \Ispace \to \calG$ is sampled and used to hide the identifiers in $\calC''$.
+$P$ observes the hidden and re-shuffled set $\calC''$.
 
 The pseudocode can be found in Figure~\ref{fig:MKPM} with the additional leakage contained in a dashed boxed.
 
-% \section{Threat Model}
+\subsection{Recovery Goals}
 % \label{sec:threat_model}
 % All functionalities and protocols we analyze in this work, i.e., \PSU, \PSUCA, \MKPM, and $\LMKPM$, 
 % involve two parties and take two inputs. Let $F$ denote any one of these functionalities.
@@ -125,8 +128,7 @@ The pseudocode can be found in Figure~\ref{fig:MKPM} with the additional leakage
 % The attacker's exact goal depends on the functionality we attack;
 % we formalize the different recovery goals in the following sections.
 
-% Note that we purposefully assume that the attacker is given some target set and 
-% make no assumptions on how this target set is constructed.
+
 % As an immediate example, it may just contain some company's user data, 
 % which would also be used as input in honest protocol executions, 
 % but is then abused by a rogue employee to infer information about the victim's input.
@@ -137,11 +139,6 @@ The pseudocode can be found in Figure~\ref{fig:MKPM} with the additional leakage
 % between these identifiers and the victim's data.
 % Not making any assumptions on the origin of the target set 
 % allows us to cover a broad range of such scenarios.
-
-% \subsection{Intersection Recovery}\label{sec:IR_goal}
-% A common goal in the literature analyzing PSI-related functionalities \cite{Guo22,AnonPSI}, especially PSI-CA and PSI-SUM,
-% is to recover the intersection of the protocol inputs. 
-% We adopt this goal for our attacks against PSU and PSU-CA.
 
 % \begin{definition}[Intersection Recovery]
 % 	Let $F$ be either the \PSU{} or the \PSUCA{} functionality and let $X$ and $Y$ be two sets.
