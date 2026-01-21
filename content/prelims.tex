@@ -25,28 +25,27 @@ where all identifiers $x_{i,j}$ and $y_{k,\ell}$ are in $\calI$.
 The functionality takes $X$ and 
 $Y$ as inputs from the respective parties and then applies a random permutation. The records of $X$ are permuted while preserving the order of identifiers within each record, whereas in $Y$ both the records and the identifiers within each record are permuted. We denote the resulting collections by $X'$ and $Y'$, respectively.\footnote{Although sets are unordered, the implementation~\cite{PIDRepo} treats inputs as ordered lists of records; we follow the authors of~\cite{MKPMC} in adopting this terminology.}
 
-The core of the protocol is the record-matching procedure $\match$ (the detailed pseudocode can be found in Appendix~\ref{ap:mkpc}), which takes shuffled inputs $X'$ and $Y'$. Each record in $X'$ (resp., $Y'$) is matched with at most one record in $Y'$ (resp., $X'$). For each identifier position $j$ in $X'$, $\match$ scans all $\by_k \in y'$ and matches $\by_k$ to the first $\bx_i \in X'$ whose $j$-th identifier appears in $\by_k$:
+The core of the protocol is the record-matching procedure $\match$ (see Appendix~\ref{ap:mkpc} for detailed pseudocode), which takes shuffled inputs $X'$ and $Y'$. Each record in $X'$ (resp. $Y'$) is matched with at most one record in $Y'$ (resp. $X'$). For each identifier position $j$ in $X'$, $\match$ scans all $\by_k \in y'$ and matches $\by_k$ to the first $\bx_i \in X'$ whose $j$-th identifier appears in $\by_k$ i.e., for which there exists $\ell$ such that
 \[
-\exists \ell \text{ such that } \by_k[\ell] = \bx_i[j],
+\by_k[\ell] = \bx_i[j],
 \]
 where $i$ is minimal. By processing identifiers in this order, Party $P_1$ can prioritize matching on identifiers that are less likely to change. For example, matching on a social security number yields higher-quality results than matching on a phone number, which is more likely to change.
-\ff{edited notation up to here}
 
-The matching logic assigns a unique identifier from a space $\calG$ to every pair of matched records, as well as to each unmatched record in $\calC$ and $\calP$; we denote the resulting set of identifiers by $\UID$. The procedure also constructs two maps, $M_C: \UID \to \calC \cup \{\bot\}$ and $M_P: \UID \to \calP \cup \{\bot\}$, which link each UID to its corresponding record in $\calC$ or $\calP$, or to $\bot$ if it corresponds to an unmatched record of the other party. Party $C$ receives $\UID$ and $M_C$, while $P$ receives $\UID$ and $M_P$. Both parties obtain a common set of universal identifiers along with a mapping from each UID to their local records or $\bot$ for unmatched records.
+The matching logic assigns a unique identifier from a space $\calG$ to every pair of matched records, as well as to each unmatched record in $X$ and $Y$; we denote the resulting set of identifiers by $\UID$. The procedure also constructs two maps, $M_X: \UID \to X\cup \{\bot\}$ and $M_Y: \UID \to Y \cup \{\bot\}$, which link each UID to its corresponding record in $X$ or $Y$, or to $\bot$ if it corresponds to an unmatched record of the other party. Party $P_1$ receives $\UID$ and $M_X$, while $P_2$ receives $\UID$ and $M_Y$. Both parties obtain a common set of universal identifiers along with a mapping from each UID to their local records or $\bot$ for unmatched records.
 
 The detailed description of $\calF_{\MKPM}$ can be found in Figure~\ref{fig:MKPM}.
 
 \begin{figure*}[t]
     \centering
-    \subfloat[\label{fig:match-input}The inputs from Parties $C$ (left) and $P$ (right).]%
+    \subfloat[\label{fig:match-input}The inputs from Parties $P_1$ (left) and $P_2$ (right).]%
     {
     \includegraphics[clip, trim=0cm -1.1cm 0cm 0cm,width=1.34\columnwidth]{figures/match-input.pdf}} 
     \quad
-    \subfloat[\label{fig:match-output}The outputs to Parties $C$ (left) and $P$ (right).]%
+    \subfloat[\label{fig:match-output}The outputs to Parties $P_1$ (left) and $P_2$ (right).]%
     {
     \includegraphics[width=0.66\columnwidth]{figures/match-output.pdf}}
     \caption{
-    Example inputs (a) and outputs (b) of the $\MKPM$ protocol. In (a) we depict a one-to-many match (red edges): Party $C$’s User 1 matches Party $P$’s User 1 on email and Party $P$’s User 2 on phone. The conflict is resolved randomly, yielding a one-to-one mapping in which $C$’s User 1 and $P$’s User 1 share the same UID, 2093, while $P$’s User 2 is assigned UID 9349. Party $C$’s User 2 matches only $P$’s User 3 on email (green edge) and thus are assigned UID 3042. Both parties learn their local UID mappings and the universe of UIDs.
+    Example inputs (a) and outputs (b) of the $\MKPM$ protocol. In (a) we depict a one-to-many match (red edges): Party $P_1$’s User 1 matches Party $P_2$’s User 1 on email and Party $P_2$’s User 2 on phone. The conflict is resolved randomly, yielding a one-to-one mapping in which $P_1$’s User 1 and $P_2$’s User 1 share the same UID, 2093, while $P_2$’s User 2 is assigned UID 9349. Party $P_1$’s User 2 matches only $P_2$’s User 3 on email (green edge) and thus are assigned UID 3042. Both parties learn their local UID mappings and the universe of UIDs.
     \label{fig:matching-logic-example}}
 \end{figure*}
 
@@ -92,7 +91,7 @@ The detailed description of $\calF_{\MKPM}$ can be found in Figure~\ref{fig:MKPM
 \label{fig:MKPM}
 \end{figure}
 
-
+\ff{edited notation up to here}
 \subsubsection{Leakage.}
 In favor of higher efficiency, MK-PrivateID leaks additional information which we capture with an extended ``leaky'' functionality $\calF_{\LMKPM{}}$. 
 We distinguish between the leakage observed by $C$ and that observed by $P$.
