@@ -12,7 +12,7 @@ The original work~\cite{MKPMC} provides a proof sketch for security against a se
 
 \subsubsection{Functionality}
 \label{sec:mkpmc_functionality}
-We start by presenting a formal description of the intended functionality $\calF_{\MKPM{}}$. Let $\calI$ denote the universe of identifiers (e.g., email addresses, phone numbers, IP addresses), and let $\lambda \in \NN$ be the maximum number of identifiers per record. Party $P_1$ holds
+We start by presenting a formal description of the intended functionality $\calF_{\MKPM{}}$. Let $\calI$ denote the universe of identifiers and let $\lambda \in \NN$ be the maximum number of identifiers per record. Party $P_1$ holds
 \[
 X:= \{\bx_i = (x_{i,1}, \ldots, x_{i,n_i}) \mid i \in [n]\},
 \]
@@ -44,7 +44,7 @@ The detailed description of $\calF_{\MKPM}$ can be found in Figure~\ref{fig:MKPM
     \subfloat[\label{fig:match-output}The outputs to Parties $P_1$ (left) and $P_2$ (right).]%
     {
     \includegraphics[width=0.755\columnwidth]{figures/match-output.pdf}}
-    \caption{In (a), we illustrate a one-to-many match: party $P_1$’s record $\bx_1$ matches party $P_2$’s records $\by_1$ on email and $\by_2$ on phone (red edges). The conflict is resolved randomly, yielding a one-to-one mapping in which $\bx_1$ and $\by_1$ are assigned the same UID (2093), while $\by_2$ receives a distinct UID (9349). Record $\bx_2$ matches only $\by_2$ on email (green edge) and is assigned UID 3042. Both parties learn their local mappings and the universe of UIDs.
+    \caption{In (a), we illustrate a one-to-many match: party $P_1$’s record $\bx_1$ matches party $P_2$’s records $\by_1$ on email and $\by_2$ on phone (red edges). The conflict is resolved randomly, yielding a one-to-one mapping in which $\bx_1$ and $\by_1$ are assigned the same UID (2093), while $\by_2$ is assigned a distinct UID (9349). Record $\bx_2$ matches only $\by_2$ on email (green edge) and thus both are assigned UID 3042. Both parties learn their local mappings and the universe of UIDs.
     \label{fig:matching-logic-example}}
 \end{figure*}
 
@@ -91,13 +91,12 @@ The detailed description of $\calF_{\MKPM}$ can be found in Figure~\ref{fig:MKPM
 \label{fig:MKPM}
 \end{figure}
 
-\ff{edited notation up to here}
 \subsubsection{Leakage.}
 In favor of higher efficiency, MK-PrivateID leaks additional information which we capture with an extended ``leaky'' functionality $\calF_{\LMKPM{}}$. 
 We distinguish between the leakage observed by $P_1$ and that observed by $P_2$.
 
 The leakage to party $P_1$ consists of a renamed copy of the shuffled sets $X'$ and 
-$P_2'$. Concretely, we sample an injective random function $f_1:\Ispace\to\calG$, referred to as a hiding function, and apply it to all identifiers in $X'$ and 
+$Y'$. Concretely, we sample an injective random function $f_1:\Ispace\to\calG$, referred to as a hiding function, and apply it to each identifier in $X'$ and 
 $Y'$. Party $P_1$ observes the resulting hidden sets.
 
 Equivalently, the leakage to $P_1$ can be viewed as a bipartite graph $G = (V_X \cup V_Y, E)$, where $V_X$ corresponds to the records in $X'$ and $V_Y$ corresponds to the records in $Y'$. An edge $(\bx_i', \by_k') \in E$ exists if and only if the records
@@ -119,84 +118,11 @@ Throughout this work, we consider a setting with two parties, where one party (t
 The adversary is given some target set $T$ and oracle access to $\calF(\cdot; Y)$ and tries to infer as much information about $Y$ with respect to $T$ as possible. The adversary’s precise objective depends on the targeted functionality, which we specify below.
 
 
-% \begin{definition}[Intersection Recovery]
-% 	Let $F$ be either the \PSU{} or the \PSUCA{} functionality and let $X$ and $Y$ be two sets.
-% 	An adversary $\adv$ provided with the target set $X$ and oracle access to $F(\cdot, Y)$
-% 	achieves \textbf{intersection recovery} if it outputs $X \cap Y$.
-% \end{definition}
-
-% \subsection{Intersection Recovery in the Multi-Key Setting}\label{sec:MK_IR_goals}
-% Given that the MKPM functionality operates on sets of records, 
-% intersection recovery as we introduced it above would entail
-% recovering the set of records that appear in both input sets.
-% However, in real-world scenarios, it is rather unlikely that two records match exactly
-% and we can expect the intersection between the inputs in the traditional sense to be small, or even empty.
-% We therefore generalize the intersection recovery attack goal to the multi-key setting,
-% which results in two new attack goals.
-% From now on the target and victim sets are sets of records, which we denote by \setT{} and \setV{} respectively.
-
-% \subsubsection{Recovering Matched Records}\label{sec:MRR_goal}
-% Given that the matching logic used in MK-PrivateID (see \cref{fig:match_logic}) 
-% pairs records and assigns the the same uid to two matched records and separate uids to unmatched ones, 
-% one can think of \match{} as computing a pseudo-union of records,
-% whereby a record in the victim set and a record in the target set are considered equal 
-% if they are assigned the same uid by the matching logic.
-% Recovering the corresponding pseudo-intersection 
-% -- the records of the attacker's target set which are matched with some record in the victim set --
-% seems a natural generalization of the intersection recovery goal we introduced above.
-% However, since \setT{} and \setV{} are shuffled before the matching step, 
-% the matching logic does not consistently pair the same records across multiple protocol invocations with the same inputs.
-% In fact, even the number of matched records may fluctuate.
-% This not only makes such an attack goal hard to formalize, 
-% but also greatly complicates proving the correctness of the attacks aiming to achieve said goal. 
-
-% However, we can relax the notion of such a pseudo-intersection to
-% include all records of the target set which share at least one identifier with some record in the victim set,
-% that is, all records that could potentially be matched by the matching logic.
-% We call these records \emph{matchable records} and the attacker's goal shall be to find 
-% all matchable records its target set. We formalize this using the following notation: 
-% $$\setT \sqcap \setV := \{t \in \setT \setdsc \exists v \in \setV\; \exists j, \ell \in \N : t[j] = v[\ell]\}$$
-% Note that in contrast to the standard set intersection, 
-% $\setT \sqcap \setV$ is not commutative.
-% In particular, $\setT \sqcap \setV$ is a subset of $\setT$, but not necessarily of $\setV$.
-% We use this attack goal in the context of analyzing the \MKPM{} functionality (without leakage).
-
-% \begin{definition}[Matchable Record Recovery]\label{def:matchable_records_recovery}
-% 	Let \setT{} and \setV{} be two sets of records.
-% 	An adversary $\adv$ provided with the target set $\setT$ and oracle access to $\MKPM(\cdot, \setV)$
-% 	achieves \textbf{Matchable Record Recovery} (MRR) if it outputs $\setT \sqcap \setV$.
-% \end{definition}
-
-% Note that MRR does not require the attacker to reconstruct any explicit identifiers or records of the victim set.
-% Nevertheless, this information can be sensitive and should not be easily recoverable,
-% as the mere information that at least one identifier of some user occurs in another organization's data set 
-% can be detrimental to the privacy of said user. 
-% We expect the authors of MK-PrivateID to share our view, 
-% as they highlight specific precautions against leaking this information in their protocol design.
-
-% \subsubsection{Recovering Matched Identifiers}\label{sec:IIR_goal}
-% As elaborated above, only recovering records from the victim set that exactly match some record in the target set
-% is unlikely to yield satisfactory results.
-% However, this is not necessary if one does not care about whole records and simply wants to 
-% determine which identifiers of the target set also occur in the victim set.
-% Our second generalization of intersection recovery captures exactly this:
-% the attacker shall determine the set of identifiers that occur in both the target set and the victim set.
-
-% Recall that for any set of records \setX{}, we denote the set of identifiers that occur in \setX{} with $\Ispace{\setX}$.
-% The attack goal we outlined above therefore corresponds to recovering the set $\Ispace{\setT} \cap \Ispace{\setV}$.
-% This goal is achieved by our first attack that considers the additional information leaked by MK-PrivateID.
-% We therefore state the its definition using the extended functionality \LMKPM{}.
-
-% \begin{definition}[Identifier Intersection Recovery]\label{def:IR_goal}
-% 	Let \setT{} and \setV{} be two sets of records.
-% 	An adversary $\adv$ provided with \setT{} and oracle access to $\LMKPM(\cdot, \setV)$
-% 	achieves \textbf{Identifier Intersection Recovery} (IIR) if it outputs $\Ispace{\setT} \cap \Ispace{\setV}$.
-% \end{definition}
 
 \subsubsection{Maximum Set Reconstruction}\label{sec:MR_goal}
-Our strongest attack goal is to recover as much information as possible about the victim’s input, given a target set of records $T$.
-Specifically, the adversary aims to reconstruct all victim records that contain at least one identifier appearing in $T$. We refer to this goal as \emph{Maximum Set Reconstruction} (MSR).
-See Figure~\ref{fig:maximum-reconstruction-example} for an illustration.
+
+Recovering the full victim records that exactly match records in the target set is unlikely to yield satisfactory results. Instead, we relax our recovery goal to identifying which identifiers in the target set also occur in the victim set.
+Specifically, the adversary aims to reconstruct all victim records that contain at least one identifier appearing in $T$. We refer to this goal as \emph{Maximum Set Reconstruction} (MSR). See Figure~\ref{fig:maximum-reconstruction-example} for an illustration.
 
 \begin{definition}[Maximum Set Reconstruction]\label{def:max_recons}
 	Let $T$ and $Y$ be sets of records. An adversary $\adv$, given $T$ and oracle access to the functionality $\calF_{\LMKPM}(\ \cdot\ ; Y)$, achieves \textbf{maximum set reconstruction (MSR)} of $Y$ with respect to $T$ if it outputs a multiset $R_Y$ for which there exists an injective mapping $\varphi : R_Y \to Y$ such that
@@ -218,13 +144,6 @@ Finally, Condition~(3) enforces $\Ispace{T}$-restricted global completeness i.e.
 containing an identifier from $\Ispace{T}$ are at least partially reconstructed.
 
 
-% Furthermore, we do not require the order of identifiers within records to match between \setV{} and \recVT.
-% This is mainly due to the fact that the identifiers within records of \setV{} are randomly shuffled.
-% However, in real-world use cases these identifiers will often be 
-% syntactically clearly distinguishable attributes 
-% like email addresses, phone numbers and IP addresses, 
-% which allows for a later reconstruction (or at least re-alignment) 
-% of the identifier order within the reconstructed records.
 \begin{figure}[t]
     \centering
     \subfloat[\label{fig:target-set-example}Target set $T$.]%
