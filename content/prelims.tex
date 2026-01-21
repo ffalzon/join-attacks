@@ -53,40 +53,40 @@ The detailed description of $\calF_{\MKPM}$ can be found in Figure~\ref{fig:MKPM
 \begin{figure}
     \fbox{%
     \begin{minipage}[t]{0.98\columnwidth}
-		\textbf{Parameters:} Two parties, $C$ and $P$, set sizes $n, m\in \NN$ and
+		\textbf{Parameters:} Two parties, $P_1$ and $P_2$, set sizes $n, m\in \NN$ and
 		record lengths $n_i, m_j \in \NN$ for $i\in[n]$ and $j\in[m]$.\\
-		\textbf{Functionality} $\calF_{\MKPM}(\calC, \calP)$ \dbox{$\calF_{\LMKPM}(\calC, \calP)$}~: 
+		\textbf{Functionality} $\calF_{\MKPM}(X; Y)$ \dbox{$\calF_{\LMKPM}(X; Y)$}~: 
         %%%
         \begin{enumerate}
-			\item Receive the input from party $C$: $\calC = \{c_i \setdsc i \in [n]\}$.
-			\item Receive the input from party $P$: $\calP = \{p_i \setdsc i \in [m]\}$.
-			\item Sample $\pi_C \sample \Perms[[n]]$ and $\pi_P \sample \Perms[[m]]$.
-			\item Let $\calC' := \{c'_i \setdsc i \in [n]\}$, where $c'_i := c_{\pi_C(i)}$.
-			\item Let $\calP' := \{p'_i \setdsc i \in [m]\}$, where $p'_i := p_{\pi_P(i)}$.
-			\item Shuffle the identifiers in $p'_i$ for all $i \in [m]$.
-			\item Compute $\UID, \MC, \MP \gets \match(\calC', \calP')$ (Figure \ref{fig:match_logic}).
+			\item Receive the input from party $P_1$: $X = \{\bx_i \setdsc i \in [n]\}$.
+			\item Receive the input from party $P_2$: $Y = \{\by_i \setdsc i \in [m]\}$.
+			\item Sample $\pi_X \sample \Perms[[n]]$ and $\pi_Y \sample \Perms[[m]]$.
+			\item Let $X' := \{\bx'_i \setdsc i \in [n]\}$, where $\bx'_i := \bx_{\pi_X(i)}$.
+			\item Let $Y' := \{\by'_i \setdsc i \in [m]\}$, where $\by'_i := \by_{\pi_Y(i)}$.
+			\item Shuffle the identifiers in $\by'_i$ for all $i \in [m]$.
+			\item Compute $\UID, \MX, \MY \gets \match(X', Y')$ (Figure \ref{fig:match_logic}).
 		\end{enumerate}
         \begin{adjustbox}{minipage=0.98\textwidth,precode=\dbox}
         \begin{enumerate}
 				\addtocounter{enumi}{7}
-				\item  $f_C, f_P \sample \InjFuncs[\Ispace,\; \calG]$.
-				\item  $\leak_\calC^C := \{(f_C(c'_i[1]), \dots, f_C(c'_i[n_i])) \dots i \in [n]\}$.
-				\item  $\leak_\calP^C := \{(f_C(p'_i[1]), \dots, f_C(p'_i[m_i])) \dots i \in [m]\}$.
+				\item  $f_X, f_Y \sample \InjFuncs[\Ispace,\; \calG]$.
+				\item  $\leak_\calC^C := \{(f_X(\bx'_i[1]), \dots, f_X(\bx'_i[n_i])) \setdsc i \in [n]\}$.
+				\item  $\leak_\calP^C := \{(f_X(\by'_i[1]), \dots, f_X(\by'_i[m_i])) \setdsc i \in [m]\}$.
 				\item  $\pi \sample \Perms[[n]]$.
-				\item  $\calC'' := \{c''_i \setdsc i \in [n]\}$, where $c''_i := c_{\pi(i)}$.
-				\item  $\leak_\calC^P := \{(f_P(c''_i[1]), \dots, f_P(c''_i[n_i])) \dots i \in [n]\}$.
+				\item  $X'' := \{\bx''_i \setdsc i \in [n]\}$, where $\bx''_i := \bx_{\pi(i)}$. \ff{Is it correct or = $\bx'$}
+				\item  $\leak_\calC^P := \{(f_Y(\bx''_i[1]), \dots, f_Y(\bx''_i[n_i])) \setdsc i \in [n]\}$.
 			\end{enumerate}
 		\end{adjustbox}
 			\begin{enumerate}
 			\addtocounter{enumi}{13}
 			\item Output:\hfill \begin{itemize}
-					\item Send $\UID, \MC$ \dbox{$,\left(\leak_\calC^C, \leak_\calP^C\right)$} to $C$.
-					\item Send $\UID, \MP$ \dbox{$,\leak_\calC^P$} to $P$.
+					\item Send $\UID, \MX$ \dbox{$,\left(\leak_\calC^C, \leak_\calP^C\right)$} to $P_1$.
+					\item Send $\UID, \MY$ \dbox{$,\leak_\calC^P$} to $P_2$.
 			\end{itemize}
 		\end{enumerate}
     \end{minipage}
     }
-	\caption{The Multi-Key Private Matching functionality $\calF_{\MKPM}(\calC, \calP)$. The additional steps of the leakage-aware functionality $\calF_{\LMKPM}(\calC, \calP)$ are shown in \protect\dbox{dashed boxes}.
+	\caption{The Multi-Key Private Matching functionality $\calF_{\MKPM}(X; Y)$. The additional steps of the leakage-aware functionality $\calF_{\LMKPM}(X; Y)$ are shown in \protect\dbox{dashed boxes}.
 	The record-matching procedure \match{} is defined in Figure~\ref{fig:match_logic}.}
 \label{fig:MKPM}
 \end{figure}
@@ -94,7 +94,7 @@ The detailed description of $\calF_{\MKPM}$ can be found in Figure~\ref{fig:MKPM
 \ff{edited notation up to here}
 \subsubsection{Leakage.}
 In favor of higher efficiency, MK-PrivateID leaks additional information which we capture with an extended ``leaky'' functionality $\calF_{\LMKPM{}}$. 
-We distinguish between the leakage observed by $C$ and that observed by $P$.
+We distinguish between the leakage observed by $P_1$ and that observed by $P_2$.
 
 The leakage to party $C$ consists of a renamed copy of the shuffled sets $\calC'$ and 
 $\calP'$. Concretely, we sample an injective random function $f_C:\Ispace{}\to\calG$, referred to as a hiding function, and apply it to all identifiers in $\calC'$ and 
@@ -106,10 +106,10 @@ $c_i \in \calC'$ and $p_k \in \calP'$ share at least one identifier. Further not
 
 
 Although the procedure $\match$ computes only a partial matching in $G$, such that each vertex is matched to at most one
-vertex in the other vertex set, party $C$ still learns the full graph $G$.
+vertex in the other vertex set, party $P_1$ still learns the full graph $G$.
 
-The leakage observed by $P$ consists only of a hidden copy of $\calC$. The records of $\calC$ with fresh randomness, yielding a set $\calC''$. Then, a new hiding function $f_P : \Ispace \to \calG$ is sampled and used to hide the identifiers in $\calC''$.
-$P$ observes the hidden and re-shuffled set $\calC''$.
+The leakage observed by $P_2$ consists only of a hidden copy of $X$. The records of $X$ with fresh randomness, yielding a set $X''$. Then, a new hiding function $f_Y : \Ispace \to \calG$ is sampled and used to hide the identifiers in $X''$.
+$P_2$ observes the hidden and re-shuffled set $X''$.
 
 The pseudocode can be found in Figure~\ref{fig:MKPM} with the additional leakage contained in a dashed boxed.
 
@@ -117,7 +117,7 @@ The pseudocode can be found in Figure~\ref{fig:MKPM} with the additional leakage
 \label{sec:recovery-goals}
 
 Throughout this work, we consider a setting with two parties, where one party (the \emph{victim}) behaves honestly and holds a fixed, static input, while the other party is \emph{input-malicious}. The malicious party follows the protocol specification but may evaluate the functionality arbitrarily many times and adaptively choose its own inputs. 
-The adversary is given some target set $T$ and oracle access to $\calF(\cdot, Y)$ and tries to infer as much information about $Y$ with respect to $T$ as possible. The adversary’s precise objective depends on the targeted functionality, which we specify below.
+The adversary is given some target set $T$ and oracle access to $\calF(\cdot; Y)$ and tries to infer as much information about $Y$ with respect to $T$ as possible. The adversary’s precise objective depends on the targeted functionality, which we specify below.
 
 
 % \begin{definition}[Intersection Recovery]
