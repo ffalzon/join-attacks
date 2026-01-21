@@ -39,13 +39,12 @@ The detailed description of $\calF_{\MKPM}$ can be found in Figure~\ref{fig:MKPM
     \centering
     \subfloat[\label{fig:match-input}The inputs from Parties $P_1$ (left) and $P_2$ (right).]%
     {
-    \includegraphics[clip, trim=0cm -1.1cm 0cm 0cm,width=1.34\columnwidth]{figures/match-input.pdf}} 
-    \quad
+    \includegraphics[clip, trim=0cm -1.25cm 0cm 0cm,width=1.3\columnwidth]{figures/match-input.pdf}} 
+    %\quad
     \subfloat[\label{fig:match-output}The outputs to Parties $P_1$ (left) and $P_2$ (right).]%
     {
-    \includegraphics[width=0.66\columnwidth]{figures/match-output.pdf}}
-    \caption{
-    Example inputs (a) and outputs (b) of the $\MKPM$ protocol. In (a) we depict a one-to-many match (red edges): Party $P_1$’s User 1 matches Party $P_2$’s User 1 on email and Party $P_2$’s User 2 on phone. The conflict is resolved randomly, yielding a one-to-one mapping in which $P_1$’s User 1 and $P_2$’s User 1 share the same UID, 2093, while $P_2$’s User 2 is assigned UID 9349. Party $P_1$’s User 2 matches only $P_2$’s User 3 on email (green edge) and thus are assigned UID 3042. Both parties learn their local UID mappings and the universe of UIDs.
+    \includegraphics[width=0.755\columnwidth]{figures/match-output.pdf}}
+    \caption{In (a), we illustrate a one-to-many match: party $P_1$’s record $\bx_1$ matches party $P_2$’s records $\by_1$ on email and $\by_2$ on phone (red edges). The conflict is resolved randomly, yielding a one-to-one mapping in which $\bx_1$ and $\by_1$ are assigned the same UID (2093), while $\by_2$ receives a distinct UID (9349). Record $\bx_2$ matches only $\by_2$ on email (green edge) and is assigned UID 3042. Both parties learn their local mappings and the universe of UIDs.
     \label{fig:matching-logic-example}}
 \end{figure*}
 
@@ -69,19 +68,20 @@ The detailed description of $\calF_{\MKPM}$ can be found in Figure~\ref{fig:MKPM
         \begin{adjustbox}{minipage=0.98\textwidth,precode=\dbox}
         \begin{enumerate}
 				\addtocounter{enumi}{7}
-				\item  $f_X, f_Y \sample \InjFuncs[\Ispace,\; \calG]$.
-				\item  $\leak_\calC^C := \{(f_X(\bx'_i[1]), \dots, f_X(\bx'_i[n_i])) \setdsc i \in [n]\}$.
-				\item  $\leak_\calP^C := \{(f_X(\by'_i[1]), \dots, f_X(\by'_i[m_i])) \setdsc i \in [m]\}$.
+				\item  $f_1, f_2 \sample \InjFuncs[\Ispace,\; \calG]$.
+				\item  $\hXone := \{(f_1(\bx'_i[1]), \dots, f_1(\bx'_i[n_i])) \setdsc i \in [n]\}$.
+				\item  $\hYone := \{(f_1(\by'_i[1]), \dots, f_1(\by'_i[m_i])) \setdsc i \in [m]\}$.
 				\item  $\pi \sample \Perms[[n]]$.
-				\item  $X'' := \{\bx''_i \setdsc i \in [n]\}$, where $\bx''_i := \bx_{\pi(i)}$. \ff{Is it correct or = $\bx'$}
-				\item  $\leak_\calC^P := \{(f_Y(\bx''_i[1]), \dots, f_Y(\bx''_i[n_i])) \setdsc i \in [n]\}$.
+				\item  $X'' := \{\bx''_i \setdsc i \in [n]\}$, where $\bx''_i := \bx_{\pi(i)}$.
+				\item  $\hXtwo := \{(f_2(\bx''_i[1]), \dots, f_2(\bx''_i[n_i])) \setdsc i \in [n]\}$.
+				\item $\leak_1 \gets (\hXone,\hYone)$,\ \  $\leak_2 \gets \hXtwo$
 			\end{enumerate}
 		\end{adjustbox}
 			\begin{enumerate}
 			\addtocounter{enumi}{13}
 			\item Output:\hfill \begin{itemize}
-					\item Send $\UID, \MX$ \dbox{$,\left(\leak_\calC^C, \leak_\calP^C\right)$} to $P_1$.
-					\item Send $\UID, \MY$ \dbox{$,\leak_\calC^P$} to $P_2$.
+					\item Send $\UID, \MX$ \dbox{$,\leak_1$} to $P_1$.
+					\item Send $\UID, \MY$ \dbox{$,\leak_2$} to $P_2$.
 			\end{itemize}
 		\end{enumerate}
     \end{minipage}
@@ -96,19 +96,18 @@ The detailed description of $\calF_{\MKPM}$ can be found in Figure~\ref{fig:MKPM
 In favor of higher efficiency, MK-PrivateID leaks additional information which we capture with an extended ``leaky'' functionality $\calF_{\LMKPM{}}$. 
 We distinguish between the leakage observed by $P_1$ and that observed by $P_2$.
 
-The leakage to party $C$ consists of a renamed copy of the shuffled sets $\calC'$ and 
-$\calP'$. Concretely, we sample an injective random function $f_C:\Ispace{}\to\calG$, referred to as a hiding function, and apply it to all identifiers in $\calC'$ and 
-$\calP'$. Party $C$ observes the resulting hidden sets.
+The leakage to party $P_1$ consists of a renamed copy of the shuffled sets $X'$ and 
+$P_2'$. Concretely, we sample an injective random function $f_1:\Ispace\to\calG$, referred to as a hiding function, and apply it to all identifiers in $X'$ and 
+$Y'$. Party $P_1$ observes the resulting hidden sets.
 
-Equivalently, the leakage to $C$ can be viewed as a bipartite graph $G = (V_C \cup V_P, E)$, where $V_C$ corresponds to the records in $\calC'$ and
-$V_P$ corresponds to the records in $\calP'$. An edge $(c_i, p_k) \in E$ exists if and only if the records
-$c_i \in \calC'$ and $p_k \in \calP'$ share at least one identifier. Further note that, because the identifier order within records of $\calC'$ is preserved, the matching process induces a priority ordering over edges, determined by the position of shared identifiers within records of $\calC'$.
+Equivalently, the leakage to $P_1$ can be viewed as a bipartite graph $G = (V_X \cup V_Y, E)$, where $V_X$ corresponds to the records in $X'$ and $V_Y$ corresponds to the records in $Y'$. An edge $(\bx_i', \by_k') \in E$ exists if and only if the records
+$\bx_i' \in X'$ and $\by_k' \in Y'$ share at least one identifier. Further note that, because the identifier order within records of $X'$ is preserved, the matching process induces a priority ordering over edges, determined by the position of shared identifiers within records of $X'$.
 
 
 Although the procedure $\match$ computes only a partial matching in $G$, such that each vertex is matched to at most one
 vertex in the other vertex set, party $P_1$ still learns the full graph $G$.
 
-The leakage observed by $P_2$ consists only of a hidden copy of $X$. The records of $X$ with fresh randomness, yielding a set $X''$. Then, a new hiding function $f_Y : \Ispace \to \calG$ is sampled and used to hide the identifiers in $X''$.
+The leakage observed by $P_2$ consists only of a hidden copy of $X$. The records of $X$ with fresh randomness, yielding a set $X''$. Then, a new hiding function $f_2 : \Ispace \to \calG$ is sampled and used to hide the identifiers in $X''$.
 $P_2$ observes the hidden and re-shuffled set $X''$.
 
 The pseudocode can be found in Figure~\ref{fig:MKPM} with the additional leakage contained in a dashed boxed.
@@ -200,18 +199,18 @@ Specifically, the adversary aims to reconstruct all victim records that contain 
 See Figure~\ref{fig:maximum-reconstruction-example} for an illustration.
 
 \begin{definition}[Maximum Set Reconstruction]\label{def:max_recons}
-	Let $T$ and $Y$ be sets of records. An adversary $\adv$, given $T$ and oracle access to the functionality $\calF_{\LMKPM}(\cdot, Y)$, achieves \textbf{maximum set reconstruction (MSR)} of $Y$ with respect to $T$ if it outputs a multiset $R_Y$ for which there exists an injective mapping $\varphi : R_Y \to Y$ such that
+	Let $T$ and $Y$ be sets of records. An adversary $\adv$, given $T$ and oracle access to the functionality $\calF_{\LMKPM}(\ \cdot\ ; Y)$, achieves \textbf{maximum set reconstruction (MSR)} of $Y$ with respect to $T$ if it outputs a multiset $R_Y$ for which there exists an injective mapping $\varphi : R_Y \to Y$ such that
 	\begin{enumerate}
-		\item For all $y^* \in R_Y$ and all $\id \in y^*$ we have $\id \in \varphi(y^*)$.
-		\item For all $y^* \in R_Y$ 
-		and all $\id \in\varphi(y^*)$ we have if $\id \in \Ispace{T}$ 
-		then $\id \in y^*$.
-		\item For all $y \in Y$, if there is some $\id \in y$ 
-		with $\id \in \Ispace{T}$ then $y \in \varphi\left(R_Y\right)$. 
+		\item For all $\by^* \in R_Y$ and all $\id \in \by^*$ we have $\id \in \varphi(\by^*)$.
+		\item For all $\by^* \in R_Y$ 
+		and all $\id \in\varphi(\by^*)$ we have if $\id \in \Ispace{T}$ 
+		then $\id \in \by^*$.
+		\item For all $\by \in Y$, if there is some $\id \in \by$ 
+		with $\id \in \Ispace{T}$ then $\by \in \varphi\left(R_Y\right)$. 
 	\end{enumerate} 
 \end{definition}
 
-Injectivity of $\varphi$ ensures that each $y^* \in R_Y$ corresponds to exactly one $y \in Y$.
+Injectivity of $\varphi$ ensures that each $\by^* \in R_Y$ corresponds to exactly one $\by \in Y$.
 Condition~(1) enforces per-record soundness, i.e., every identifier in a reconstructed record
 appears in the corresponding original record.
 Condition~(2) captures $\Ispace{T}$-restricted per-record completeness i.e., each reconstructed record contains all identifiers from its original record that also appear in $\Ispace{T}$.
