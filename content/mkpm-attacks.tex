@@ -1,9 +1,6 @@
 \section{Analysis of Meta's MKPM Protocol}
 
-In the previous chapter, we presented an attack that exploits the leakage of the MK-PrivateID protocol to 
-recover the set of identifiers which occur in both the target and the victim set 
-without changing the statistical distribution of the protocol inputs (compared to honest protocol executions).
-In this chapter, we show how deviating from this restriction 
+In this section, we describe three powerful attacks that exploit the ``leaky'' functionality $\calF_{\LMKPM}$ and enable an adversary to produce a maximum reconstruction of the victim's set in as little as 1 query.
 can lead to significantly stronger and more efficient attacks.
 Recall that the authors of MK-PrivateID \cite{MKPMC} acknowledge the existence of their protocol's leakage
 -- or at least the existence of an informal variant thereof --
