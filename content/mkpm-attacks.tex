@@ -1,17 +1,11 @@
 \section{Analysis of Meta's MKPM Protocol}
 
-In this section, we describe three powerful attacks that exploit the ``leaky'' functionality $\calF_{\LMKPM}$ and enable an adversary to produce a maximum reconstruction of the victim's set in as little as 1 query.
-can lead to significantly stronger and more efficient attacks.
-Recall that the authors of MK-PrivateID \cite{MKPMC} acknowledge the existence of their protocol's leakage
--- or at least the existence of an informal variant thereof --
-but deem it acceptable, as it is an aggregate metric that would only cause concern when involved in multiple executions.
+In this section, we describe three powerful attacks that exploit the ``leaky'' functionality $\calF_{\LMKPM}$. The authors of MK-PrivateID \cite{MKPMC} acknowledge the existence of their protocol's leakage but deem it acceptable, as it is an aggregate metric that would only cause concern when involved in multiple executions. 
 We contradict this assessment by presenting three attacks that achieve Maximum Set Reconstruction
 with only a single protocol invocation. 
-As before, we assume an input-malicious party $\hat{P}_1$ which interacts with the ``leaky'' MKPM functionality $\LMKPM$. 
 
-% Our three attacks follow a similar paradigm: they involve preprocessing the target set $T$ in such a way that its modified records  are uniquely identifiable in the protocol leakage, 
+All three attacks involve preprocessing the target set $T$ in such a way that its modified records are uniquely identifiable from the protocol's output.
 % which enables the translation of hidden identifiers from the leakage to original plaintext identifiers.
-% Exploiting the full leakage pattern then allows us to infer a maximum reconstruction of the victim set \setV{}.
 % We start by presenting a baseline attack which is very efficient 
 % but makes strong assumptions on the shape of the protocol inputs.
 % We then present a three more attacks that gradually weaken said assumptions.
