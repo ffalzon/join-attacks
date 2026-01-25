@@ -1,0 +1,58 @@
+\begin{tikzpicture}[
+    block/.style={
+    draw,
+    minimum width=#1,
+    minimum height=\blockminheight,
+    font=\small,
+    text height=1.2ex,
+    text depth=0.25ex,
+    align=center
+}
+]
+\def\arrowgap{0.4em}
+\def\arrowdot{3pt}
+
+% ---- Left table ----
+\node[block=\minwidthid, draw=none] (a_idx1) {$0:$};
+\node[block=\minwidthemail,fill=trow-dark, right=\linecorr of a_idx1] (a11) {alice@mail.com};
+\node[block=\minwidthphone,fill=trow-dark, right=\linecorr of a11] (a12) {30 4829 1746};
+
+\node[block=\minwidthid, draw=none, below=\rowspace of a_idx1] (a_idx2) {$1:$};
+\node[block=\minwidthemail,fill=trow-light, right=\linecorr of a_idx2] (a21) {bob@mail.com};
+\node[block=\minwidthphone,fill=trow-light, right=\linecorr of a21] (a22) {90 5561 2844};
+
+
+% ---- Right table (copy with xshift) ----
+\begin{scope}[xshift=18em]
+
+\node[block=\minwidthid, draw=none] (b_idx1) {$0:$};
+\node[block=\minwidthemail,fill=trow-dark, right=\linecorr of b_idx1] (b11) {alice@mail.com};
+\node[block=\minwidthphone,fill=trow-dark, right=\linecorr of b11] (b12) {04 8632 5578};
+
+\node[block=\minwidthid, draw=none, below=\rowspace of b_idx1] (b_idx2) {$1:$};
+\node[block=\minwidthemail,fill=trow-light, right=\linecorr of b_idx2] (b21) {carol@mail.com};
+\node[block=\minwidthphone,fill=trow-light, right=\linecorr of b21] (b22) {30 4829 1746};
+
+\node[block=\minwidthid, draw=none, below=\rowspace of b_idx2] (b_idx3) {$2:$};
+\node[block=\minwidthemail,fill=trow-dark, right=\linecorr of b_idx3] (b31) {bob@mail.com};
+
+\end{scope}
+
+\node[font=\small, anchor=south, yshift=0.1em] at (a11.north) {\textbf{Email:}};
+\node[font=\small, anchor=south, yshift=0.1em] at (a12.north) {\textbf{Phone \#}};
+\node[font=\small, anchor=south, yshift=0.1em] at (b11.north) {\textbf{Email:}};
+\node[font=\small, anchor=south, yshift=0.1em] at (b12.north) {\textbf{Phone \#}};
+
+\colorlet{darkgreen}{green!70!black}
+
+\draw[-, red, line width=.9pt, line cap=round]
+  ($(a12.east)+(\arrowgap,0)$) -- ($(b_idx1.west)$);
+
+\draw[-, red, line width=.9pt, line cap=round]
+  ($(a12.east)+(\arrowgap,0)$) -- ($(b_idx2.west)$);
+
+\draw[-, highlight-blue, line width=.9pt, line cap=round]
+  ($(a22.east)+(\arrowgap,0)$) -- ($(b_idx3.west)$);
+
+\path (current bounding box.south west) ++(0,-1.3em);
+\end{tikzpicture}

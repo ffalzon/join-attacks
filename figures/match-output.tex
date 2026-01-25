@@ -1,0 +1,51 @@
+\begin{tikzpicture}[
+    block/.style={
+    draw,
+    minimum width=#1,
+    minimum height=\blockminheight,
+    font=\small,
+    text height=1.2ex,
+    text depth=0.25ex,
+    align=center
+  }
+]
+\def\arrowgap{0.4em}
+\def\arrowdot{3pt}
+
+
+% ---- Left table ----
+\node[block=\minwidthuid, fill=trow-dark] (a11) {2093};
+\node[block=\minwidthid, fill=trow-dark, right=\linecorr of a11] (a12) {1};
+
+\node[block=\minwidthuid, fill=trow-light, below=\rowspace of a11] (a21) {9349};
+\node[block=\minwidthid, fill=trow-light, right=\linecorr of a21] (a22) {$\bot$};
+
+\node[block=\minwidthuid, fill=trow-dark, below=\rowspace of a21] (a31) {3042};
+\node[block=\minwidthid, fill=trow-dark, right=\linecorr of a31] (a32) {2};
+
+
+
+% ---- Right table (copy with xshift) ----
+\begin{scope}[xshift=10.5em]
+\node[block=\minwidthuid, fill=trow-dark] (b11) {2093};
+\node[block=\minwidthid, fill=trow-dark, right=\linecorr of b11] (b12) {1};
+
+\node[block=\minwidthuid, fill=trow-light, below=\rowspace of b11] (b21) {9349};
+\node[block=\minwidthid, fill=trow-light, right=\linecorr of b21] (b22) {2};
+
+\node[block=\minwidthuid, fill=trow-dark, below=\rowspace of b21] (b31) {3042};
+\node[block=\minwidthid, fill=trow-dark, right=\linecorr of b31] (b32) {3};
+\end{scope}
+
+\node[font=\small, anchor=south, yshift=0.1em] at (a11.north) {\textbf{UID:}};
+\node[font=\small, anchor=south, yshift=0.1em] at (a12.north) {\textbf{Rec:}};
+\node[font=\small, anchor=south, yshift=0.1em] at (b11.north) {\textbf{UID:}};
+\node[font=\small, anchor=south, yshift=0.1em] at (b12.north) {\textbf{Rec:}};
+
+% ---- Labels under tables ----
+\node[font=\small, anchor=north, yshift=-0.4em]
+  at ($(a31.south)!0.5!(a32.south)$) {$\UID=\{2093,9349,3042\}$};
+
+\node[font=\small, anchor=north, yshift=-0.4em]
+  at ($(b31.south)!0.5!(b32.south)$)  {$\UID=\{2093,9349,3042\}$};
+\end{tikzpicture}

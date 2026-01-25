@@ -62,39 +62,54 @@ However, the maximum record length has decreased from $|\Ispace{T}|$ to $\frac{\
 % hides identifiers deterministically, 
 % i.e. two occurrences of the same identifier result in the same hidden identifier in the same protocol run.
 
-% \begin{figure}
-% 	\centering
-% 	{\def\rowspace{-.4pt}
-% 	\def\minwidthemail{1.95cm}
-% 	\def\minwidthphone{2.1cm}
-% 	\def\minwidthid{.6cm}
-% 	\def\linecorr{-.4pt}
-% 	\def\blockminheight{1.3em}
-% 	\definecolor{added-id}{HTML}{15b01a}
-% 	\definecolor{matched-light}{HTML}{DCEDC8}
-% 	\definecolor{matched-dark}{HTML}{C4E1A3}
-% 	\definecolor{tiebreaker}{HTML}{A3CEE1}
+
+\begin{figure}[t]
+    \centering
+    \def\rowspace{-.4pt}
+    \def\minwidthemail{2.5cm}
+    \def\minwidthphone{2.5cm}
+    \def\minwidthid{.6cm}
+    \def\linecorr{-.4pt}
+    \def\blockminheight{1.4em}
+    \definecolor{added-id}{HTML}{15b01a}
+    \definecolor{matched-light}{HTML}{DCEDC8}
+    \definecolor{matched-dark}{HTML}{C4E1A3}
+    \definecolor{tiebreaker}{HTML}{A3CEE1}
+    \definecolor{highlight-blue}{HTML}{4A90E2} 
+    % Subfigures
+    \subfloat[Target set $T$ (boxed in blue) and input set $X$ (the entire table).\label{subfig:recenum_example_plain}]{
+        \resizebox{0.99\columnwidth}{!}{%
+        \input{figures/recenum_example_plain.tex}
+        }
+    }
+    \quad
+    \subfloat[The hidden, shuffled leakage $\hXone$.\label{subfig:recenum_example_leakage}]{
+        \resizebox{0.52\columnwidth}{!}{%
+        \input{figures/recenum_example_leakage.tex}
+        }
+    }
+    \caption{
+    An example of a target set transformation by \recenumattack.
+    (\ref{subfig:recenum_example_plain}) shows the target set $T$ (blue box) and the input set $X$, extended with prepended encoding identifiers (green box). 
+    Note the second identifier $\id_2$ in the last record.
+    (\ref{subfig:recenum_example_leakage}) shows the hidden, shuffled protocol records of $P_1$, $\hXone$.
+    The hidden identifiers corresponding to $(\id_0,\id_0)$ are highlighted in green, and that corresponding to $\id_2$ is highlighted in blue.
+    }
+    \label{fig:recenum_example}
+\end{figure}
 
 
-% 	\begin{subfigure}{.5\textwidth}
-% 		\centering
-% 		\input{chapters/figures/recenum_example_plain.tex}
-% 		\caption{$\setT'$}\label{subfig:recenum_example_plain}
-% 	\end{subfigure}
-% 	\hspace{1cm}
-% 	\begin{subfigure}{.25\textwidth}
-% 		\centering
-% 		\input{chapters/figures/recenum_example_leakage.tex}
-% 		\caption{$\leak_{\setT'}$}\label{subfig:recenum_example_leakage}
-% 	\end{subfigure}}
-% 	\caption{Example of a target set transformation performed by \recenumattack{}. 
-% 	(\subref{subfig:recenum_example_plain}) shows the preprocessed set $\setT'$. 
-% 	The prepended sequences encoding the set enumeration have a green border.
-% 	Note the third identifier $\id_2$ in the last record. 
-% 	(\subref{subfig:recenum_example_leakage}) shows the (partial) protocol leakage $\leak_{\setT'}$.
-% 	The encoding of zero is highlighted in green. The hidden $\id_2$ is highlighted in blue.}
-% 	\label{fig:recenum_example}
-% \end{figure}
+
+
+
+% % ---- Connections ----
+% \draw[->, line width=1pt, draw=match-red] (c1_phone.east) -- (p1_email.west);
+% %\draw[->, line width=1pt, draw=match-red] (c1_email.east) -- (p1_email.west);
+
+% \draw[->, line width=1pt, draw=match-green] (c2_email.east) -- (p3_email.west);
+% \draw[->, line width=1pt, draw=match-green] (c2_phone.east) -- (p2_phone.west);
+
+
 
 % We leverage these properties by enumerating the records in the target set \setT{} and
 % prepending an encoding of their respective index as a sequence of known identifiers.

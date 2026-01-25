@@ -7,7 +7,7 @@
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{bmpsize}
-\usepackage{xcolor}
+\usepackage[table,dvipsnames]{xcolor}
 \usepackage{lipsum}
 \usepackage{xspace}
 \usepackage{subfig}
@@ -16,15 +16,10 @@
 \usepackage{adjustbox}
 \usepackage{dashbox}
 \usepackage{float}
-
-%\usepackage[colorlinks=true,urlcolor=black]{hyperref}
+\usepackage{tikz}
+\usetikzlibrary{trees,positioning,arrows.meta,quotes, patterns}
 
 \usepackage{etoolbox}
-
-
-\newcommand{\todo}[1]{{\textcolor{red}{[TODO: #1]}}}
-\newcommand{\ff}[1]{{\textcolor{violet}{[francesca: #1]}}}
-
 \usepackage[adversary,
             lambda,
             landau,
@@ -33,6 +28,17 @@
             sets,
             complexity,
             asymptotics]{cryptocode}
+
+\newcommand{\todo}[1]{{\textcolor{red}{[TODO: #1]}}}
+\newcommand{\ff}[1]{{\textcolor{violet}{[francesca: #1]}}}
+
+
+\definecolor{trow-light}{HTML}{E7EAED}
+\definecolor{trow-dark}{HTML}{CCD2D8}
+\newcommand{\bandedrows}{\rowcolors{1}{trow-dark}{trow-light}}
+\newcommand{\emptycell}{\cellcolor{white}}
+
+
 
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{prop}[theorem]{Proposition}
