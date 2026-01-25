@@ -1,195 +1,56 @@
 \section{Analysis of Meta's MKPM Protocol}
 
-In this section, we describe three powerful attacks that exploit the ``leaky'' functionality $\calF_{\LMKPM}$. The authors of MK-PrivateID \cite{MKPMC} acknowledge the existence of their protocol's leakage but deem it acceptable, as it is an aggregate metric that would only cause concern when involved in multiple executions. 
-We contradict this assessment by presenting three attacks that achieve Maximum Set Reconstruction
-with only a single protocol invocation. 
+In this section, we describe three powerful attacks that exploit the ``leaky'' functionality $\calF_{\LMKPM}$. 
+The authors of MK-PrivateID \cite{MKPMC} acknowledge the existence of their protocol’s leakage but deem it acceptable as an aggregate metric that would only cause concern in multiple executions. We contradict this by presenting three attacks that achieve Maximum Set Reconstruction with only a single protocol invocation.
 
-All three attacks involve preprocessing the target set $T$ in such a way that its modified records are uniquely identifiable from the protocol's output.
-% which enables the translation of hidden identifiers from the leakage to original plaintext identifiers.
-% We start by presenting a baseline attack which is very efficient 
-% but makes strong assumptions on the shape of the protocol inputs.
-% We then present a three more attacks that gradually weaken said assumptions.
-% All attacks presented assume the adversary obtains the full protocol leakage.
+We first present a baseline attack that is highly efficient but relies on a strong assumption on the protocol inputs. We then describe two additional attacks that progressively relax these assumptions.
+All three attacks preprocess the target set $T$ so that the resulting records are uniquely identifiable from the protocol output in a single invocation. This allows the adversary to map hidden identifiers revealed by the leakage back to their plaintext values. 
 
-% As in the previous chapter, the attacks we present in this section only rely on the leakage pattern,
-% but not on the other outputs of \LMKPM{}. For a cleaner presentation of the attacks and correctness proofs,
-% we introduce the following notation to denote the leakage stemming from an execution of MK-PrivateID:
-% $\leak(\setX, \setY) := (\leakX, \leakY)$, where $(\UID, \MC, (\leakX, \leakY)) \sample \LMKPM(\setX, \setY)$.
+Recall that the output of $\calF_{\LMKPM}$ to party $P_1$ is
+\[
+(\UID, \MX, \leak_1) = (\UID, \MX, (\hXone, \hYone)),
+\]
+where $\UID$ denotes the set of all assigned UIDs, $\MX$ is the local mapping from UIDs to records in $X$, and $(\hXone, \hYone)$ are the hidden, shuffled records of $X$ and $Y$, respectively.
 
-% \section{Baseline Attack}
-% \label{sec:toy_attack}
-% We start with presenting our baseline attack, which will serve as a comparison for further attacks.
-% The attack consists of transforming the target set \setT{} into a format which
-% -- after invoking the MK-PrivateID protocol and observing the leakage -- 
-% will allow the records of the protocol input to be easily matched with the records in the protocol leakage.
-% The reader will encounter this paradigm several more times in this chapter.
 
-% Concretely, we make the observation that determining a record matching is trivial
-% if there is only one record in \setT. 
-% We therefore flatten \setT{} into a modified target set $\setT'$, 
-% which only contains one record that holds all identifiers in $\Ispace{\setT}$.
-% We then use $\setT'$, together with the leaked $\leak_{\setT'}$,
-% as a dictionary to lookup the identifiers corresponding to the hidden identifiers in \leakV.
-% An implementation of this attack can be found in \cref{fig:toy_attack}.
+\subsection{The Baseline Attack}
+\label{sec:baseline-attack}
 
-% \begin{figure}
-% 	\centering
-% 	\begin{pchstack}[boxed, center]
-% 		\pchspace
-% 		\procedure[linenumbering]{$\toyattack^{\LMKPM(\cdot, \setV)}(\setT)$}{%
-% 			r \gets () \label{lin:baseline_r_start}\\
-% 			\pcfor t \in \setT{} \pcdo \\
-% 			\t	\pcfor i = 1, \dots, |t| \pcdo \label{lin:toy_attack_membership_check}\\
-% 			\t	\t	\pcif t[i] \not\in r \pcthen \\
-% 			\t	\t	\t	r \gets r \ccat t[i] \label{lin:baseline_r_end}\\
-% 			\setT' \gets \{r\} \label{lin:toy_attack_def_T_prime} \\
-% 			(\UID, \MC, (\leak_{\setT'}, \leakV)) \sample \LMKPM(\setT', \setV) \label{lin:baseline_eval}\\
-% 			\{r_e\} \gets \leak_{\setT'} \\
-% 			\text{Initialize empty dictionary $D$} \\
-% 			\pcfor i = 1, \dots, |r_e| \pcdo \label{lin:baseline_D_start}\\
-% 			\t	D[r_e[i]] \gets r[i] \label{lin:baseline_D_end}\\
-% 			\recV{\setT'} \gets \dictInfer(\leakV, D) \\
-% 			\pcreturn \recV{\setT'}
-% 		}
-% 		\pchspace
-% 		\procedure[linenumbering]{$\dictInfer(\leakV, D)$}{
-% 		\text{Initialize empty set $\mathfrak{R}$.} \\
-% 		\pcfor v \in \leakV \pcdo \\
-% 		\t	r \gets () \\
-% 		\t	\pcfor i = 1, \dots, |v| \pcdo \\
-% 		\t	\t	\pcif v[i] \in D \pcthen \label{lin:substitute_membership_check} \\
-% 		\t	\t	\t	r \gets r \ccat D\left[v[i]\right] \label{lin:substitute_add_id} \\
-% 		\t	\mathfrak{R} \gets \mathfrak{R} \cup \{r\} \label{lin:substitute_add_record}\\
-% 		\pcreturn \mathfrak{R}
-% 	}
-% 	\end{pchstack}
-% 	\caption{Baseline attack with oracle access to the extended MKPM functionality $\LMKPM(\cdot, \setV)$. 
-% 	\setV{} is part of the oracle and is unknown to the adversary.
-% 	\dictInfer{} takes a set of hidden records $\leakV$ 
-% 	and a dictionary $D:\G \to \Ispace{}$ mapping hidden to plaintext identifiers
-% 	and replaces the identifiers in the records of \leakV{} with the corresponding entries in $D$.
-% 	Identifiers that do not occur in $D$ are not replaced.} \label{fig:toy_attack} \label{fig:dict_infer}
-% \end{figure}
+We first observe that record matching is trivial when the target set contains a single record.
+Exploiting this, our baseline attack flattens the target set $T$ into a modified input table $X$ with one record containing all identifiers in $\Ispace{T}$.
+Evaluating this record against the victim set via $\leak_1$ yields unambiguous matches.
 
-% \begin{lemma}
-% 	\label{lem:dictinfer_MR}
-% 	Let \setX{} and \setY{} be two sets of records and let $(\leakX, \leakY) \sample \leak(\setX, \setY)$.
-% 	Moreover, let $f_C: \Ispace{} \to \G$ be the hiding function sampled in \LMKPM{} to produce \leakX{} and \leakY.
-% 	If $D$ is a dictionary mapping $f_C(\id)$ to \id{} for all $\id \in \Ispace{\setX}$,
-% 	then $\dictInfer(D, \leakY)$ (\cref{fig:dict_infer}) produces a maximum reconstruction of \setY{} with respect to \setX{}.
-% \end{lemma}
-% \begin{proof}
-% 	Let $\mathfrak{R}$ be the multiset produced by \dictInfer.
-% 	Recall from \cref{sec:notation} that we consider different instantiations 
-% 	of the same record in $\mathfrak{R}$ as distinct elements.
-% 	Note that for each $y \in \leakY$ exactly one reconstructed record $r$
-% 	is added to $\mathfrak{R}$.
-% 	Let $d: \mathfrak{R} \to \leakY$ denote the function mapping these reconstructed records 
-% 	to the corresponding $y$. Clearly, $d$ is a bijection.
+Recall that the records in $X$ are hidden and shuffled, while the order of identifiers within each record is preserved to support prioritized matching.
+The baseline attack leverages the single record in $X$ to construct a dictionary that maps hidden identifiers appearing in the leakage back to their original plaintext identifiers. This is possible because the adversary knows the plaintext record and can align it with its hidden counterpart, $\hXone$.
+Applying this dictionary to the leaked, hidden records of the victim set, $\hYone$, allows the adversary to reconstruct all victim records that share at least one identifier with $T$. This results in a maximum set reconstruction of $Y$ with respect to $T$.
 
-% 	We now define an injective function $\varphi: \mathfrak{R} \to \setY$ and prove that it satisfies the three conditions for Maximum Set Reconstruction (\cref{def:max_recons}).
-% 	For any record $r \in \mathfrak{R}$ let $(d_1, \dots, d_k)=d(r) \in \leakY$ and let
-% 	$$\varphi(r) := (f_C^{-1}(d_1), \dots, f_C^{-1}(d_k))$$
-	
-% 	Note that $f_C^{-1}(d_j)$ exists for all $r$ and $j$, since $d(r) \in \leakY$ by definition.
-% 	Moreover, since $f_C$ is injective, $f_C^{-1}$ is injective for elements in $f_C(\Ispace{})$.
-% 	$\varphi$ is injective since $d$ and $f_C^{-1}$ are injective.
-% 	We show the three properties from \cref{def:max_recons} separately:
-% 	\begin{enumerate}
-% 		\item Let $r\in \mathfrak{R}$, $k := |r|$ and $i \leq |r|$. 
-% 		Moreover, let $(d_1, \dots, d_{k'}) = d(r)$ for some $k' \geq k$.
-% 		By definition of $d$ and by construction of $r$ (line \ref{lin:substitute_add_id}), 
-% 		there exists some $j^*\in[k']$ such that $r[i] = D[d_{j^*}]$.
-% 		Suppose for a contradiction that $r[i] \not \in \varphi(r)$, that is,
-% 		we have $r[i] \neq f_C^{-1}(d_j)$ for all $j \in [k']$.
-% 		But since for all $j \in [k']$ with $d_j \in D$ we have $f_C^{-1}(d_j) = D[d_j]$,
-% 		we also have that $r[i] \neq D[d_j]$, i.e., there is no $j$ such that $r[i] = D[d_j]$. 
-% 		This is a direct contradiction to $r[i] = D[d_{j^*}]$.
-% 		% However, if this holds, then the condition on line \ref{lin:substitute_membership_check} 
-% 		% would not have been true for any $j\in[k']$ and thus $r[i]$ would not have been added, 
-% 		% thus resulting in a contradiction. 
-% 		\item Let $r\in \mathfrak{R}$ and $(d_1, \dots, d_{k'}) = d(r)$ for some $k' \in \N$.
-% 		Let $\id \in \varphi(r)$, 
-% 		i.e., there is some $i \in [k']$ such that $\id = f_C^{-1}(d_i)$.
-% 		If $\id \in \Ispace{\setX}$, then by assumption we have $f_C(\id) \in D$ and $D[f_C(\id)] = \id$.
-% 		Since $\id = f_C^{-1}(d_i)$, we have $f_C(\id) = f_C(f_C^{-1}(d_i)) = d_i$ 
-% 		and thus $d_i \in D$. Therefore, the condition on line~\ref{lin:substitute_membership_check} is met and
-% 		$D[d_i] = D[f_C(\id)] = \id$ is added to $r$.
-% 		\item Holds trivially, since we have $\varphi(\mathfrak{R}) = \setY$ by the definition of $d$. 
-% 	\end{enumerate}
-% The lemma thus follows.
-% \end{proof}
+We omit a full proof of correctness, as the construction directly follows from the fact that all identifiers in the flattened target record are uniquely identifiable in a single invocation of $\calF_{\LMKPM}$.
 
-% \begin{lemma}
-% 	For any target set \setT{} and victim set \setV{}, 
-% 	$\toyattack^{\LMKPM(\cdot, \setV)}(\setT)$ from \cref{fig:toy_attack}
-% 	produces a maximum reconstruction of \setV{} with respect to \setT{}.
-% \end{lemma}
-% \begin{proof}
-% 	It is easy to see that the record $r$ constructed in lines \ref{lin:baseline_r_start}~-~\ref{lin:baseline_r_end} contains all identifiers from 
-% 	$\Ispace{\setT}$ and therefore $\Ispace{\setT} = \Ispace{\setT'}$. 
-% 	It therefore suffices to show that $\toyattack$ produces a maximum reconstruction of $\setV$ w.r.t. $\setT'$.
-	
-% 	Let $f_C$ be the identifier hiding function sampled during the invocation of 
-% 	\LMKPM{} in line \ref{lin:baseline_eval},  
-% 	let $D$ be the dictionary constructed in lines \ref{lin:baseline_D_start} and \ref{lin:baseline_D_end} 
-% 	and let $k = |r|$.
-% 	By definition of \LMKPM{}, we have $r_e = (f_C(r[1]), \dots, f_C(r[k]))$
-% 	and therefore $D[f_C(r[i])] = D[r_e[i]] = r[i]$ for all $i \in [k]$.
-% 	Since $r$ contains all identifiers from $\Ispace{\setT'}$, the claim follows from \cref{lem:dictinfer_MR}.
-% \end{proof}
 
-% Note that the attack creates a reconstruction for every record in \leakV,
-% even if the corresponding record in \setV{} contains no identifiers from \Ispace{\setT}.
-% In that case, the reconstructed record simply remains empty. 
-% This does not violate \cref{def:max_recons} and simplifies the presentation and correctness proof of the attack.
-% Moreover, after carrying out the attack, the adversary can remove these empty records from the reconstruction 
-% without affecting its validity as a maximum reconstruction.
+\heading{Time and query Complexity.}
+Let $\lambda$ denote the maximum record length in $T$ and $Y$, and let $n := |T|$ and $m := |Y|$.
+The attack has an asymptotic time complexity of
+$\bigO{(n\lambda)^2 + \lambda m}$.
+The membership check can be reduced to constant time by maintaining an auxiliary set of already added identifiers, as set membership can be tested in constant time.
+The attack requires only one protocol invocation and therefore establishes a tight lower bound on the number of queries needed to achieve MR.
 
-% \textbf{Time and Query Complexity.}
-% Recall from \cref{sec:notation} that we assume that reading from, writing to, 
-% and checking the presence of keys in dictionaries requires constant time.
-% Let $\lambda$ denote the maximum record length in \setT{} and \setV{} and let $n := |\setT|$ and $m := |\setV|$.
-% The attack has an asymptotic time complexity of $\bigO{(n\lambda)^2 + \lambda m}$.
-% The membership check in line \ref{lin:toy_attack_membership_check} could be reduced to constant time by maintaining 
-% a set of already added identifiers, since membership checks in the latter can be done in constant time.
-% This reduces to time complexity to \bigO{\lambda(n+m)} at the cost of increasing the space consumption.
-% This increase in space consumption could be avoided using approximate membership query data structures such as Bloom Filters.
-% However, these data structures usually yield false positive answers with a certain probability, 
-% which may lead to an incomplete reconstruction.  
-% The attack only requires one protocol invocation.
+\heading{A need for less conspicious attacks.} This baseline attack relies on an atypical input structure is both unnatural and easily detectable in practice, namely a table containing a single, long record. This limitation motivates the more refined attacks presented next, which achieve similar reconstruction goals while avoiding conspicuous, adversarial input patterns.
 
-% \textbf{Discussion.}
-% The attack sets an upper bound on the strength of the assumptions
-% necessary for the attack to work, which we will reduce substantially throughout the remainder of this chapter. 
-% Concretely, the single record contained in $\setT'$ has length $|\Ispace{\setT}|$.
-% The attack therefore assumes that the length of records may be arbitrary, in particular, may be linear in the input size.
-% While not excluded by neither the MK-PrivateID specification nor its implementation,
-% this is easily detectable by the victim, as it learns the format of the adversary's input in its own leakage $\leak^P_{\setT'}$ (see \cref{fig:MKPM}).
-% Aborting the protocol execution in such a case provides an easy mitigation.
+\ff{edited until here}
+\subsection{A First Optimization}
+One can circumvent the need for arbitrarily long records by observing that the lengths of records are preserved in the protocol leakage.
+This insight allows splitting the single long record in $X$
+into multiple smaller records of unique lengths.
+Call this new set of records $X'$. 
+A record matching between $X'$ and the correspong $\leak_{T''}$ can then be inferred based on
+record lengths. 
+This optimized attack also requires only one protocol invocation and has a time complexity of \bigO{(n\lambda)^2 + \lambda m}.
+However, the maximum record length has decreased from $|\Ispace{T}|$ to $\frac{\sqrt{1+8|\Ispace{T}|}-1}{2} \approx \sqrt{2|\Ispace{T}|}$.
 
-% \subsection{A First Optimization}
-% One can circumvent the need for arbitrarily long records, 
-% with the simple observation that the lengths of records are preserved in the protocol leakage.
-% This insight allows splitting the single long record in $\setT'$
-% into multiple smaller records with unique lengths.
-% Call this new set of records $\setT''$. 
-% A record matching between $\setT''$ and $\leak_{\setT''}$ can then be inferred based on
-% record lengths. 
-% This optimized attack, too, requires only one protocol invocation and has a time complexity of \bigO{(n\lambda)^2 + \lambda m}, 
-% which could be reduced to \bigO{\lambda(n+m)} with optimizing membership checks, as mentioned above.
-% However, the maximum record length has decreased from $|\Ispace{\setT}|$ to $\frac{\sqrt{1+8|\Ispace{\setT}|}-1}{2} \approx \sqrt{2|\Ispace{\setT}|}$.
+ While (arguably) less conspicuous to the naked eye,  the victim can still detect such an attack by checking whether the adversary's input contains no two records with the same length. In our next two attacks, we thus remove this assumption.
 
-% While (arguably) less conspicuous to the naked eye, 
-% the victim can still detect such an attack by checking whether the adversary's input contains no two records with the same length.
-% As before, the victim can abort the protocol execution in this case to prevent the attack.
-% A much simpler mitigation, however, 
-% is to enforce all records to have the same length and abort protocol execution otherwise.
-% This does not restrict the protocol's deployment, as shorter records can simply be padded with random bit strings.
-% While the authors of~\cite{MPMC} also suggest this measure to prevent leaking the record lengths,
-% they did not include it in their implementation of MK-PrivateID.
+\section{Record Enumeration Attack}\label{sec:rec_enum_attack}
 
-% \section{Record Enumeration Attack}
 % In light of the aforementioned mitigation, we propose a more general attack,
 % whose inputs are records of equal lengths.
 % In particular, we make the assumption that all records in the target set $\setT$
@@ -444,8 +305,7 @@ All three attacks involve preprocessing the target set $T$ in such a way that it
 % since certain types of identifiers may naturally occur often.
 % IP addresses behind a Network Address Translation (NAT) device serve as an immediate example.
 
-% \section{Snake Attack}
-% \label{sec:snake_attack}
+\section{Snake Attack}\label{sec:snake_attack}
 % \begin{figure}
 % 	\centering
 % 	{\def\rowspace{.4cm}

@@ -1,0 +1,67 @@
+% \begin{lemma}
+% 	\label{lem:dictinfer_MR}
+% 	Let \setX{} and \setY{} be two sets of records and let $(\leakX, \leakY) \sample \leak(\setX, \setY)$.
+% 	Moreover, let $f_C: \Ispace{} \to \G$ be the hiding function sampled in \LMKPM{} to produce \leakX{} and \leakY.
+% 	If $D$ is a dictionary mapping $f_C(\id)$ to \id{} for all $\id \in \Ispace{\setX}$,
+% 	then $\dictInfer(D, \leakY)$ (\cref{fig:dict_infer}) produces a maximum reconstruction of \setY{} with respect to \setX{}.
+% \end{lemma}
+% \begin{proof}
+% 	Let $\mathfrak{R}$ be the multiset produced by \dictInfer.
+% 	Recall from \cref{sec:notation} that we consider different instantiations 
+% 	of the same record in $\mathfrak{R}$ as distinct elements.
+% 	Note that for each $y \in \leakY$ exactly one reconstructed record $r$
+% 	is added to $\mathfrak{R}$.
+% 	Let $d: \mathfrak{R} \to \leakY$ denote the function mapping these reconstructed records 
+% 	to the corresponding $y$. Clearly, $d$ is a bijection.
+
+% 	We now define an injective function $\varphi: \mathfrak{R} \to \setY$ and prove that it satisfies the three conditions for Maximum Set Reconstruction (\cref{def:max_recons}).
+% 	For any record $r \in \mathfrak{R}$ let $(d_1, \dots, d_k)=d(r) \in \leakY$ and let
+% 	$$\varphi(r) := (f_C^{-1}(d_1), \dots, f_C^{-1}(d_k))$$
+	
+% 	Note that $f_C^{-1}(d_j)$ exists for all $r$ and $j$, since $d(r) \in \leakY$ by definition.
+% 	Moreover, since $f_C$ is injective, $f_C^{-1}$ is injective for elements in $f_C(\Ispace{})$.
+% 	$\varphi$ is injective since $d$ and $f_C^{-1}$ are injective.
+% 	We show the three properties from \cref{def:max_recons} separately:
+% 	\begin{enumerate}
+% 		\item Let $r\in \mathfrak{R}$, $k := |r|$ and $i \leq |r|$. 
+% 		Moreover, let $(d_1, \dots, d_{k'}) = d(r)$ for some $k' \geq k$.
+% 		By definition of $d$ and by construction of $r$ (line \ref{lin:substitute_add_id}), 
+% 		there exists some $j^*\in[k']$ such that $r[i] = D[d_{j^*}]$.
+% 		Suppose for a contradiction that $r[i] \not \in \varphi(r)$, that is,
+% 		we have $r[i] \neq f_C^{-1}(d_j)$ for all $j \in [k']$.
+% 		But since for all $j \in [k']$ with $d_j \in D$ we have $f_C^{-1}(d_j) = D[d_j]$,
+% 		we also have that $r[i] \neq D[d_j]$, i.e., there is no $j$ such that $r[i] = D[d_j]$. 
+% 		This is a direct contradiction to $r[i] = D[d_{j^*}]$.
+% 		% However, if this holds, then the condition on line \ref{lin:substitute_membership_check} 
+% 		% would not have been true for any $j\in[k']$ and thus $r[i]$ would not have been added, 
+% 		% thus resulting in a contradiction. 
+% 		\item Let $r\in \mathfrak{R}$ and $(d_1, \dots, d_{k'}) = d(r)$ for some $k' \in \N$.
+% 		Let $\id \in \varphi(r)$, 
+% 		i.e., there is some $i \in [k']$ such that $\id = f_C^{-1}(d_i)$.
+% 		If $\id \in \Ispace{\setX}$, then by assumption we have $f_C(\id) \in D$ and $D[f_C(\id)] = \id$.
+% 		Since $\id = f_C^{-1}(d_i)$, we have $f_C(\id) = f_C(f_C^{-1}(d_i)) = d_i$ 
+% 		and thus $d_i \in D$. Therefore, the condition on line~\ref{lin:substitute_membership_check} is met and
+% 		$D[d_i] = D[f_C(\id)] = \id$ is added to $r$.
+% 		\item Holds trivially, since we have $\varphi(\mathfrak{R}) = \setY$ by the definition of $d$. 
+% 	\end{enumerate}
+% The lemma thus follows.
+% \end{proof}
+
+% \begin{lemma}
+% 	For any target set \setT{} and victim set \setV{}, 
+% 	$\toyattack^{\LMKPM(\cdot, \setV)}(\setT)$ from \cref{fig:toy_attack}
+% 	produces a maximum reconstruction of \setV{} with respect to \setT{}.
+% \end{lemma}
+% \begin{proof}
+% 	It is easy to see that the record $r$ constructed in lines \ref{lin:baseline_r_start}~-~\ref{lin:baseline_r_end} contains all identifiers from 
+% 	$\Ispace{\setT}$ and therefore $\Ispace{\setT} = \Ispace{\setT'}$. 
+% 	It therefore suffices to show that $\toyattack$ produces a maximum reconstruction of $\setV$ w.r.t. $\setT'$.
+	
+% 	Let $f_C$ be the identifier hiding function sampled during the invocation of 
+% 	\LMKPM{} in line \ref{lin:baseline_eval},  
+% 	let $D$ be the dictionary constructed in lines \ref{lin:baseline_D_start} and \ref{lin:baseline_D_end} 
+% 	and let $k = |r|$.
+% 	By definition of \LMKPM{}, we have $r_e = (f_C(r[1]), \dots, f_C(r[k]))$
+% 	and therefore $D[f_C(r[i])] = D[r_e[i]] = r[i]$ for all $i \in [k]$.
+% 	Since $r$ contains all identifiers from $\Ispace{\setT'}$, the claim follows from \cref{lem:dictinfer_MR}.
+% \end{proof}
