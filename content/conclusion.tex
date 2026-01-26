@@ -4,4 +4,25 @@
 
 \subsection{Mitigations}
 
+% The mitigation of the record enumeration attack is clearly more 
+% involved than with the baseline attack,
+% since MK-PrivateID heavily relies on the preservation of the identifier order 
+% and the deterministic hiding of identifiers
+% in order to compute its multi-key matching logic (see \cref{fig:match_logic}).
+% A simple approach is to limit record lengths to smaller than $\lceil \log_2 n\rceil$,
+% in order to prohibit an exhaustive enumeration of all records.
+% However, there are more space-efficient encodings that require fewer identifiers to be added. 
+% For instance, using a base-$(\ell + 1)$ encoding and omitting certain indices
+% allows us to encode and recover $(\ell + 1)^\ell - \ell^2$ records with prefixes of length $\ell$.
+% It is therefore unclear, what the maximum allowed record length should be.
+
+% Other mitigation strategies that inspect the input directly
+% such as limiting the maximum number occurrences per identifier are effective, 
+% but burden the victim with additional computation.
+% Moreover, they too become complex when trying to guard against various different encodings.
+% Limiting the number of occurrences of any identifier specifically 
+% comes at the additional risk of accidentally prohibiting honest protocol executions, 
+% since certain types of identifiers may naturally occur often.
+% IP addresses behind a Network Address Translation (NAT) device serve as an immediate example.
+
 \subsection{Looking towards Deployment}

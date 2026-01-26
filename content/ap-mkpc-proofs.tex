@@ -67,7 +67,6 @@
 % \end{proof}
 
 %%%%
-Rec Enum Attack Proofs
 \subsection{Proof of Correctness of $\recenumattack$}
 \label{sec:recenumattack:correctness}
 % \begin{proof}
@@ -127,4 +126,67 @@ Rec Enum Attack Proofs
 	
 % % \begin{proof}
 % 	The theorem follows directly from \cref{thm:recenum_D} and \cref{lem:dictinfer_MR}.
+% \end{proof}
+
+\subsection{Proof of Correctness of $\snakeattack$}
+\label{sec:snakeattack:correctness}
+
+
+% \begin{proof}
+% 	To prove the theorem, we prove the following proposition.
+% 	The theorem follows directly from Proposition~\ref{thm:snake_D} and \cref{lem:dictinfer_MR}.
+% \begin{proposition}
+% 	\label{thm:snake_D}
+% 	Let \setT{} and \setV{} be two sets of records and let $D$ be the substitution dictionary
+% 	constructed during an invocation of $\snakeattack^{\LMKPM(\cdot, \setV)}(\setT)$.
+% 	Moreover, let $f_C$ be the identifier hiding function sampled during the invocation of \leak{}
+% 	in line~\ref{lin:snake_evaluation}.
+% 	Then, we have $D[f_C(\id)] = \id$ for all $\id \in \Ispace{\setT}$.
+% \end{proposition}
+% \begin{proof} \textbf{of Proposition~\ref{thm:snake_D}}
+% 	Let $\setT' := \{t'_1, \dots, t'_n\}$ where $t'_i$ is produced by \snakeencodeUnique{} in line~\ref{lin:snake_encode}
+% 	and let $k' := |t'_i|$ for any $i\in [n]$\footnote{Recall that we assume that all records have the same length $\lambda$.
+% 	Thus, $k' \in \{\lambda + 1, \lambda+2\}$}.
+% 	We show that $D[f_C(\id)] = \id$ for all $\id \in \Ispace{\setT'}$.
+% 	Since \snakeattack{} potentially adds fresh identifiers to records of \setT{}, but does not remove any, 
+% 	we have $\Ispace{\setT}\subseteq\Ispace{\setT'}$, which implies the claim.
+	
+% 	Similar to the proof of \cref{thm:recenum_D}, we show that
+% 	$t^*_i[j] = f_C(t'_i[j])$ for all $i\in[n]$ and all $j \in [k']$.
+% 	The result then follows from the construction of $D$ in lines~\ref{lin:snake_D_start}~-~\ref{lin:snake_D_end}. 
+% 	In particular, we will show that the linked list we create in \IdxToSeq{} is preserved in the leakage, 
+% 	and that this linked list allows us to uniquely identify each record. 
+% 	We show this by induction on $i$. 
+% 	Let $j^*$ denote the index of a column whose identifiers are all unique (note that if such a column does not exist, it is created on line~\ref{lin:distinctIDs_j*}).
+
+% 	For $i = 1$, observe that identifier $t_1[j^*]$ is not appended to any record in \snakeencodeUnique{}; 
+% 	in other words, it is the only item in the linked list that doesn't have anything pointing to it.
+% 	In contrast, for all $i' > 1$, identifier $t_{i'}[j^*]$ is appended to $t_{i'+1}$.
+% 	$t'_1$ is therefore the only record in $\setT'$ whose $j^*$-th identifier is not contained in the last column, 
+% 	i.e., $t'_1[j^*] \not \in \{t'_{i'}[k'] \setdsc i'\in[n]\}$.
+% 	By the definition of $\LMKPM$, this property is preserved in the leakage $\leak_{\setT'}$.
+% 	That is, the corresponding record in the leakage $h = (f_C(t'_1[1]), \dots, f_C(t'_1[k']))$
+% 	is the only record in $\leak_{\setT'}$ such that such that $h[j^*]\not\in\{h_{i'}[k'] \setdsc i' \in [n]\}$.
+% 	In line~\ref{lin:snake_recover_c} in \snakerecoverUnique{} we pick $h_c := h$.
+% 	Thus, for all $j \in [k']$ we have that $h_c[j] = f_C(t'_1[j])$
+% 	and, therefore  $t^*_1[j] = h_c[j] = f_C(t'_1[j])$, where the first equality follows from line~\ref{lin:snake_recover_assign_t_star}.
+
+% 	Now assume that for some $i < n$ we have $t^*_i[j] = f_C(t'_i[j])$ for all $j \in [k']$. 
+% 	We show that there is a unique record which $t'_i[k']$ is pointing to (that has not been traversed by the previous items in the linked list), 
+% 	and that, once again this property is preserved in the leakage allowing for unique identification of the record.
+% 	By construction in \snakeencodeUnique{}, we have $t'_{i+1}[j^*] = t'_i[k']$.
+% 	Since all identifiers in the $j^*$-th column are distinct, 
+% 	$t'_{i+1}$ is the only record in $\setT'$ that satisfies this condition.
+% 	As before, since $f_C$ is injective, the corresponding record in the leakage 
+% 	$h = (f_C(t'_{i+1}[1]), \dots, f_C(t'_{i+1}[k']))$
+% 	is the only record that satisfies $h[j^*] = t^*_i[k']$.
+% 	Moreover, all hidden identifiers in the $j^*$-th column of $\leak_{\setT'}$	are distinct. % $t'_{i+1}$ is the only record in $\setT'$
+% 	Thus, the dictionary \loc{} in \SeqToIdx{} contains exactly the $n$ keys $\{f_C(t'_{i'}[j^*]) \setdsc i' \in [n]\} = \{f_C(t^*_{i'}[j^*]) \setdsc i' \in [n]\}$,
+% 	which are mapped as $\loc[f_C(t'_{i'}[j^*])] = i'$.
+% 	In line~\ref{lin:snake_recover_assign_t_star}, we pick $t^*_{i+1} := h_c$ for $c = \loc[t^*_i[k']]$, 
+% 	implying $t^*_{i+1}[j^*] = t^*_i[k']$ and, thus, $t^*_{i+1} = h$.
+% 	We therefore have $t^*_{i+1}[j] = h[j] = f_C(t'_{i+1}[j])$ for all $j \in [k']$.
+% \end{proof}
+
+% 	The statement follows from \cref{thm:snake_D} and \cref{lem:dictinfer_MR}.
 % \end{proof}
