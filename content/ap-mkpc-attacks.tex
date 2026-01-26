@@ -65,3 +65,71 @@
 % 	and therefore $D[f_C(r[i])] = D[r_e[i]] = r[i]$ for all $i \in [k]$.
 % 	Since $r$ contains all identifiers from $\Ispace{\setT'}$, the claim follows from \cref{lem:dictinfer_MR}.
 % \end{proof}
+
+%%%%
+Rec Enum Attack Proofs
+%%%%
+
+% \begin{theorem}
+% 	Let $T$ and $Y$ be two sets of records.
+% 	$\recenumattack^{\LMKPM(\cdot, \setV)}(\setT)$ (\cref{fig:rec_enum_attack}) produces a maximum reconstruction of \setV{} w.r.t. \setT{} (\cref{def:max_recons}).
+% \end{theorem}
+
+% \begin{proof}
+% In order to prove the theorem we prove the following proposition. 
+% The theorem follows directly from Proposition~\ref{thm:recenum_D} and \cref{lem:dictinfer_MR}.
+% \begin{proposition}\label{thm:recenum_D}
+% 	Let \setT{} and \setV{} be two sets of records and let
+% 	$D$ be the dictionary constructed during an execution of $\recenumattack^{\LMKPM(\cdot, \setV)}(\setT)$ (\cref{fig:rec_enum_attack}).
+% 	Moreover, let $f_C$ be the identifier hiding function sampled during the evaluation of \LMKPM{} in line~\ref{lin:recenum_evaluation} in \cref{fig:rec_enum_attack}. 
+% 	We have $D[f_C(\id)] = \id$ for all $\id \in \Ispace{\setT}.$
+% \end{proposition}
+% \begin{proof} \textbf{of Proposition~\ref{thm:recenum_D}} 
+% 	Let $\setT' = \{t'_0, \dots, t'_{n-1}\}$, where $t'_i$ denotes the altered target record constructed in 
+% 	line~\ref{lin:recenum_t_prime} for $i \in \{0, \dots, n - 1\}$.
+% 	We show that $D[f_C(\id)] = \id$ for all $\id \in \setT'$.
+% 	Since $\Ispace{\setT} \subseteq \Ispace{\setT'}$, this implies the claim.
+	
+% 	We first show that $e_0 = f_C(\id_0)$ for the value $e_0$ defined on line~\ref{lin:assign_e0}.
+% 	Note that the transformation of an index's binary representation to a sequence of $\id_0$ and $\id_1$
+% 	in lines \ref{lin:idx_to_seq_bin_encode_start}~-~\ref{lin:idx_to_seq_bin_encode_end} of \IdxToSeq{}
+% 	could produce two encodings that only contain one identifier, namely, $(\id_0)^\ell$ and $(\id_1)^\ell$
+% 	for $i = 0$ and $i = 2^\ell - 1$ respectively.
+% 	However, the latter is prevented by the condition on line~\ref{lin:seq_to_idx_tiebreak} and therefore
+% 	\IdxToSeq{} only outputs one sequence where all identifiers are equal.
+% 	Hence, there is only one record in $\setT'$ whose first $\ell$ identifiers all coincide,
+% 	namely, $t'_0$ with encoding $(\id_0)^\ell$.
+% 	Since $f_C$ is injective and the identifiers in records of $\setT'$ are not shuffled, 
+% 	the latter also holds for $\leak_{\setT'}$.
+% 	Therefore, $t^*_0 = (f_C(t'_0[1]), \dots, f_C(t'_0[\lambda + \ell]))$ (line~\ref{lin:recenum_t0}).
+% 	Since $t'_0[1] = \id_0$, we have $e_0 = t^*_0[1] = f_C(t'_0[1]) = f_C(\id_0)$ (see line~\ref{lin:recenum_e0}).
+	
+% 	We now show that the attack correctly recovers indices from $\leak_{\setT'}$. 
+% 	We have already established that $t^*_0$ is correctly matched with $t'_0$,
+% 	as it's encoding is the only one containing only $\id_0$. 
+% 	Any other encoding $s$ produced by \IdxToSeq{}
+% 	either (a) is $(\id_1)^{\ell - 1} \ccat \id_2$ or (b) only
+% 	contains the identifiers $\id_0$ and $\id_1$.
+% 	\begin{description}
+% 	\item[Case (a):] This case is only produced on input $i = 2^\ell - 1$ and the resulting vector of hidden identifiers in the 	
+% 		 leakage is $(f_C(\id_1))^{\ell - 1} \ccat f_C(\id_2)$. 
+% 		 This satisfies the condition on line~\ref{lin:seq_to_idx_tiebreak} of \SeqToIdx{}, 
+% 		 which therefore yields the correct index $2^\ell - 1$.
+% 	\item[Case (b):] In this case, the vector of hidden identifiers corresponding to $s$ in the leakage, which we denote
+% 		$s^*:=(f_C(s[1]),\allowbreak\dots,f_C(s[\ell]))$, does not satisfy the condition on line~\ref{lin:seq_to_idx_tiebreak}, 
+% 		since the only encoding that would do so is $(\id_1)^{\ell}$. 
+% 		But this is never output by \IdxToSeq{}. 
+% 		Therefore, $s^*$ is interpreted as a binary encoding, where every occurrence of $e_0$ 
+% 		is interpreted as $0$ and every other identifier as $1$.
+% 		The correctness of this recovery therefore follows from the fact that $e_0 = f_C(\id_0)$,
+% 		which we established above.
+% 	\end{description}
+	
+% 	By the definition of \LMKPM{}, we have $t^*_i = (f_C(t'_i[1]), \dots, f_C(t'_i[\lambda+\ell]))$ for all $i \in \{0, \dots, n-1\}$.
+% 	Since $\Ispace{\setT'} := \bigcup_{\substack{l}{t\in\setT'\\\id \in t}} \id$, 
+% 	the claim holds by the construction of $D$ in lines~\ref{lin:recenum_D_start}~-~\ref{lin:recenum_D_end}.
+% \end{proof}
+	
+% % \begin{proof}
+% 	The theorem follows directly from \cref{thm:recenum_D} and \cref{lem:dictinfer_MR}.
+% \end{proof}
