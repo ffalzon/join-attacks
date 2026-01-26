@@ -92,7 +92,7 @@ We refer to this attack as the \emph{Record Enumeration Attack}. It relies only 
 
 
 We leverage these properties by enumerating the records in the target set $T$ and prepending to each record an encoding of its index using known identifiers.
-If this enumeration can be recovered from the protocol leakage, we can construct a dictionary $\dictInfer$ from hidden to plaintext identifiers and then use $\dictInfer$ (see \ref{fig:dict_infer}) to output a maximum reconstruction of the victim's input $Y$.
+If this enumeration can be recovered from the protocol leakage, we can construct a dictionary $\Dict$ from hidden to plaintext identifiers (see procedure $\dictInfer$ in \ref{fig:dict_infer}) and then use $\Dict$ to output a maximum reconstruction of the victim's input $Y$.
 
 Concretely, let $\id_0$ and $\id_1$ be two distinct identifiers (whether they already occur in the target or victim sets does not matter).
 Fix an ordering $(\bt_0,\ldots,\bt_{n-1})$ of the records in $T$, where $\bt_i$ denotes the $i$-th record.
@@ -102,17 +102,19 @@ This ``binary'' encoding is prepended to $\bt_i$, and we denote by $X$ the resul
 
 See Figure~\ref{subfig:recenum_example_plain} for a small example. The encoding procedure \IdxToSeq{} is given in Figure~\ref{fig:idx_to_seq}.
 
-We now consider the leakage that results from invoking MK-PrivateID on $X$;
-% let $(\leak_{\setT'}, \leakV) \sample \leak(\setT', \setV)$.
-% Recall that \LMKPM{} hides identifiers using an injective random function $f_C$.
-% Since \LMKPM{} preserves the order of the identifiers in records of $\setT'$,
-% the first $\ell$ identifiers of any $t^* \in \leak_{\setT'}$ therefore 
-% only contains two (hidden) identifiers $e$ and $e'$.
-% Moreover, we either have $e=f_C(\id_0)$ and $e'=f_C(\id_1)$ or $e=f_C(\id_1)$ and $e'=f_C(\id_0)$.
-% By determining which of the two cases applies, one can recover the index $i$ encoded in the prefix 
-% of $t^*$ and establish a mapping between the hidden identifiers of $t^*$ and the plain identifiers 
-% of its corresponding record $t_i \in \setT'$.
-% See procedure \SeqToIdx{} in \cref{fig:seq_to_idx} for details.
+We now analyze the leakage produced by invoking MK-PrivateID on the modified input $X$. Let $(\hXone,\hYone)$ denote the additional leakage revealed to the adversarial party $P_1$. Recall that $\calF_{\LMKPM}$ hides identifiers via an injective random function $f_X$ while preserving the order of identifiers within records of $X$. Consequently, for any $\hbx \in \hXone$, the first $\ell$ positions correspond exactly to the encoded prefix and therefore contain only two hidden identifiers, say $e$ and $e'$. Moreover, either $(e,e') = (f_X(\id_0), f_X(\id_1))$ or $(e,e') = (f_X(\id_1), f_X(\id_0))$.
+
+By distinguishing between these two cases, the adversary can recover the index $i$ encoded in the prefix of $\hbx$ and thereby establish a correspondence between the hidden identifiers in $\hXone$ and the plaintext identifiers in $X$. The decoding procedure is formalized by $\SeqToIdx$ in Figure~\ref{fig:seq_to_idx}.
+To determine whether a hidden identifier $e$ corresponds to $\id_0$ or $\id_1$, we assume that $n$ is not a power of two, i.e., $|T| < 2^\ell$. As such, no record is assigned index $2^\ell - 1$, and the corresponding encoding $(\id_1,\ldots,\id_1)$ never appears. This asymmetry serves as a tiebreaker: the encoding of index $0$, namely $(\id_0,\ldots,\id_0)$, must occur.
+
+In the leakage, this record is easily identified as the unique element of $\hXone$ whose first $\ell$ identifiers are all equal. Let $\hbx_0$ denote this record. It follows immediately that $\hbx_0[1] = f_X(\id_0)$, allowing the adversary to distinguish $f_X(\id_0)$ from $f_X(\id_1)$ and decode all remaining prefixes.
+
+The assumption that $n$ is not a power of two is without loss of generality.
+If $T$ is a power of two, the adversary can simply add or remove a single record from the target set.
+Altneratively, it can introduce a third, tie-breaking identifier $\id_2 \notin {\id_0,\id_1}$ and modify the encoding of the index $2^\ell-1$ by replacing its last symbol in $(\id_1,\ldots,\id_1)$ with $\id_2$. This modification guarantees a unique, identifiable prefix and removes the ambiguity between the encoding of $0$ and $2^n$. We adopt this tie-breaking approach in our presentation of the attack.
+
+An example of such leakage for the enumerated target set is shown in Figure~\ref{subfig:recenum_example_leakage}. The complete record enumeration attack is formalized in Figure~\ref{fig:rec_enum_attack}.
+
 
 \begin{figure*}
 	\pchspace
@@ -120,25 +122,27 @@ We now consider the leakage that results from invoking MK-PrivateID on $X$;
 	\begin{pcvstack}
 	\procedure[linenumbering]{$\recenumattack^{\calF_{\LMKPM}(\cdot, Y)}(T)$}{
     \rule{0pt}{2em}%
-		\text{Choose three distinct $\id_0, \id_1, \id_2\gets\calI$} \\
-		\text{Pick some ordering $T = (\bt_1, \dots, \bt_n)$} \\
-	     \ell \gets \lceil \log_2 n \rceil \\
-		\pcfor i = 0, \dots, n -1 \pcdo\\
-		\t	\bs \gets \IdxToSeq(i, \ell, \id_0, \id_1, \id_2) \\
-		\t	\bx_i \gets \bs \| \bt_i \label{lin:recenum_t_prime}\\
-        \t X \gets (\bx_0,\dots, \bx_{n-1}) \\
-		(\UID, \MC, (\hXone, \hYone)) \sample \calF_{\LMKPM}(X, Y) \label{lin:recenum_evaluation} \pcskipln\\
-		\cmmnt{Find value corresponding to $\id_0$.} \\
-		\text{Find $\bx^*_0 \in\hXone$ s.t. $\bx^*_0[1] = \dots = \bx_0^*[\ell]$} \label{lin:recenum_t0}\\
-		e_0 \gets t^*_0[1] \label{lin:recenum_e0} \label{lin:assign_e0} \pcskipln\\
-		\cmmnt{Construct substitution map $D$. }\\
-		\text{Initialize empty dictionary $D$.} \\
-		\pcfor \bx^* \in \hXone \pcdo \label{lin:recenum_D_start} \\
-		\t	i \gets \SeqToIdx(\bx^*, \ell, e_0) \\
-		\t	\pcfor j = 1, \dots, |\bx^*| \pcdo \\
-		\t	\t	D\left[\bx^*[j]\right] \gets \bx_i[j] \label{lin:recenum_D_end}\\
-		R_Y \gets \dictInfer(\hYone, D) \\
-		\pcreturn R_Y
+        \text{Choose three distinct identifiers } \id_0, \id_1, \id_2 \gets \calI \\
+        \text{Fix an ordering } T = (\bt_0,\ldots,\bt_{n-1}). \\
+        \ell \gets \lceil \log_2 n \rceil \\
+        \pcfor i = 0,\ldots,n-1 \pcdo \\
+             \t \bs \gets \IdxToSeq(i,\ell,\id_0,\id_1,\id_2) \\
+             \t \bx_i \gets \bs \| \bt_i \label{lin:recenum_extend}\\
+        X \gets (\bx_0,\ldots,\bx_{n-1}) \\
+        (\UID,\MC,(\hXone,\hYone)) \sample \calF_{\LMKPM}(X,Y)\label{lin:recenum_eval} \pcskipln\\
+        %%
+        \cmmnt{Identify the hidden encoding of $\id_0$.} \\
+        \text{Find } \hbx_0 \in \hXone \text{ s.t. } 
+        \hbx_0[0]=\cdots=\hbx_0[\ell-1] \label{lin:recenum_find0}\\
+        e_0 \gets \hbx_0[1] \label{lin:recenum_e0}        \pcskipln \\
+        \cmmnt{Construct substitution dictionary $\Dict$} \\
+        \text{Initialize empty dictionary $\Dict$.} \\
+        \pcfor \hbx \in \hXone \pcdo \label{lin:recenum_dict_start}\\
+            \t i \gets \SeqToIdx(\hbx,\ell,e_0) \\
+            \t \pcfor j = 0,\ldots,|\hbx|-1 \pcdo \\
+                \t\t \Dict[\hbx[j]] \gets \bx_i[j] \label{lin:recenum_dict_end}\\
+        R_Y \gets \dictInfer(\hYone, \Dict) \\
+        \pcreturn R_Y
 	}
 	\end{pcvstack}
 	\pchspace
@@ -147,52 +151,53 @@ We now consider the leakage that results from invoking MK-PrivateID on $X$;
     \rule{0pt}{2em}%
 		\pcif i = 2^\ell - 1 \pcthen \\
 		\t	\pcreturn (\id_1)^{\ell - 1} \| \id_2 \\
-		s \gets () \\
-		b \gets \binary{\ell}(i)\\
-		\pcfor j = 1,\dots, \ell \pcdo \label{lin:idx_to_seq_bin_encode_start}\\
+		\bs \gets () \\
+		b \gets \Bin_\ell(i)\\
+		\pcfor j = 0,\dots, \ell-1 \pcdo \label{lin:idx_to_seq_bin_encode_start}\\
 		\t	\pcif b_j = 0 \pcthen \\
-		\t	\t 	s \gets s \| \id_0 \\
+		\t	\t 	\bs \gets \bs \| \id_0 \\
 		\t	\pcelse \\
-		\t	\t	s \gets s \| \id_1 \label{lin:idx_to_seq_bin_encode_end} \\
-		\pcreturn s
+        \t  \t  \bs \gets \bs \| \id_1 \label{lin:idx_to_seq_bin_encode_end} \\
+		\pcreturn \bs
 	}
-	\procedure[linenumbering, lnstart=28]{$\SeqToIdx(\bx^*, \ell, e_0)$}{
+	\procedure[linenumbering, lnstart=28]{$\SeqToIdx(\hbx, \ell, e_0)$}{
     \rule{0pt}{2em}%
-		\pcif \forall j \in [\ell], \bx^*[j] \neq e_0 \pcthen \label{lin:seq_to_idx_tiebreak} \pcskipln\\
-		\t	\pclinecomment{Encoding is $(\id_1, \dots, \id_1, \id_2)$} \\
+		\pcif \text{for all } j \in [\ell],\ \hbx[j] \neq e_0 \pcthen \label{lin:seq_to_idx_tiebreak} \pcskipln\\
+		\t \cmmnt{Encoding is $(\id_1, \dots, \id_1, \id_2)$} \\
 		\t	\pcreturn 2^\ell - 1\\
 		i \gets 0 \\
-		\pcfor j = 1, \dots, \ell \pcdo \\
-		\t	\pcif s[j] \neq e_0 \pcthen \\
+		\pcfor j = 0, \dots, \ell -1 \pcdo \\
+		\t	\pcif \bs[j] \neq e_0 \pcthen \\
 		\t	\t	i \gets i + 2^{\ell - i} \\
 		\pcreturn i
 	}
 	\end{pcvstack}
+    \begin{pcvstack}
+    \procedure[linenumbering]{$\dictInfer(\hYone, \Dict)$}{
+    \rule{0pt}{2em}%
+		\text{Initialize $R\gets \emptyset$} \\
+		\pcfor \hby \in \hYone \pcdo \\
+		\t	\br \gets () \\
+		\t	\pcfor i = 0, \dots, |\hby|-1 \pcdo \\
+		\t	\t	\pcif \hby[i] \in \Dict \pcthen \label{lin:substitute_membership_check} \\
+		\t	\t	\t	\br \gets \br \| \Dict[\hby[i]] \label{lin:substitute_add_id} \\
+		\t	R \gets R \cup \{\br\} \label{lin:substitute_add_record}\\
+		\pcreturn R
+    }
+    \end{pcvstack}
 	\end{pchstack}
 	\caption{Record enumeration attack $\recenumattack$ with oracle access to the extended MK-PrivateID functionality $\calF_{LMKPM}(\cdot, Y)$. 
-	Note that $Y$ is part of the oracle and not known to the adversary. $\dictInfer$ is defined in Figure~\ref{fig:toy_attack}.}\label{fig:rec_enum_attack}\label{fig:idx_to_seq}\label{fig:seq_to_idx}
+	Note that $Y$ is part of the oracle and not known to the adversary.}\label{fig:rec_enum_attack}\label{fig:idx_to_seq}\label{fig:seq_to_idx}\label{fig:dict_infer}
 \end{figure*}
 
-% To decide whether $e$ corresponds to $\id_0$ or $\id_1$, assume that $n$ is not a power of two,
-% i.e., there are less than $2^\ell$ records in \setT{}.
-% Thus, no record will be assigned index $2^\ell -1$ and the corresponding encoding $(\id_1, \dots, \id_1)$
-% will not occur. This acts as a tiebreaker, since the encoding of index zero, $(\id_0, \dots, \id_0)$, clearly does occur.
-% We can identify the record containing said encoding in the leakage, as it is the only record in $\leak_{\setT'}$
-% whose first $\ell$ identifiers coincide. We call this record $t^*_0$ and clearly, we have $id_0 = f_C(t_0^*[1])$.
-% Continuing the aforementioned example, \cref{subfig:recenum_example_leakage} shows a possible protocol leakage with the previously enumerated set.
-% The full attack is displayed in \cref{fig:rec_enum_attack}.
 
-% The assumption that $n$ is not a power of two incurs no loss of generality.
-% Should this not be the case, the adversary can simply add or remove one record from the target set.
-% If this is not an option, the adversary can also
-% introduce a third, tie-breaking identifier $\id_2 \not\in\{\id_0, \id_1\}$ and replace the last identifier in the encoding 
-% $(\id_1, \dots, \id_1)$ with $\id_2$. 
-% This is the approach we take in our presentation of the attack.
 
-\begin{theorem}
-	Let $T$ be the adversary's target set and $Y$ be the victim's tables of records.
-$\recenumattack^{\calF_\LMKPM(\cdot, Y)}(T)$ (Figure~\ref{fig:rec_enum_attack}) produces a maximum reconstruction of $Y$ w.r.t. $T$ (Def.~\ref{def:max_recons}).
+\begin{theorem}\label{thm:recenumattack:correctness}
+	Let $T$ be the adversary's target set and $Y$ be the victim's input.
+    $\recenumattack^{\calF_\LMKPM(\cdot, Y)}(T)$ (Figure~\ref{fig:rec_enum_attack}) produces a maximum reconstruction of $Y$ with respect to $T$ (Def.~\ref{def:max_recons}).
 \end{theorem}
+
+The proof of Theorem~\ref{thm:recenumattack:correctness} can be found in Appendix~\ref{sec:recenumattack:correctness}.
 
 
 
