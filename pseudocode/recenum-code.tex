@@ -1,0 +1,69 @@
+\pchspace
+	\begin{pchstack}[boxed, center]
+	\begin{pcvstack}
+	\procedure[linenumbering]{$\recenumattack^{\calF_{\LMKPM}(\cdot, Y)}(T)$}{
+    \rule{0pt}{2em}%
+        \text{Choose three distinct identifiers } \id_0, \id_1, \id_2 \gets \calI \\
+        \text{Fix an ordering } T = (\bt_0,\ldots,\bt_{n-1}). \\
+        \ell \gets \lceil \log_2 n \rceil \\
+        \pcfor i = 0,\ldots,n-1 \pcdo \\
+             \t \bs \gets \IdxToSeq(i,\ell,\id_0,\id_1,\id_2) \\
+             \t \bx_i \gets \bs \| \bt_i \label{lin:recenum_extend}\\
+        X \gets (\bx_0,\ldots,\bx_{n-1}) \\
+        (\UID,\MC,(\hXone,\hYone)) \sample \calF_{\LMKPM}(X,Y)\label{lin:recenum_eval} \pcskipln\\
+        %%
+        \cmmnt{Identify the hidden encoding of $\id_0$.} \\
+        \text{Find } \hbx_0 \in \hXone \text{ s.t. } 
+        \hbx_0[0]=\cdots=\hbx_0[\ell-1] \label{lin:recenum_find0}\\
+        e_0 \gets \hbx_0[1] \label{lin:recenum_e0}        \pcskipln \\
+        \cmmnt{Construct substitution dictionary $\Dict$} \\
+        \text{Initialize empty dictionary $\Dict$.} \\
+        \pcfor \hbx \in \hXone \pcdo \label{lin:recenum_dict_start}\\
+            \t i \gets \SeqToIdx(\hbx,\ell,e_0) \\
+            \t \pcfor j = 0,\ldots,|\hbx|-1 \pcdo \\
+                \t\t \Dict[\hbx[j]] \gets \bx_i[j] \label{lin:recenum_dict_end}\\
+        R_Y \gets \dictInfer(\hYone, \Dict) \\
+        \pcreturn R_Y
+	}
+	\end{pcvstack}
+	\pchspace
+	\begin{pcvstack}
+	\procedure[linenumbering, lnstart=18]{$\IdxToSeq(i, \ell, \id_0, \id_1, \id_2)$}{
+    \rule{0pt}{2em}%
+		\pcif i = 2^\ell - 1 \pcthen \\
+		\t	\pcreturn (\id_1)^{\ell - 1} \| \id_2 \\
+		\bs \gets () \\
+		b \gets \Bin_\ell(i)\\
+		\pcfor j = 0,\dots, \ell-1 \pcdo \label{lin:idx_to_seq_bin_encode_start}\\
+		\t	\pcif b_j = 0 \pcthen \\
+		\t	\t 	\bs \gets \bs \| \id_0 \\
+		\t	\pcelse \\
+        \t  \t  \bs \gets \bs \| \id_1 \label{lin:idx_to_seq_bin_encode_end} \\
+		\pcreturn \bs
+	}
+	\procedure[linenumbering, lnstart=28]{$\SeqToIdx(\hbx, \ell, e_0)$}{
+    \rule{0pt}{2em}%
+		\pcif \text{for all } j \in [\ell],\ \hbx[j] \neq e_0 \pcthen \label{lin:seq_to_idx_tiebreak} \pcskipln\\
+		\t \cmmnt{Encoding is $(\id_1, \dots, \id_1, \id_2)$} \\
+		\t	\pcreturn 2^\ell - 1\\
+		i \gets 0 \\
+		\pcfor j = 0, \dots, \ell -1 \pcdo \\
+		\t	\pcif \bs[j] \neq e_0 \pcthen \\
+		\t	\t	i \gets i + 2^{\ell - i} \\
+		\pcreturn i
+	}
+	\end{pcvstack}
+    \begin{pcvstack}
+    \procedure[linenumbering]{$\dictInfer(\hYone, \Dict)$}{
+    \rule{0pt}{2em}%
+		\text{Initialize $R\gets \emptyset$} \\
+		\pcfor \hby \in \hYone \pcdo \\
+		\t	\br \gets () \\
+		\t	\pcfor i = 0, \dots, |\hby|-1 \pcdo \\
+		\t	\t	\pcif \hby[i] \in \Dict \pcthen \label{lin:substitute_membership_check} \\
+		\t	\t	\t	\br \gets \br \| \Dict[\hby[i]] \label{lin:substitute_add_id} \\
+		\t	R \gets R \cup \{\br\} \label{lin:substitute_add_record}\\
+		\pcreturn R
+    }
+    \end{pcvstack}
+	\end{pchstack}

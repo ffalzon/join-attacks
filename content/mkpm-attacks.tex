@@ -35,25 +35,11 @@ $\bigO{(n\lambda)^2 + \lambda m}$.
 The membership check can be reduced to constant time by maintaining an auxiliary set of already added identifiers, as set membership can be tested in constant time.
 The attack requires only one protocol invocation and therefore establishes a tight lower bound on the number of queries needed to achieve MR.
 
-
-\subsubsection{A First Optimization}
-This baseline attack relies on an atypical input structure is both unnatural and easily detectable in practice, namely a table containing a single, long record. This limitation motivates the more refined attacks presented next, which achieve similar reconstruction goals while avoiding conspicuous, adversarial input patterns.
-
-One can avoid using arbitrarily long records by exploiting the fact that record lengths are preserved in the protocol leakage.
-Specifically, the identifiers in the target set $T$ can be partitioned into multiple smaller records, each of a \emph{unique} length. Let $X'$ denote the resulting table of unique-length records and ${\hXone}'$ the corresponding leaked, hidden records.
-Because each record has a distinct length and the identifier order within records is preserved, the adversary can still establish a unique correspondence between the values in ${\hXone}'$ and the plaintext identifiers in $X'$. Consequently, any identifier shared between $Y$ and $X'$ can be inferred by identifying values common to $\hYone$ and ${\hXone}'$ and then mapping them back to their plaintext identifiers via $X'$.
-
-
-\heading{Time and query complexity.} This optimized attack also requires one protocol query and has a time complexity of \bigO{(n\lambda)^2 + \lambda m}.
-However, the maximum record length has decreased from $|\Ispace{T}|$ to $\frac{\sqrt{1+8|\Ispace{T}|}-1}{2} \approx \sqrt{2|\Ispace{T}|}$. While (arguably) less conspicuous than the single-record variant,  the victim can still detect such an attack by checking whether the adversary's input contains no two records with the same length. In our next two attacks, we thus remove this assumption.
-
-\subsection{Record Enumeration Attack}\label{sec:rec_enum_attack}
-
-In this subsection, we present a more general attack that applies even when all records in the target set have equal length.
-For clarity, we assume that every record in the target set $T$ contains exactly $\lambda$ identifiers for some $\lambda \in \NN$; however, the attack extends directly to target sets with records of varying lengths.
-
-We refer to this attack as the \emph{Record Enumeration Attack}. It relies only on two properties of the extended functionality $\calF_{\LMKPM}$: (i) the order of identifiers within each target record is preserved in the leakage, and (ii) identifiers are hidden deterministically, so that repeated occurrences of the same identifier yield the same hidden value within a single protocol execution.
-
+\begin{figure*}
+	\input{pseudocode/recenum-code.tex}
+	\caption{Record enumeration attack $\recenumattack$ with oracle access to the extended MK-PrivateID functionality $\calF_{LMKPM}(\cdot, Y)$. 
+	Note that $Y$ is part of the oracle and not known to the adversary.}\label{fig:rec_enum_attack}\label{fig:idx_to_seq}\label{fig:seq_to_idx}\label{fig:dict_infer}
+\end{figure*}
 
 \begin{figure}[t]
     \centering
@@ -91,6 +77,26 @@ We refer to this attack as the \emph{Record Enumeration Attack}. It relies only 
 \end{figure}
 
 
+\subsubsection{A First Optimization}
+This baseline attack relies on an atypical input structure is both unnatural and easily detectable in practice, namely a table containing a single, long record. This limitation motivates the more refined attacks presented next, which achieve similar reconstruction goals while avoiding conspicuous, adversarial input patterns.
+
+One can avoid using arbitrarily long records by exploiting the fact that record lengths are preserved in the protocol leakage.
+Specifically, the identifiers in the target set $T$ can be partitioned into multiple smaller records, each of a \emph{unique} length. Let $X'$ denote the resulting table of unique-length records and ${\hXone}'$ the corresponding leaked, hidden records.
+Because each record has a distinct length and the identifier order within records is preserved, the adversary can still establish a unique correspondence between the values in ${\hXone}'$ and the plaintext identifiers in $X'$. Consequently, any identifier shared between $Y$ and $X'$ can be inferred by identifying values common to $\hYone$ and ${\hXone}'$ and then mapping them back to their plaintext identifiers via $X'$.
+
+
+\heading{Time and query complexity.} This optimized attack also requires one protocol query and has a time complexity of \bigO{(n\lambda)^2 + \lambda m}.
+However, the maximum record length has decreased from $|\Ispace{T}|$ to $\frac{\sqrt{1+8|\Ispace{T}|}-1}{2} \approx \sqrt{2|\Ispace{T}|}$. While (arguably) less conspicuous than the single-record variant,  the victim can still detect such an attack by checking whether the adversary's input contains no two records with the same length. In our next two attacks, we thus remove this assumption.
+
+\subsection{Record Enumeration Attack}\label{sec:rec_enum_attack}
+
+In this subsection, we present a more general attack that applies even when all records in the target set have equal length.
+For clarity, we assume that every record in the target set $T$ contains exactly $\lambda$ identifiers for some $\lambda \in \NN$; however, the attack extends directly to target sets with records of varying lengths.
+
+We refer to this attack as the \emph{Record Enumeration Attack}. It relies only on two properties of the extended functionality $\calF_{\LMKPM}$: (i) the order of identifiers within each target record is preserved in the leakage, and (ii) identifiers are hidden deterministically, so that repeated occurrences of the same identifier yield the same hidden value within a single protocol execution.
+
+
+
 
 We leverage these properties by enumerating the records in the target set $T$ and prepending to each record an encoding of its index using known identifiers.
 If this enumeration can be recovered from the protocol leakage, we can construct a dictionary $\Dict$ from hidden to plaintext identifiers (see procedure $\dictInfer$ in \ref{fig:dict_infer}) and then use $\Dict$ to output a maximum reconstruction of the victim's input $Y$.
@@ -117,79 +123,6 @@ Altneratively, it can introduce a third, tie-breaking identifier $\id_2 \notin {
 An example of such leakage for the enumerated target set is shown in Figure~\ref{subfig:recenum_example_leakage}. The complete record enumeration attack is formalized in Figure~\ref{fig:rec_enum_attack}.
 
 
-\begin{figure*}
-	\pchspace
-	\begin{pchstack}[boxed, center]
-	\begin{pcvstack}
-	\procedure[linenumbering]{$\recenumattack^{\calF_{\LMKPM}(\cdot, Y)}(T)$}{
-    \rule{0pt}{2em}%
-        \text{Choose three distinct identifiers } \id_0, \id_1, \id_2 \gets \calI \\
-        \text{Fix an ordering } T = (\bt_0,\ldots,\bt_{n-1}). \\
-        \ell \gets \lceil \log_2 n \rceil \\
-        \pcfor i = 0,\ldots,n-1 \pcdo \\
-             \t \bs \gets \IdxToSeq(i,\ell,\id_0,\id_1,\id_2) \\
-             \t \bx_i \gets \bs \| \bt_i \label{lin:recenum_extend}\\
-        X \gets (\bx_0,\ldots,\bx_{n-1}) \\
-        (\UID,\MC,(\hXone,\hYone)) \sample \calF_{\LMKPM}(X,Y)\label{lin:recenum_eval} \pcskipln\\
-        %%
-        \cmmnt{Identify the hidden encoding of $\id_0$.} \\
-        \text{Find } \hbx_0 \in \hXone \text{ s.t. } 
-        \hbx_0[0]=\cdots=\hbx_0[\ell-1] \label{lin:recenum_find0}\\
-        e_0 \gets \hbx_0[1] \label{lin:recenum_e0}        \pcskipln \\
-        \cmmnt{Construct substitution dictionary $\Dict$} \\
-        \text{Initialize empty dictionary $\Dict$.} \\
-        \pcfor \hbx \in \hXone \pcdo \label{lin:recenum_dict_start}\\
-            \t i \gets \SeqToIdx(\hbx,\ell,e_0) \\
-            \t \pcfor j = 0,\ldots,|\hbx|-1 \pcdo \\
-                \t\t \Dict[\hbx[j]] \gets \bx_i[j] \label{lin:recenum_dict_end}\\
-        R_Y \gets \dictInfer(\hYone, \Dict) \\
-        \pcreturn R_Y
-	}
-	\end{pcvstack}
-	\pchspace
-	\begin{pcvstack}
-	\procedure[linenumbering, lnstart=18]{$\IdxToSeq(i, \ell, \id_0, \id_1, \id_2)$}{
-    \rule{0pt}{2em}%
-		\pcif i = 2^\ell - 1 \pcthen \\
-		\t	\pcreturn (\id_1)^{\ell - 1} \| \id_2 \\
-		\bs \gets () \\
-		b \gets \Bin_\ell(i)\\
-		\pcfor j = 0,\dots, \ell-1 \pcdo \label{lin:idx_to_seq_bin_encode_start}\\
-		\t	\pcif b_j = 0 \pcthen \\
-		\t	\t 	\bs \gets \bs \| \id_0 \\
-		\t	\pcelse \\
-        \t  \t  \bs \gets \bs \| \id_1 \label{lin:idx_to_seq_bin_encode_end} \\
-		\pcreturn \bs
-	}
-	\procedure[linenumbering, lnstart=28]{$\SeqToIdx(\hbx, \ell, e_0)$}{
-    \rule{0pt}{2em}%
-		\pcif \text{for all } j \in [\ell],\ \hbx[j] \neq e_0 \pcthen \label{lin:seq_to_idx_tiebreak} \pcskipln\\
-		\t \cmmnt{Encoding is $(\id_1, \dots, \id_1, \id_2)$} \\
-		\t	\pcreturn 2^\ell - 1\\
-		i \gets 0 \\
-		\pcfor j = 0, \dots, \ell -1 \pcdo \\
-		\t	\pcif \bs[j] \neq e_0 \pcthen \\
-		\t	\t	i \gets i + 2^{\ell - i} \\
-		\pcreturn i
-	}
-	\end{pcvstack}
-    \begin{pcvstack}
-    \procedure[linenumbering]{$\dictInfer(\hYone, \Dict)$}{
-    \rule{0pt}{2em}%
-		\text{Initialize $R\gets \emptyset$} \\
-		\pcfor \hby \in \hYone \pcdo \\
-		\t	\br \gets () \\
-		\t	\pcfor i = 0, \dots, |\hby|-1 \pcdo \\
-		\t	\t	\pcif \hby[i] \in \Dict \pcthen \label{lin:substitute_membership_check} \\
-		\t	\t	\t	\br \gets \br \| \Dict[\hby[i]] \label{lin:substitute_add_id} \\
-		\t	R \gets R \cup \{\br\} \label{lin:substitute_add_record}\\
-		\pcreturn R
-    }
-    \end{pcvstack}
-	\end{pchstack}
-	\caption{Record enumeration attack $\recenumattack$ with oracle access to the extended MK-PrivateID functionality $\calF_{LMKPM}(\cdot, Y)$. 
-	Note that $Y$ is part of the oracle and not known to the adversary.}\label{fig:rec_enum_attack}\label{fig:idx_to_seq}\label{fig:seq_to_idx}\label{fig:dict_infer}
-\end{figure*}
 
 
 
@@ -222,32 +155,31 @@ Overall, the attack runs in time \bigO{n (\log_2 n + \lambda) + \lambda m} and--
 
 
 \subsection{Snake Attack}\label{sec:snake_attack}
-% \begin{figure}
-% 	\centering
-% 	{\def\rowspace{.4cm}
-% 	\def\minwidthemail{2cm}
-% 	\def\minwidthphone{2.1cm}
-% 	\def\minwidthid{.6cm}
-% 	\def\linecorr{-.4pt}
-% 	\def\blockminheight{1.3em}
-% 	\definecolor{added-id}{HTML}{15b01a}
-% 	\begin{subfigure}[t][][c]{0.48\textwidth}
-% 		\centering
-% 		\input{chapters/figures/snake_encode1_example.tex}
-% 		\caption{}
-% 		\label{subfig:snake_example_unique}
-% 	\end{subfigure}
-% 	\begin{subfigure}[t][][c]{0.48\textwidth}
-% 		\centering
-% 		\input{chapters/figures/snake_encode2_example.tex}
-% 		\caption{}
-% 		\label{subfig:snake_example_general}
-% 	\end{subfigure}
-% 	}
-% 	\caption{Results of preprocessing a set of records \textbf{(\subref{subfig:snake_example_unique})} if there is a column that only contains unique identifiers 
-% 	and \textbf{(\subref{subfig:snake_example_general})} if an artificial unique column needs to be added.
-% 	The original records have black borders. Added identifiers are highlighted in green. Arrows indicate the (implicit) linked list.}\label{fig:snake_exmp}
-% \end{figure}
+\begin{figure}
+	\centering
+	{\def\rowspace{.4cm}
+	\def\minwidthemail{2cm}
+	\def\minwidthphone{2.1cm}
+	\def\minwidthid{.6cm}
+	\def\linecorr{-.4pt}
+	\def\blockminheight{1.3em}
+	\definecolor{added-id}{HTML}{15b01a}
+    \subfloat[\label{subfig:snake_example_unique}]{
+        \resizebox{0.85\columnwidth}{!}{%
+        \input{figures/snake_encode1_example.tex}
+        }
+    }
+    \quad
+	\subfloat[\label{subfig:snake_example_general}]{
+        \resizebox{0.85\columnwidth}{!}{%
+        \input{figures/snake_encode2_example.tex}
+        }
+    }
+	}
+	\caption{Results of preprocessing a set of records \textbf{(\ref{subfig:snake_example_unique})} if there is a column that only contains unique identifiers 
+	and \textbf{(\ref{subfig:snake_example_general})} if an artificial unique column needs to be added.
+	The original records have black borders. Added identifiers are highlighted in green. Arrows indicate the (implicit) linked list.}\label{fig:snake_exmp}
+\end{figure}
 
 
 While the record enumeration attack improves over the baseline in terms of detectability, it still produces records whose lengths grow with the input size, which is impractical for large datasets. We address this limitation by observing that it suffices to impose an order on the records without explicitly assigning a unique index to each one. This approach extends each record by only two identifiers, so every record in the modified input set $X$ is larger than its counterpart in $T$ by only a constant additive factor.
