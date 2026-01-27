@@ -80,6 +80,14 @@ The attack requires only one protocol invocation and therefore establishes a tig
 \subsubsection{A First Optimization}
 This baseline attack relies on an atypical input structure is both unnatural and easily detectable in practice, namely a table containing a single, long record. This limitation motivates the more refined attacks presented next, which achieve similar reconstruction goals while avoiding conspicuous, adversarial input patterns.
 
+\begin{figure*}[ht!]
+    \centering
+    \vspace{0pt}
+	\input{pseudocode/snake-code.tex}
+    \caption{Snake attack with oracle access to the extended MKPM functionality $\calF_{\LMKPM}(\cdot, Y)$. $Y$ is part of the oracle and unknown to the adversary.\label{fig:snakeattack}\label{fig:snakeencode1}\label{fig:snakedecode1}} 
+\end{figure*}
+
+
 One can avoid using arbitrarily long records by exploiting the fact that record lengths are preserved in the protocol leakage.
 Specifically, the identifiers in the target set $T$ can be partitioned into multiple smaller records, each of a \emph{unique} length. Let $X'$ denote the resulting table of unique-length records and ${\hXone}'$ the corresponding leaked, hidden records.
 Because each record has a distinct length and the identifier order within records is preserved, the adversary can still establish a unique correspondence between the values in ${\hXone}'$ and the plaintext identifiers in $X'$. Consequently, any identifier shared between $Y$ and $X'$ can be inferred by identifying values common to $\hYone$ and ${\hXone}'$ and then mapping them back to their plaintext identifiers via $X'$.
@@ -196,53 +204,7 @@ While the record enumeration attack improves over the baseline in terms of detec
 % The procedure outputs the modified target set $\setT'$ as a list $(t'_1, \dots, t'_n)$,
 % such that $t'_i$ is located at the $i$-th position in the (implicit) linked list.
 
-% \begin{figure*}
-% 	\centering
-% 	\Wider[2em]{
-% 	\begin{pchstack}[boxed, center]
-% 		\begin{pcvstack}
-% 			\procedure[linenumbering]{$\snakeencodeUnique(j^*, (t_1, \dots, t_n))$}{
-% 				\text{Initialize empty dictionary $E$.} \\
-% 				\pcfor i = 1, \dots, n - 1 \pcdo \\
-% 				\t	t'_i \gets t_i \ccat t_{i+1}[j^*] \\
-% 				\text{Pick some $\id \not \in \{t_i[j^*] \setdsc i \in [n]\}$}  \label{lin:snake_encode_last_id}\\
-% 				t'_n \gets t_n \ccat \id \\
-% 				\pcreturn (t'_1, \dots, t'_n)
-% 			}
-% 			% \procedure[linenumbering]{$\snakeencodeGeneral(\setT)$}{
-% 			% 	\text{Initialize empty dictionary $E$.} \\
-% 			% 	\text{Fix some ordering $\setT = \{t_1, \dots, t_n\}$.} \\
-% 			% 	\text{Pick $n+1$ distinct identifiers $\id_0, \dots \id_n \in \Ispace{}$.} \\
-% 			% 	\pcfor i = 1 \dots, n \pcdo \\
-% 			% 	\t	t'_i \gets \id_i \ccat t_i \ccat id_{i+1} \\
-% 			% 	\t	E[i] \gets t' \\
-% 			% 	\pcreturn (t'_1, \dots, t'_n)
-% 			% }
-% 		\end{pcvstack}
-% 		\pchspace
-% 		\begin{pcvstack}
-% 			\procedure[linenumbering]{$\snakerecoverUnique(\leak_{\setT'}, j^*)$}{
-% 				\text{Initialize empty dictionary $\loc$.}\\
-% 				\text{Fix some ordering $\leak_{\setT'} = (h_1, \dots, h_n)$.} \\
-% 				k' \gets |h_1| \pccomment{$= |h_2| = \dots = |h_n|$} \pcskipln\\
-% 				\pclinecomment{Store locations of linked identifiers}\\
-% 				\pcfor i = 1, \dots, n \pcdo \\
-% 				\t	\loc[h_i[j^*]] \gets i \pcskipln\\
-% 				\pclinecomment{Find start index $c$ of the linked list} \\
-% 				\text{Find $c \leq n$ s.t. $h_c[j^*]\not\in\{h_i[k'] \setdsc i \in [n]\}$} \label{lin:snake_recover_c} \pcskipln\\
-% 				\pclinecomment{Traverse linked list to recover original ordering}\\
-% 				i \gets 1 \\
-% 				\pcdo \label{lin:snake_recover_dowhile}\\
-% 				\t	t^*_i := h_{c} \label{lin:snake_recover_assign_t_star}\\
-% 				\t	c \gets \loc[h_c[k']] \label{lin:snake_recover_updt_c}\\
-% 				\t	i \gets i + 1\\
-% 				\pcwhile h_{c}[k'] \in \loc \label{lin:snake_recover_dowhile_end}\\
-% 				\pcreturn (t^*_1, \dots, t^*_n)
-% 			}
-% 		\end{pcvstack}
-% 	\end{pchstack}}
-% 	\caption{Procedures \snakeencodeUnique{} and \snakerecoverUnique{}.}\label{fig:snakeencode1}\label{fig:snakedecode1}
-% \end{figure*}
+
 
 % Since the identifier hiding function in \LMKPM{} (see \cref{fig:MKPM}) is injective and deterministic for repeating identifiers, 
 % this linkage is preserved in the protocol leakage $\leak_{\setT'}$, where $(\leak_{\setT'}, \leakV) = \leak(\setT', \setV)$.
@@ -256,32 +218,6 @@ While the record enumeration attack improves over the baseline in terms of detec
 % we can then apply the usual substitution-based transformation to infer a maximum reconstruction from \leakV{}.
 % The full attack is displayed in \cref{fig:snakeattack}.
 
-\begin{figure}
-	\centering
-	\begin{pcvstack}[boxed, center]
-		\procedure[linenumbering]{$\snakeattack^{\calF_{\LMKPM}(\cdot, Y)}(T)$}{
-        \rule{0pt}{2em}%
-			n \gets |T| \\
-            \text{Fix an ordering } T = (\bt_0,\ldots,\bt_{n-1}). \\
-			\pcif \text{there doesn't exist $j^*$ s.t. $|\{\bt_i[j^*] \setdsc \bt_i\in T\}| = n$} \pcthen \label{lin:distinctIDs_j*} \\
-			\t 	\text{Pick $n$ distinct identifiers $\id_1, \dots \id_n \in \Ispace{}$.} \\
-			\t 	\pcforeach i \in [0,n-1] \pcdo\\
-            \t \t \bt_i' \gets \id_i \| \bt_i  \\
-			\t	j^* \gets  1\\
-			X \gets \snakeencodeUnique(j^*, (\bt'_1, \dots, \bt'_n)) \label{lin:snake_encode}\\
-			(\UID, \MC, (\hXone, \hYone)) \sample \calF_{\LMKPM}(\{\bt_1', \dots, \bt_n'\}, Y) \label{lin:snake_evaluation}\\
-			% (\hbx_0, \dots, \hbx_{n-1}) \gets \snakerecoverUnique(\hXone, j^*) \label{lin:snake_decode}\pcskipln \\
-			% \cmmnt{Construct substitution map $\Dict$. }\\
-			% \text{Initialize empty dictionary $D$.} \\
-			% \pcfor i = 1, \dots, n \pcdo \label{lin:snake_D_start} \\
-			% \t	\pcfor j = 1, \dots |t| \pcdo \\
-			% \t	\t	D[t^*_i[j]] \gets t'_i[j] \label{lin:snake_D_end} \\
-			\recVT \gets \dictInfer(\hYone, \Dict) \\
-			\pcreturn \recVT
-		}
-		\end{pcvstack}
-		\caption{Snake attack with oracle access to the extended MKPM functionality $\calF_{\LMKPM}(\cdot, Y)$. $Y$ is part of the oracle and unknown to the adversary.} \label{fig:snakeattack}
-\end{figure}
 
 
 \begin{theorem}\label{thm:snakeattack:correctness}
@@ -291,10 +227,8 @@ While the record enumeration attack improves over the baseline in terms of detec
 
 The proof of Theorem~\ref{thm:snakeattack:correctness} can be found in Appendix~\ref{sec:snakeattack:correctness}.
 
-% \textbf{Time and Query Complexity.} 
-% Recall our assumptions that reading from, writing to, and checking for the presence of a key in a dictionary 
-% requires an average-case constant time complexity.
-% Then, \snakeencodeUnique{} has an asymptotic average-case time complexity of \bigO{n} for $n = |\setT|$,
+\heading{Time and query complexity.} 
+\snakeencodeUnique{} has an asymptotic average-case time complexity of \bigO{n} for $n = |T|$,
 % assuming \id{} in line \ref{lin:snake_encode_last_id} can be found in constant time\footnote{This is feasible with some additional assumptions on \setT. For instance, if \setT{} only contains email addresses, one may simply pick a single character for $\id$.}.
 % The same holds for \snakerecoverUnique{}.
 % In particular, $c$ in line~\ref{lin:snake_recover_c} can be found by inserting the last identifier of every record into a dictionary 
@@ -313,7 +247,7 @@ The proof of Theorem~\ref{thm:snakeattack:correctness} can be found in Appendix~
 
 \heading{Discussion and mitigation.}
 While requiring the same number of protocol invocations and incurring a comparable computational complexity to the other attacks, \snakeattack{} stands out for requiring only minimal modifications to the target set and is applicable to scenarios where the record length is constrained to a small constant.
-Meta's Private Computation Solution \cite{FBPCSRepo} serves as a concrete example, where records are limited to at most four identifiers. If the target set already meets the maximum allowed record length, the adversary can always rearrange the target set into shorter records and use the newly available space for the snake encoding.
+Meta's Private Computation Solution \cite{FBPCSRepo} serves as a concrete example, where records are limited to at most four identifiers. If the target set already meets the maximum allowed record length, the adversary can always rearrange the target set into shorter records and use the available space for the snake encoding.
 
 % Since records are only extended by a small constant, limiting record lengths to mitigate against attacks, 
 % as proposed previously, is ineffective.
