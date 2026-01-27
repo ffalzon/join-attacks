@@ -1,7 +1,6 @@
 \documentclass[sigconf,anonymous,review]{acmart}
 \usepackage{popets}
 
-
 \input{top-matter/header.tex}
 \input{top-matter/macros.tex}
 
@@ -21,13 +20,9 @@
 \acmConference{Proceedings on Privacy Enhancing Technologies}
 \settopmatter{printacmref=false,printccs=false,printfolios=true}
 
-
 \begin{document}
 
-
-
-\title{Analysis of Join Functionalities}
-
+\title{Analyzing Private Set Operations}
 
 %%%%%%%%%%%%%%%% Authors' Info %%%%%%%%%%%%%%%%%
 %%
@@ -44,13 +39,10 @@
 % \email{trovato@corporation.com}
 %\renewcommand{\shortauthors}{Trovato et al.}
 
-
 \input{content/abstract}
 
-
-\keywords{private set union, multi-key private matching, attacks,
-MPC}
-
+\keywords{private set union, private set intersection, multi-key private
+  matching, attacks, multi-party computation}
 
 \maketitle
 
@@ -65,12 +57,8 @@ MPC}
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{references,cryptobib/abbrev3,cryptobib/crypto}
 
-
-
 \appendix
 \input{content/ap-mkpc.tex}
 \input{content/ap-psu.tex}
-
-
 
 \end{document}
