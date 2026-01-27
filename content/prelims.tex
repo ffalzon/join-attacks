@@ -138,7 +138,8 @@ The adversary is given some target set $T$ and oracle access to $\calF(\cdot; Y)
 
 \subsubsection{Maximum Set Reconstruction}\label{sec:MR_goal}
 
-Recovering the full victim records that exactly match records in the target set is unlikely to yield satisfactory results. Instead, we relax our recovery goal to identifying which identifiers in the target set also occur in the victim set.
+Recovering the full victim records that exactly match records in the target set is unlikely to yield satisfactory results. Instead, we relax our recovery goal to identifying which identifiers in the target set also occur in the victim set. 
+\ff{satisfactory is not clear; make it clear that we cannot do better with respect to plaintext recovery}
 Specifically, the adversary aims to reconstruct all victim records that contain at least one identifier appearing in $T$. We refer to this goal as \emph{Maximum Set Reconstruction} (MSR). See Figure~\ref{fig:maximum-reconstruction-example} for an illustration.
 
 \begin{definition}[Maximum Set Reconstruction]\label{def:max_recons}
