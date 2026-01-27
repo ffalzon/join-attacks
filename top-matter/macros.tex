@@ -1,19 +1,26 @@
-\newcommand{\heading}[1]{\noindent\textbf{{#1}}\xspace}
+\newcommand{\heading}[1]{\vspace{1.5mm}\noindent\textbf{{#1}}\xspace}
+\newcommand\cmmnt[1]{\text{\noindent\textcolor{gray}{// #1}}}
 
 
 \newcommand{\calA}{\mathcal{A}}
 
-\newcommand{\hYone}{\widehat{Y}^{(1)}}
-\newcommand{\hXone}{\widehat{X}^{(1)}}
-\newcommand{\hXtwo}{\widehat{X}^{(2)}}
+\newcommand{\hYone}{\widehat{Y}_{1}}
+\newcommand{\hXone}{\widehat{X}_{1}}
+\newcommand{\hXtwo}{\widehat{X}_{2}}
 
 \newcommand{\MX}{{\mathsf{M}_X}}
 \newcommand{\MY}{{\mathsf{M}_Y}}
+\newcommand{\Dict}{\mathsf{D}}
 
+\newcommand{\bt}{\mathbf{t}}
 \newcommand{\bc}{\mathbf{c}}
 \newcommand{\bp}{\mathbf{p}}
 \newcommand{\bx}{\mathbf{x}}
+\newcommand{\br}{\mathbf{r}}
 \newcommand{\by}{\mathbf{y}}
+\newcommand{\bs}{\mathbf{s}}
+\newcommand{\hbx}{\hat{\mathbf{x}}}
+\newcommand{\hby}{\hat{\mathbf{y}}}
 
 
 %Functionalities
@@ -34,7 +41,16 @@
 \newcommand{\PSUattack}{{\mathsf{PSU\text{-}Diff}}}
 \newcommand{\PSUCAattack}{{\mathsf{PSU\text{-}CA\text{-}SearchTree}}}
 \newcommand{\PSICAattack}{{\mathsf{PSI\text{-}CA\text{-}SearchTree}}}
+\newcommand{\baselineattack}{\textsc{BaselineAttack}}
 \newcommand{\recenumattack}{\textsc{EnumAttack}}
+\newcommand{\SeqToIdx}{\textsc{DecodeIndex}}
+\newcommand{\IdxToSeq}{\textsc{EncodeIndex}}
+\newcommand{\recVT}{R_Y}
+\newcommand{\snakeattack}{\textsc{SnakeAttack}}
+\newcommand{\snakeencodeUnique}{\textsc{MakeSnake}}
+
+\newcommand{\Bin}{\textsc{Bin}}
+
 
 % Sets and Spaces
 \newcommand{\calF}{\ensuremath{\mathcal{F}}}
@@ -52,7 +68,6 @@
 \newcommand{\recP}[1]{\rec{\calP}{#1}}
 \newcommand{\recPC}{\recP{\calC}}
 \newcommand{\recV}[1]{\rec{\calV}{#1}}
-\newcommand{\recVT}{\recV{\calV}}
 \newcommand{\leak}{\ensuremath{\mathfrak{L}}}
 \newcommand{\leakC}{{\ensuremath{\mathfrak{L}_{\calC}}}}
 \newcommand{\leakP}{{\ensuremath{\mathfrak{L}_{\calP}}}}
@@ -71,5 +86,6 @@
 \newcommand{\UID}{\ensuremath{\mathsf{UID}}}
 \newcommand{\MC}{\ensuremath{M_C}}
 \newcommand{\MP}{\ensuremath{M_P}}
+\newcommand{\dictInfer}{\textsc{Substitute}}
 
 \newcommand{\setdsc}{\; | \;}

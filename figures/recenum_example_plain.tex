@@ -1,29 +1,29 @@
-\begin{tikzpicture}[
-    block/.style={draw,minimum width=#1, minimum height=\blockminheight,font={\tiny}},
-    block/.default=10em, high/.style={}, auto,
-    node distance=0, >=Stealth
-]
+\begin{tikzpicture}
+  [block/.style={draw,minimum width=#1, minimum height=\blockminheight,font={\small}},
+	block/.default=10em,high/.style={},auto,
+	node distance=0, 
+	>=Stealth]
 
 % Nodes
-\node[block=\minwidthid, draw=none ] (alice_idx) {$0:$};
+\node[block=\minwidthid, draw=none ] (alice_idx) {$\bx_0:$};
 \node[block=\minwidthid,fill=matched-light, right=\linecorr of alice_idx] (alice1) {$\id_0$};
 \node[block=\minwidthid,fill=matched-light, right=\linecorr of alice1] (alice2) {$\id_0$};
 \node[block=\minwidthemail,fill=trow-dark, right=\linecorr of alice2] (alice3) {alice@mail.com};
 \node[block=\minwidthphone,fill=trow-dark, right=\linecorr of alice3] (alice4) {+41 98 765 43 21};
 
-\node[block=\minwidthid, draw=none, below=\rowspace of alice_idx] (bob_idx) {$1:$};
+\node[block=\minwidthid, draw=none, below=\rowspace of alice_idx] (bob_idx) {$\bx_1:$};
 \node[block=\minwidthid,fill=trow-light, right=\linecorr of bob_idx] (bob1) {$\id_0$};
 \node[block=\minwidthid,fill=trow-light, right=\linecorr of bob1] (bob2) {$\id_1$};
 \node[block=\minwidthemail,fill=trow-light, right=\linecorr of bob2] (bob3) {bob@mail.com};
 \node[block=\minwidthphone,fill=trow-light, right=\linecorr of bob3] (bob4) {+41 12 345 67 89};
 
-\node[block=\minwidthid,below=\rowspace of bob_idx, draw=none ] (eve_idx) {$2:$};
+\node[block=\minwidthid,below=\rowspace of bob_idx, draw=none ] (eve_idx) {$\bx_2:$};
 \node[block=\minwidthid,fill=trow-dark, right=\linecorr of eve_idx] (eve1) {$\id_1$};
 \node[block=\minwidthid,fill=trow-dark, right=\linecorr of eve1] (eve2) {$\id_0$};
 \node[block=\minwidthemail,fill=trow-dark, right=\linecorr of eve2] (eve3) {eve@mail.com};
 \node[block=\minwidthphone,fill=trow-dark, right=\linecorr of eve3] (eve4) {+41 45 678 91 23};
 
-\node[block=\minwidthid,below=\rowspace of eve_idx, draw=none ] (gus_idx) {$3:$};
+\node[block=\minwidthid,below=\rowspace of eve_idx, draw=none ] (gus_idx) {$\bx_3:$};
 \node[block=\minwidthid,fill=trow-light, right=\linecorr of gus_idx] (gus1) {$\id_1$};
 \node[block=\minwidthid,fill=tiebreaker, right=\linecorr of gus1] (gus2) {$\id_2$};
 \node[block=\minwidthemail,fill=trow-light, right=\linecorr of gus2] (gus3) {gus@mail.com};

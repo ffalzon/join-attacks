@@ -24,44 +24,22 @@ Recall that the records in $X$ are hidden and shuffled, while the order of ident
 The baseline attack leverages the single record in $X$ to construct a dictionary that maps hidden identifiers appearing in the leakage back to their original plaintext identifiers. This is possible because the adversary knows the plaintext record and can align it with its hidden counterpart, $\hXone$.
 Applying this dictionary to the leaked, hidden records of the victim set, $\hYone$, allows the adversary to reconstruct all victim records that share at least one identifier with $T$. This results in a maximum set reconstruction of $Y$ with respect to $T$.
 
+For convenience, we refer to this attack as the \baselineattack{}.
 We omit a full proof of correctness, as the construction directly follows from the fact that all identifiers in the flattened target record are uniquely identifiable in a single invocation of $\calF_{\LMKPM}$.
 
 
-\heading{Time and query Complexity.}
+\heading{Time and query complexity.}
 Let $\lambda$ denote the maximum record length in $T$ and $Y$, and let $n := |T|$ and $m := |Y|$.
 The attack has an asymptotic time complexity of
 $\bigO{(n\lambda)^2 + \lambda m}$.
 The membership check can be reduced to constant time by maintaining an auxiliary set of already added identifiers, as set membership can be tested in constant time.
 The attack requires only one protocol invocation and therefore establishes a tight lower bound on the number of queries needed to achieve MR.
 
-\heading{A need for less conspicious attacks.} This baseline attack relies on an atypical input structure is both unnatural and easily detectable in practice, namely a table containing a single, long record. This limitation motivates the more refined attacks presented next, which achieve similar reconstruction goals while avoiding conspicuous, adversarial input patterns.
-
-\ff{edited until here}
-\subsection{A First Optimization}
-One can circumvent the need for arbitrarily long records by observing that the lengths of records are preserved in the protocol leakage.
-This insight allows splitting the single long record in $X$
-into multiple smaller records of unique lengths.
-Call this new set of records $X'$. 
-A record matching between $X'$ and the correspong $\leak_{T''}$ can then be inferred based on
-record lengths. 
-This optimized attack also requires only one protocol invocation and has a time complexity of \bigO{(n\lambda)^2 + \lambda m}.
-However, the maximum record length has decreased from $|\Ispace{T}|$ to $\frac{\sqrt{1+8|\Ispace{T}|}-1}{2} \approx \sqrt{2|\Ispace{T}|}$.
-
- While (arguably) less conspicuous to the naked eye,  the victim can still detect such an attack by checking whether the adversary's input contains no two records with the same length. In our next two attacks, we thus remove this assumption.
-
-\section{Record Enumeration Attack}\label{sec:rec_enum_attack}
-
-% In light of the aforementioned mitigation, we propose a more general attack,
-% whose inputs are records of equal lengths.
-% In particular, we make the assumption that all records in the target set $\setT$
-% contain $\lambda$ identifiers for some $\lambda\in\N$.
-% Crucially, the attack we present in this section is successful if this assumption is met, 
-% but does not rely on it. This sets it apart from the previous attack, 
-% which only succeeds if the record lengths are unique and preserved by the protocol leakage. 
-% Instead, our next attack only leverages the fact that \LMKPM{} preserves the order of identifiers in records of \setT{} and
-% hides identifiers deterministically, 
-% i.e. two occurrences of the same identifier result in the same hidden identifier in the same protocol run.
-
+\begin{figure*}
+	\input{pseudocode/recenum-code.tex}
+	\caption{Record enumeration attack $\recenumattack$ with oracle access to the extended MK-PrivateID functionality $\calF_{LMKPM}(\cdot, Y)$. 
+	Note that $Y$ is part of the oracle and not known to the adversary.}\label{fig:rec_enum_attack}\label{fig:idx_to_seq}\label{fig:seq_to_idx}\label{fig:dict_infer}
+\end{figure*}
 
 \begin{figure}[t]
     \centering
@@ -78,13 +56,13 @@ However, the maximum record length has decreased from $|\Ispace{T}|$ to $\frac{\
     \definecolor{highlight-blue}{HTML}{4A90E2} 
     % Subfigures
     \subfloat[Target set $T$ (boxed in blue) and input set $X$ (the entire table).\label{subfig:recenum_example_plain}]{
-        \resizebox{0.99\columnwidth}{!}{%
+        \resizebox{1\columnwidth}{!}{%
         \input{figures/recenum_example_plain.tex}
         }
     }
     \quad
     \subfloat[The hidden, shuffled leakage $\hXone$.\label{subfig:recenum_example_leakage}]{
-        \resizebox{0.52\columnwidth}{!}{%
+        \resizebox{0.48\columnwidth}{!}{%
         \input{figures/recenum_example_leakage.tex}
         }
     }
@@ -99,195 +77,70 @@ However, the maximum record length has decreased from $|\Ispace{T}|$ to $\frac{\
 \end{figure}
 
 
+\subsubsection{A First Optimization}
+This baseline attack relies on an atypical input structure is both unnatural and easily detectable in practice, namely a table containing a single, long record. This limitation motivates the more refined attacks presented next, which achieve similar reconstruction goals while avoiding conspicuous, adversarial input patterns.
+
+One can avoid using arbitrarily long records by exploiting the fact that record lengths are preserved in the protocol leakage.
+Specifically, the identifiers in the target set $T$ can be partitioned into multiple smaller records, each of a \emph{unique} length. Let $X'$ denote the resulting table of unique-length records and ${\hXone}'$ the corresponding leaked, hidden records.
+Because each record has a distinct length and the identifier order within records is preserved, the adversary can still establish a unique correspondence between the values in ${\hXone}'$ and the plaintext identifiers in $X'$. Consequently, any identifier shared between $Y$ and $X'$ can be inferred by identifying values common to $\hYone$ and ${\hXone}'$ and then mapping them back to their plaintext identifiers via $X'$.
+
+
+\heading{Time and query complexity.} This optimized attack also requires one protocol query and has a time complexity of \bigO{(n\lambda)^2 + \lambda m}.
+However, the maximum record length has decreased from $|\Ispace{T}|$ to $\frac{\sqrt{1+8|\Ispace{T}|}-1}{2} \approx \sqrt{2|\Ispace{T}|}$. While (arguably) less conspicuous than the single-record variant,  the victim can still detect such an attack by checking whether the adversary's input contains no two records with the same length. In our next two attacks, we thus remove this assumption.
+
+\subsection{Record Enumeration Attack}\label{sec:rec_enum_attack}
+
+In this subsection, we present a more general attack that applies even when all records in the target set have equal length.
+For clarity, we assume that every record in the target set $T$ contains exactly $\lambda$ identifiers for some $\lambda \in \NN$; however, the attack extends directly to target sets with records of varying lengths.
+
+We refer to this attack as the \emph{Record Enumeration Attack}. It relies only on two properties of the extended functionality $\calF_{\LMKPM}$: (i) the order of identifiers within each target record is preserved in the leakage, and (ii) identifiers are hidden deterministically, so that repeated occurrences of the same identifier yield the same hidden value within a single protocol execution.
 
 
 
-% % ---- Connections ----
-% \draw[->, line width=1pt, draw=match-red] (c1_phone.east) -- (p1_email.west);
-% %\draw[->, line width=1pt, draw=match-red] (c1_email.east) -- (p1_email.west);
 
-% \draw[->, line width=1pt, draw=match-green] (c2_email.east) -- (p3_email.west);
-% \draw[->, line width=1pt, draw=match-green] (c2_phone.east) -- (p2_phone.west);
+We leverage these properties by enumerating the records in the target set $T$ and prepending to each record an encoding of its index using known identifiers.
+If this enumeration can be recovered from the protocol leakage, we can construct a dictionary $\Dict$ from hidden to plaintext identifiers (see procedure $\dictInfer$ in \ref{fig:dict_infer}) and then use $\Dict$ to output a maximum reconstruction of the victim's input $Y$.
 
+Concretely, let $\id_0$ and $\id_1$ be two distinct identifiers (whether they already occur in the target or victim sets does not matter).
+Fix an ordering $(\bt_0,\ldots,\bt_{n-1})$ of the records in $T$, where $\bt_i$ denotes the $i$-th record.
+Each index $i \in [0,n-1]$ is encoded as a binary string of length $\ell := \lceil \log_2 n\rceil$ 
+where bits $0$ and $1$ are represented by $\id_0$ and $\id_1$, respectively.
+This ``binary'' encoding is prepended to $\bt_i$, and we denote by $X$ the resulting set of extended records.
 
+See Figure~\ref{subfig:recenum_example_plain} for a small example. The encoding procedure \IdxToSeq{} is given in Figure~\ref{fig:idx_to_seq}.
 
-% We leverage these properties by enumerating the records in the target set \setT{} and
-% prepending an encoding of their respective index as a sequence of known identifiers.
-% If this enumeration can be recovered in the protocol leakage, 
-% we can establish a mapping from hidden to plaintext identifiers and, 
-% thus, use \dictInfer{} (see \cref{fig:dict_infer}) to infer a maximum reconstruction of the victim set \setV{}.
+We now analyze the leakage produced by invoking MK-PrivateID on the modified input $X$. Let $(\hXone,\hYone)$ denote the additional leakage revealed to the adversarial party $P_1$. Recall that $\calF_{\LMKPM}$ hides identifiers via an injective random function $f_X$ while preserving the order of identifiers within records of $X$. Consequently, for any $\hbx \in \hXone$, the first $\ell$ positions correspond exactly to the encoded prefix and therefore contain only two hidden identifiers, say $e$ and $e'$. Moreover, either $(e,e') = (f_X(\id_0), f_X(\id_1))$ or $(e,e') = (f_X(\id_1), f_X(\id_0))$.
 
-% Concretely, let $\id_0$ and $\id_1$ be two arbitrary but distinct identifiers.
-% Whether they already occur in the target or victim sets does not matter.
-% We pick some order $(t_0, \dots, t_{n-1})$ among the records of \setT{}.
-% Some index $i\in \{0, \dots, n-1\}$ can be encoded as a sequence of $\id_0$ and $\id_1$
-% by taking the binary representation of $i$ and replacing all zeros with $\id_0$ and all ones with $\id_1$ respectively.
-% This sequence has length $\ell := \lceil \log_2 n\rceil$ for $n = |\setT|$ and 
-% is prepended to the record $t_i$. We denote the set of these extended records by $\setT'$. 
-% See \cref{subfig:recenum_example_plain} for a small example.
-% The encoding procedure \IdxToSeq{} is depicted in \cref{fig:idx_to_seq}.
+By distinguishing between these two cases, the adversary can recover the index $i$ encoded in the prefix of $\hbx$ and thereby establish a correspondence between the hidden identifiers in $\hXone$ and the plaintext identifiers in $X$. The decoding procedure is formalized by $\SeqToIdx$ in Figure~\ref{fig:seq_to_idx}.
+To determine whether a hidden identifier $e$ corresponds to $\id_0$ or $\id_1$, we assume that $n$ is not a power of two, i.e., $|T| < 2^\ell$. As such, no record is assigned index $2^\ell - 1$, and the corresponding encoding $(\id_1,\ldots,\id_1)$ never appears. This asymmetry serves as a tiebreaker: the encoding of index $0$, namely $(\id_0,\ldots,\id_0)$, must occur.
 
-% We now consider the leakage that results from invoking MK-PrivateID on $\setT'$;
-% let $(\leak_{\setT'}, \leakV) \sample \leak(\setT', \setV)$.
-% Recall that \LMKPM{} hides identifiers using an injective random function $f_C$.
-% Since \LMKPM{} preserves the order of the identifiers in records of $\setT'$,
-% the first $\ell$ identifiers of any $t^* \in \leak_{\setT'}$ therefore 
-% only contains two (hidden) identifiers $e$ and $e'$.
-% Moreover, we either have $e=f_C(\id_0)$ and $e'=f_C(\id_1)$ or $e=f_C(\id_1)$ and $e'=f_C(\id_0)$.
-% By determining which of the two cases applies, one can recover the index $i$ encoded in the prefix 
-% of $t^*$ and establish a mapping between the hidden identifiers of $t^*$ and the plain identifiers 
-% of its corresponding record $t_i \in \setT'$.
-% See procedure \SeqToIdx{} in \cref{fig:seq_to_idx} for details.
+In the leakage, this record is easily identified as the unique element of $\hXone$ whose first $\ell$ identifiers are all equal. Let $\hbx_0$ denote this record. It follows immediately that $\hbx_0[1] = f_X(\id_0)$, allowing the adversary to distinguish $f_X(\id_0)$ from $f_X(\id_1)$ and decode all remaining prefixes.
 
-% \begin{figure}
-% 	\pchspace
-% 	\begin{pchstack}[boxed, center]
-% 	\begin{pcvstack}
-% 	\procedure[linenumbering]{$\recenumattack^{\LMKPM(\cdot, \setV)}(\setT)$}{
-% 		\text{Pick three distinct identifiers $\id_0, \id_1, \id_2$.} \\
-% 		\text{Pick some ordering $\setT = (t_1, \dots, t_n)$.} \\
-% 		\ell \gets \lceil \log_2 n \rceil \\
-% 		\pcfor i = 1, \dots, n \pcdo\\
-% 		\t	s \gets \IdxToSeq(i, \ell, \id_0, \id_1, \id_2) \\
-% 		\t	t'_i \gets s \ccat t_i \label{lin:recenum_t_prime}\\
-% 		(\UID, \MC, (\leak_{\setT'}, \leakV)) \sample \LMKPM(\{t'_1, \dots, t'_n\}, \setV) \label{lin:recenum_evaluation} \pcskipln\\
-% 		\pclinecomment{Find $f_C(\id_0)$} \\
-% 		\text{Find $t^*_0 \in \leak_{\setT'}$ s.t. $t^*_0[1] = \dots = t^*[\ell]$} \label{lin:recenum_t0}\\
-% 		e_0 \gets t^*_0[1] \label{lin:recenum_e0} \label{lin:assign_e0} \pcskipln\\
-% 		\pclinecomment{Construct substitution map $D$. }\\
-% 		\text{Initialize empty dictionary $D$.} \\
-% 		\pcfor t^* \in \leak_{\setT'} \pcdo \label{lin:recenum_D_start} \\
-% 		\t	i \gets \SeqToIdx(t^*, \ell, e_0) \\
-% 		\t	\pcfor j = 1, \dots, |t^*| \pcdo \\
-% 		\t	\t	D\left[t^*[j]\right] \gets t'_i[j] \label{lin:recenum_D_end}\\
-% 		\recVT \gets \dictInfer(\leakV, D) \\
-% 		\pcreturn \recVT
-% 	}
-% 	\end{pcvstack}
-% 	\pchspace
-% 	\begin{pcvstack}
-% 	\procedure[linenumbering, lnstart=18]{$\IdxToSeq(i, \ell, \id_0, \id_1, \id_2)$}{
-% 		\pcif i = 2^\ell - 1 \pcthen \\
-% 		\t	\pcreturn (\id_1)^{\ell - 1} \ccat \id_2 \\
-% 		s \gets () \\
-% 		b \gets \binary{\ell}(i)\\
-% 		\pcfor j = 1,\dots, \ell \pcdo \label{lin:idx_to_seq_bin_encode_start}\\
-% 		\t	\pcif b_j = 0 \pcthen \\
-% 		\t	\t 	s \gets s \ccat \id_0 \\
-% 		\t	\pcelse \\
-% 		\t	\t	s \gets s \ccat \id_1 \label{lin:idx_to_seq_bin_encode_end} \\
-% 		\pcreturn s
-% 	}
-% 	\procedure[linenumbering, lnstart=28]{$\SeqToIdx(t^*, \ell, e_0)$}{
-% 		\pcif \forall j \in [\ell] : t^*[j] \neq e_0 \pcthen \label{lin:seq_to_idx_tiebreak} \pcskipln\\
-% 		\t	\pclinecomment{Encoding is $(\id_1, \dots, \id_1, \id_2)$} \\
-% 		\t	\pcreturn 2^\ell - 1\\
-% 		i \gets 0 \\
-% 		\pcfor j = 1, \dots, \ell \pcdo \\
-% 		\t	\pcif s[j] \neq e_0 \pcthen \\
-% 		\t	\t	i \gets i + 2^{\ell - i} \\
-% 		\pcreturn i
-% 	}
-% 	\end{pcvstack}
-% 	\end{pchstack}
-% 	\caption{Record enumeration attack \recenumattack{} with oracle access to the extended MK-PrivateID functionality $\LMKPM(\cdot, \setV)$. 
-% 	Note that \setV{} is part of the oracle and not known to the adversary.
+The assumption that $n$ is not a power of two is without loss of generality.
+If $T$ is a power of two, the adversary can simply add or remove a single record from the target set.
+Altneratively, it can introduce a third, tie-breaking identifier $\id_2 \notin {\id_0,\id_1}$ and modify the encoding of the index $2^\ell-1$ by replacing its last symbol in $(\id_1,\ldots,\id_1)$ with $\id_2$. This modification guarantees a unique, identifiable prefix and removes the ambiguity between the encoding of $0$ and $2^n$. We adopt this tie-breaking approach in our presentation of the attack.
 
-% 	\dictInfer{} is defined in \cref{fig:toy_attack}.}\label{fig:rec_enum_attack}\label{fig:idx_to_seq}\label{fig:seq_to_idx}
-% \end{figure}
-
-% To decide whether $e$ corresponds to $\id_0$ or $\id_1$, assume that $n$ is not a power of two,
-% i.e., there are less than $2^\ell$ records in \setT{}.
-% Thus, no record will be assigned index $2^\ell -1$ and the corresponding encoding $(\id_1, \dots, \id_1)$
-% will not occur. This acts as a tiebreaker, since the encoding of index zero, $(\id_0, \dots, \id_0)$, clearly does occur.
-% We can identify the record containing said encoding in the leakage, as it is the only record in $\leak_{\setT'}$
-% whose first $\ell$ identifiers coincide. We call this record $t^*_0$ and clearly, we have $id_0 = f_C(t_0^*[1])$.
-% Continuing the aforementioned example, \cref{subfig:recenum_example_leakage} shows a possible protocol leakage with the previously enumerated set.
-% The full attack is displayed in \cref{fig:rec_enum_attack}.
-
-% The assumption that $n$ is not a power of two incurs no loss of generality.
-% Should this not be the case, the adversary can simply add or remove one record from the target set.
-% If this is not an option, the adversary can also
-% introduce a third, tie-breaking identifier $\id_2 \not\in\{\id_0, \id_1\}$ and replace the last identifier in the encoding 
-% $(\id_1, \dots, \id_1)$ with $\id_2$. 
-% This is the approach we take in our presentation of the attack.
-
-% \begin{theorem}
-% 	Let \setT{} and \setV{} be two sets of records.
-% 	$\recenumattack^{\LMKPM(\cdot, \setV)}(\setT)$ (\cref{fig:rec_enum_attack}) produces a maximum reconstruction of \setV{} w.r.t. \setT{} (\cref{def:max_recons}).
-% \end{theorem}
-
-% \begin{proof}
-% In order to prove the theorem we prove the following proposition. 
-% The theorem follows directly from Proposition~\ref{thm:recenum_D} and \cref{lem:dictinfer_MR}.
-% \begin{proposition}\label{thm:recenum_D}
-% 	Let \setT{} and \setV{} be two sets of records and let
-% 	$D$ be the dictionary constructed during an execution of $\recenumattack^{\LMKPM(\cdot, \setV)}(\setT)$ (\cref{fig:rec_enum_attack}).
-% 	Moreover, let $f_C$ be the identifier hiding function sampled during the evaluation of \LMKPM{} in line~\ref{lin:recenum_evaluation} in \cref{fig:rec_enum_attack}. 
-% 	We have $D[f_C(\id)] = \id$ for all $\id \in \Ispace{\setT}.$
-% \end{proposition}
-% \begin{proof} \textbf{of Proposition~\ref{thm:recenum_D}} 
-% 	Let $\setT' = \{t'_0, \dots, t'_{n-1}\}$, where $t'_i$ denotes the altered target record constructed in 
-% 	line~\ref{lin:recenum_t_prime} for $i \in \{0, \dots, n - 1\}$.
-% 	We show that $D[f_C(\id)] = \id$ for all $\id \in \setT'$.
-% 	Since $\Ispace{\setT} \subseteq \Ispace{\setT'}$, this implies the claim.
-	
-% 	We first show that $e_0 = f_C(\id_0)$ for the value $e_0$ defined on line~\ref{lin:assign_e0}.
-% 	Note that the transformation of an index's binary representation to a sequence of $\id_0$ and $\id_1$
-% 	in lines \ref{lin:idx_to_seq_bin_encode_start}~-~\ref{lin:idx_to_seq_bin_encode_end} of \IdxToSeq{}
-% 	could produce two encodings that only contain one identifier, namely, $(\id_0)^\ell$ and $(\id_1)^\ell$
-% 	for $i = 0$ and $i = 2^\ell - 1$ respectively.
-% 	However, the latter is prevented by the condition on line~\ref{lin:seq_to_idx_tiebreak} and therefore
-% 	\IdxToSeq{} only outputs one sequence where all identifiers are equal.
-% 	Hence, there is only one record in $\setT'$ whose first $\ell$ identifiers all coincide,
-% 	namely, $t'_0$ with encoding $(\id_0)^\ell$.
-% 	Since $f_C$ is injective and the identifiers in records of $\setT'$ are not shuffled, 
-% 	the latter also holds for $\leak_{\setT'}$.
-% 	Therefore, $t^*_0 = (f_C(t'_0[1]), \dots, f_C(t'_0[\lambda + \ell]))$ (line~\ref{lin:recenum_t0}).
-% 	Since $t'_0[1] = \id_0$, we have $e_0 = t^*_0[1] = f_C(t'_0[1]) = f_C(\id_0)$ (see line~\ref{lin:recenum_e0}).
-	
-% 	We now show that the attack correctly recovers indices from $\leak_{\setT'}$. 
-% 	We have already established that $t^*_0$ is correctly matched with $t'_0$,
-% 	as it's encoding is the only one containing only $\id_0$. 
-% 	Any other encoding $s$ produced by \IdxToSeq{}
-% 	either (a) is $(\id_1)^{\ell - 1} \ccat \id_2$ or (b) only
-% 	contains the identifiers $\id_0$ and $\id_1$.
-% 	\begin{description}
-% 	\item[Case (a):] This case is only produced on input $i = 2^\ell - 1$ and the resulting vector of hidden identifiers in the 	
-% 		 leakage is $(f_C(\id_1))^{\ell - 1} \ccat f_C(\id_2)$. 
-% 		 This satisfies the condition on line~\ref{lin:seq_to_idx_tiebreak} of \SeqToIdx{}, 
-% 		 which therefore yields the correct index $2^\ell - 1$.
-% 	\item[Case (b):] In this case, the vector of hidden identifiers corresponding to $s$ in the leakage, which we denote
-% 		$s^*:=(f_C(s[1]),\allowbreak\dots,f_C(s[\ell]))$, does not satisfy the condition on line~\ref{lin:seq_to_idx_tiebreak}, 
-% 		since the only encoding that would do so is $(\id_1)^{\ell}$. 
-% 		But this is never output by \IdxToSeq{}. 
-% 		Therefore, $s^*$ is interpreted as a binary encoding, where every occurrence of $e_0$ 
-% 		is interpreted as $0$ and every other identifier as $1$.
-% 		The correctness of this recovery therefore follows from the fact that $e_0 = f_C(\id_0)$,
-% 		which we established above.
-% 	\end{description}
-	
-% 	By the definition of \LMKPM{}, we have $t^*_i = (f_C(t'_i[1]), \dots, f_C(t'_i[\lambda+\ell]))$ for all $i \in \{0, \dots, n-1\}$.
-% 	Since $\Ispace{\setT'} := \bigcup_{\substack{l}{t\in\setT'\\\id \in t}} \id$, 
-% 	the claim holds by the construction of $D$ in lines~\ref{lin:recenum_D_start}~-~\ref{lin:recenum_D_end}.
-% \end{proof}
-	
-% % \begin{proof}
-% 	The theorem follows directly from \cref{thm:recenum_D} and \cref{lem:dictinfer_MR}.
-% \end{proof}
+An example of such leakage for the enumerated target set is shown in Figure~\ref{subfig:recenum_example_leakage}. The complete record enumeration attack is formalized in Figure~\ref{fig:rec_enum_attack}.
 
 
-% \textbf{Time and Query Complexity.}
-% Assuming $\binary{\ell}(i)$ can be determined in time $\bigO{\ell}=\bigO{\log n}$, 
-% \IdxToSeq{} requires time $\bigO{\ell}$.
-% The same holds for \SeqToIdx{}.
-% Encoding the target set therefore requires time \bigO{n\log_2 n}.
-% Finding $t^*_0$ requires iterating over $\leak_{\setT'}$ and inspecting the first $\ell$ identifiers of each record,
-% incurring an effort of \bigO{n\log_2 n} as well.
-% The construction of $D$ requires \bigO{n (\log_2 n + \lambda)} time
-% and \dictInfer{} \bigO{\lambda m}, as previously established.
-% This results in an overall time complexity of \bigO{n (\log_2 n + \lambda) + \lambda m}.
-% Like the baseline attack, \recenumattack{} requires only a single protocol invocation.
+
+
+
+\begin{theorem}\label{thm:recenumattack:correctness}
+	Let $T$ be the adversary's target set and $Y$ be the victim's input.
+    $\recenumattack^{\calF_\LMKPM(\cdot, Y)}(T)$ (Figure~\ref{fig:rec_enum_attack}) produces a maximum reconstruction of $Y$ with respect to $T$ (Def.~\ref{def:max_recons}).
+\end{theorem}
+
+The proof of Theorem~\ref{thm:recenumattack:correctness} can be found in Appendix~\ref{sec:recenumattack:correctness}.
+
+
+
+
+\heading{Time and query complexity.}
+Assuming that $\Bin_\ell(i)$ can be computed in time $\bigO{\ell} = \bigO{\log n}$, both $\IdxToSeq$ and $\SeqToIdx$ run in time $\bigO{\ell}$. Encoding the target set therefore takes time $\bigO{n \log n}$.
+Identifying $\hbx_0$ requires scanning $\hXone$ and checking the first $\ell$ identifiers of each record, which also incurs time $\bigO{n \log n}$. Constructing the dictionary $\Dict$ takes time $\bigO{n(\log n + \lambda)}$, while applying $\dictInfer$ to the victim leakage requires time $\bigO{\lambda m}$, as established earlier.
+
+Overall, the attack runs in time \bigO{n (\log_2 n + \lambda) + \lambda m} and---like \baselineattack{}---\recenumattack{} requires only a single query.
 
 % \textbf{Discussion.}
 % Compared to the baseline attack, the records are now much shorter and are of uniform length.
@@ -299,60 +152,37 @@ However, the maximum record length has decreased from $|\Ispace{T}|$ to $\frac{\
 % At the same time, \recenumattack{} makes considerably weaker assumptions on the set of admissible inputs, thus,
 % resulting in a clear improvement.
 
-% The mitigation of the record enumeration attack is clearly more 
-% involved than with the baseline attack,
-% since MK-PrivateID heavily relies on the preservation of the identifier order 
-% and the deterministic hiding of identifiers
-% in order to compute its multi-key matching logic (see \cref{fig:match_logic}).
-% A simple approach is to limit record lengths to smaller than $\lceil \log_2 n\rceil$,
-% in order to prohibit an exhaustive enumeration of all records.
-% However, there are more space-efficient encodings that require fewer identifiers to be added. 
-% For instance, using a base-$(\ell + 1)$ encoding and omitting certain indices
-% allows us to encode and recover $(\ell + 1)^\ell - \ell^2$ records with prefixes of length $\ell$.
-% It is therefore unclear, what the maximum allowed record length should be.
 
-% Other mitigation strategies that inspect the input directly
-% such as limiting the maximum number occurrences per identifier are effective, 
-% but burden the victim with additional computation.
-% Moreover, they too become complex when trying to guard against various different encodings.
-% Limiting the number of occurrences of any identifier specifically 
-% comes at the additional risk of accidentally prohibiting honest protocol executions, 
-% since certain types of identifiers may naturally occur often.
-% IP addresses behind a Network Address Translation (NAT) device serve as an immediate example.
 
-\section{Snake Attack}\label{sec:snake_attack}
-% \begin{figure}
-% 	\centering
-% 	{\def\rowspace{.4cm}
-% 	\def\minwidthemail{2cm}
-% 	\def\minwidthphone{2.1cm}
-% 	\def\minwidthid{.6cm}
-% 	\def\linecorr{-.4pt}
-% 	\def\blockminheight{1.3em}
-% 	\definecolor{added-id}{HTML}{15b01a}
-% 	\begin{subfigure}[t][][c]{0.48\textwidth}
-% 		\centering
-% 		\input{chapters/figures/snake_encode1_example.tex}
-% 		\caption{}
-% 		\label{subfig:snake_example_unique}
-% 	\end{subfigure}
-% 	\begin{subfigure}[t][][c]{0.48\textwidth}
-% 		\centering
-% 		\input{chapters/figures/snake_encode2_example.tex}
-% 		\caption{}
-% 		\label{subfig:snake_example_general}
-% 	\end{subfigure}
-% 	}
-% 	\caption{Results of preprocessing a set of records \textbf{(\subref{subfig:snake_example_unique})} if there is a column that only contains unique identifiers 
-% 	and \textbf{(\subref{subfig:snake_example_general})} if an artificial unique column needs to be added.
-% 	The original records have black borders. Added identifiers are highlighted in green. Arrows indicate the (implicit) linked list.}\label{fig:snake_exmp}
-% \end{figure}
-% While the record enumeration attack marks a significant improvement over the baseline attack in terms of detectability,
-% the lengths of the modified records still depend on the input size.
-% This is impractical, especially in scenarios with large inputs.
-% In this section, we overcome this limitation with the observation that
-% an order can be imposed on a set of records without explicitly assigning 
-% a unique index to each record.
+\subsection{Snake Attack}\label{sec:snake_attack}
+\begin{figure}
+	\centering
+	{\def\rowspace{.4cm}
+	\def\minwidthemail{2cm}
+	\def\minwidthphone{2.1cm}
+	\def\minwidthid{.6cm}
+	\def\linecorr{-.4pt}
+	\def\blockminheight{1.3em}
+	\definecolor{added-id}{HTML}{15b01a}
+    \subfloat[\label{subfig:snake_example_unique}]{
+        \resizebox{0.85\columnwidth}{!}{%
+        \input{figures/snake_encode1_example.tex}
+        }
+    }
+    \quad
+	\subfloat[\label{subfig:snake_example_general}]{
+        \resizebox{0.85\columnwidth}{!}{%
+        \input{figures/snake_encode2_example.tex}
+        }
+    }
+	}
+	\caption{Results of preprocessing a set of records \textbf{(\ref{subfig:snake_example_unique})} if there is a column that only contains unique identifiers 
+	and \textbf{(\ref{subfig:snake_example_general})} if an artificial unique column needs to be added.
+	The original records have black borders. Added identifiers are highlighted in green. Arrows indicate the (implicit) linked list.}\label{fig:snake_exmp}
+\end{figure}
+
+
+While the record enumeration attack improves over the baseline in terms of detectability, it still produces records whose lengths grow with the input size, which is impractical for large datasets. We address this limitation by observing that it suffices to impose an order on the records without explicitly assigning a unique index to each one. This approach extends each record by only two identifiers, so every record in the modified input set $X$ is larger than its counterpart in $T$ by only a constant additive factor.
 
 % Assume, for now, that there exists a column $j^*$ in \setT{} in which every identifier is unique, i.e., $|\{t[j^*] \setdsc t \in \setT\}| = |\setT|$.
 % This is not an unreasonable assumption, since certain identifiers such as email addresses are usually unique across user data.
@@ -426,94 +256,40 @@ However, the maximum record length has decreased from $|\Ispace{T}|$ to $\frac{\
 % we can then apply the usual substitution-based transformation to infer a maximum reconstruction from \leakV{}.
 % The full attack is displayed in \cref{fig:snakeattack}.
 
-% \begin{figure}
-% 	\centering
-% 	\begin{pcvstack}[boxed, center]
-% 		\procedure[linenumbering]{$\snakeattack^{\LMKPM(\cdot, \setV)}(\setT)$}{
-% 			n \gets |\setT| \\
-% 			\text{Fix some ordering $\setT = (t_1, \dots, t_n)$.}\\
-% 			\pcif \text{$\lnot\exists j^*$ s.t. $|\{t_i[j^*] \setdsc i\in[n]\}| = n$} \pcthen \label{lin:distinctIDs_j*} \\
-% 			\t 	\text{Pick $n$ distinct identifiers $\id_1, \dots \id_n \in \Ispace{}$.} \\
-% 			\t 	\text{Prepend $\id_i$ to $t_i$ for all $i \in [n]$.}\\
-% 			\t	j^* :=  1\\
-% 			(t'_1, \dots, t'_n) \gets \snakeencodeUnique(j^*, (t_1, \dots, t_n)) \label{lin:snake_encode}\\
-% 			(\UID, \MC, (\leak_{\setT'}, \leakV)) \sample \LMKPM(\{t'_1, \dots, t'_n\}, \setV) \label{lin:snake_evaluation}\\
-% 			(t^*_1, \dots, t^*_n) \gets \snakerecoverUnique(\leak_{\setT'}, j^*) \label{lin:snake_decode}\pcskipln \\
-% 			\pclinecomment{Construct substitution map $D$. }\\
-% 			\text{Initialize empty dictionary $D$.} \\
-% 			\pcfor i = 1, \dots, n \pcdo \label{lin:snake_D_start} \\
-% 			\t	\pcfor j = 1, \dots |t| \pcdo \\
-% 			\t	\t	D[t^*_i[j]] \gets t'_i[j] \label{lin:snake_D_end} \\
-% 			\recVT \gets \dictInfer(\leakV{}, D) \\
-% 			\pcreturn \recVT
-% 		}
-% 		\end{pcvstack}
-% 		\caption{Snake attack with oracle access to the extended MKPM functionality $\LMKPM(\cdot, \setV)$.
-% 		\setV{} is part of the oracle and unknown to the adversary.} \label{fig:snakeattack}
-% \end{figure}
+\begin{figure}
+	\centering
+	\begin{pcvstack}[boxed, center]
+		\procedure[linenumbering]{$\snakeattack^{\calF_{\LMKPM}(\cdot, Y)}(T)$}{
+        \rule{0pt}{2em}%
+			n \gets |T| \\
+            \text{Fix an ordering } T = (\bt_0,\ldots,\bt_{n-1}). \\
+			\pcif \text{there doesn't exist $j^*$ s.t. $|\{\bt_i[j^*] \setdsc \bt_i\in T\}| = n$} \pcthen \label{lin:distinctIDs_j*} \\
+			\t 	\text{Pick $n$ distinct identifiers $\id_1, \dots \id_n \in \Ispace{}$.} \\
+			\t 	\pcforeach i \in [0,n-1] \pcdo\\
+            \t \t \bt_i' \gets \id_i \| \bt_i  \\
+			\t	j^* \gets  1\\
+			X \gets \snakeencodeUnique(j^*, (\bt'_1, \dots, \bt'_n)) \label{lin:snake_encode}\\
+			(\UID, \MC, (\hXone, \hYone)) \sample \calF_{\LMKPM}(\{\bt_1', \dots, \bt_n'\}, Y) \label{lin:snake_evaluation}\\
+			% (\hbx_0, \dots, \hbx_{n-1}) \gets \snakerecoverUnique(\hXone, j^*) \label{lin:snake_decode}\pcskipln \\
+			% \cmmnt{Construct substitution map $\Dict$. }\\
+			% \text{Initialize empty dictionary $D$.} \\
+			% \pcfor i = 1, \dots, n \pcdo \label{lin:snake_D_start} \\
+			% \t	\pcfor j = 1, \dots |t| \pcdo \\
+			% \t	\t	D[t^*_i[j]] \gets t'_i[j] \label{lin:snake_D_end} \\
+			\recVT \gets \dictInfer(\hYone, \Dict) \\
+			\pcreturn \recVT
+		}
+		\end{pcvstack}
+		\caption{Snake attack with oracle access to the extended MKPM functionality $\calF_{\LMKPM}(\cdot, Y)$. $Y$ is part of the oracle and unknown to the adversary.} \label{fig:snakeattack}
+\end{figure}
 
-% \begin{theorem}
-% 	For any sets of records \setT{} and \setV{}, 
-% 	$\snakeattack^{\LMKPM(\cdot, \setV)}(\setT)$ produces a maximum reconstruction of \setV{} w.r.t. \setT.
-% \end{theorem}
-% \begin{proof}
-% 	To prove the theorem, we prove the following proposition.
-% 	The theorem follows directly from Proposition~\ref{thm:snake_D} and \cref{lem:dictinfer_MR}.
-% \begin{proposition}
-% 	\label{thm:snake_D}
-% 	Let \setT{} and \setV{} be two sets of records and let $D$ be the substitution dictionary
-% 	constructed during an invocation of $\snakeattack^{\LMKPM(\cdot, \setV)}(\setT)$.
-% 	Moreover, let $f_C$ be the identifier hiding function sampled during the invocation of \leak{}
-% 	in line~\ref{lin:snake_evaluation}.
-% 	Then, we have $D[f_C(\id)] = \id$ for all $\id \in \Ispace{\setT}$.
-% \end{proposition}
-% \begin{proof} \textbf{of Proposition~\ref{thm:snake_D}}
-% 	Let $\setT' := \{t'_1, \dots, t'_n\}$ where $t'_i$ is produced by \snakeencodeUnique{} in line~\ref{lin:snake_encode}
-% 	and let $k' := |t'_i|$ for any $i\in [n]$\footnote{Recall that we assume that all records have the same length $\lambda$.
-% 	Thus, $k' \in \{\lambda + 1, \lambda+2\}$}.
-% 	We show that $D[f_C(\id)] = \id$ for all $\id \in \Ispace{\setT'}$.
-% 	Since \snakeattack{} potentially adds fresh identifiers to records of \setT{}, but does not remove any, 
-% 	we have $\Ispace{\setT}\subseteq\Ispace{\setT'}$, which implies the claim.
-	
-% 	Similar to the proof of \cref{thm:recenum_D}, we show that
-% 	$t^*_i[j] = f_C(t'_i[j])$ for all $i\in[n]$ and all $j \in [k']$.
-% 	The result then follows from the construction of $D$ in lines~\ref{lin:snake_D_start}~-~\ref{lin:snake_D_end}. 
-% 	In particular, we will show that the linked list we create in \IdxToSeq{} is preserved in the leakage, 
-% 	and that this linked list allows us to uniquely identify each record. 
-% 	We show this by induction on $i$. 
-% 	Let $j^*$ denote the index of a column whose identifiers are all unique (note that if such a column does not exist, it is created on line~\ref{lin:distinctIDs_j*}).
 
-% 	For $i = 1$, observe that identifier $t_1[j^*]$ is not appended to any record in \snakeencodeUnique{}; 
-% 	in other words, it is the only item in the linked list that doesn't have anything pointing to it.
-% 	In contrast, for all $i' > 1$, identifier $t_{i'}[j^*]$ is appended to $t_{i'+1}$.
-% 	$t'_1$ is therefore the only record in $\setT'$ whose $j^*$-th identifier is not contained in the last column, 
-% 	i.e., $t'_1[j^*] \not \in \{t'_{i'}[k'] \setdsc i'\in[n]\}$.
-% 	By the definition of $\LMKPM$, this property is preserved in the leakage $\leak_{\setT'}$.
-% 	That is, the corresponding record in the leakage $h = (f_C(t'_1[1]), \dots, f_C(t'_1[k']))$
-% 	is the only record in $\leak_{\setT'}$ such that such that $h[j^*]\not\in\{h_{i'}[k'] \setdsc i' \in [n]\}$.
-% 	In line~\ref{lin:snake_recover_c} in \snakerecoverUnique{} we pick $h_c := h$.
-% 	Thus, for all $j \in [k']$ we have that $h_c[j] = f_C(t'_1[j])$
-% 	and, therefore  $t^*_1[j] = h_c[j] = f_C(t'_1[j])$, where the first equality follows from line~\ref{lin:snake_recover_assign_t_star}.
+\begin{theorem}\label{thm:snakeattack:correctness}
+	Let $T$ be the adversary's target set and $Y$ be the victim's input.
+    $\snakeattack^{\calF_\LMKPM(\cdot, Y)}(T)$ (Figure~\ref{fig:rec_enum_attack}) produces a maximum reconstruction of $Y$ with respect to $T$ (Def.~\ref{def:max_recons}).
+\end{theorem}
 
-% 	Now assume that for some $i < n$ we have $t^*_i[j] = f_C(t'_i[j])$ for all $j \in [k']$. 
-% 	We show that there is a unique record which $t'_i[k']$ is pointing to (that has not been traversed by the previous items in the linked list), 
-% 	and that, once again this property is preserved in the leakage allowing for unique identification of the record.
-% 	By construction in \snakeencodeUnique{}, we have $t'_{i+1}[j^*] = t'_i[k']$.
-% 	Since all identifiers in the $j^*$-th column are distinct, 
-% 	$t'_{i+1}$ is the only record in $\setT'$ that satisfies this condition.
-% 	As before, since $f_C$ is injective, the corresponding record in the leakage 
-% 	$h = (f_C(t'_{i+1}[1]), \dots, f_C(t'_{i+1}[k']))$
-% 	is the only record that satisfies $h[j^*] = t^*_i[k']$.
-% 	Moreover, all hidden identifiers in the $j^*$-th column of $\leak_{\setT'}$	are distinct. % $t'_{i+1}$ is the only record in $\setT'$
-% 	Thus, the dictionary \loc{} in \SeqToIdx{} contains exactly the $n$ keys $\{f_C(t'_{i'}[j^*]) \setdsc i' \in [n]\} = \{f_C(t^*_{i'}[j^*]) \setdsc i' \in [n]\}$,
-% 	which are mapped as $\loc[f_C(t'_{i'}[j^*])] = i'$.
-% 	In line~\ref{lin:snake_recover_assign_t_star}, we pick $t^*_{i+1} := h_c$ for $c = \loc[t^*_i[k']]$, 
-% 	implying $t^*_{i+1}[j^*] = t^*_i[k']$ and, thus, $t^*_{i+1} = h$.
-% 	We therefore have $t^*_{i+1}[j] = h[j] = f_C(t'_{i+1}[j])$ for all $j \in [k']$.
-% \end{proof}
-
-% 	The statement follows from \cref{thm:snake_D} and \cref{lem:dictinfer_MR}.
-% \end{proof}
+The proof of Theorem~\ref{thm:snakeattack:correctness} can be found in Appendix~\ref{sec:snakeattack:correctness}.
 
 % \textbf{Time and Query Complexity.} 
 % Recall our assumptions that reading from, writing to, and checking for the presence of a key in a dictionary 
@@ -535,17 +311,9 @@ However, the maximum record length has decreased from $|\Ispace{T}|$ to $\frac{\
 
 % Like \toyattack{} and \recenumattack{}, \snakeattack{} requires only one protocol invocation.
 
-% \subsection{Discussion and Mitigation}
-% \label{sec:snake_mitigations}
-% While requiring the same number of protocol invocations 
-% and incurring a comparable computational complexity as the other attacks presented in this chapter, 
-% \snakeattack{} stands out for requiring only minimal modifications to the target set to successfully carry out the attack.
-% Since the records are extended by at most two identifiers, in contrast to $\log n$ (as required by \recenumattack{}),
-% \snakeattack{} is also applicable to scenarios where the record length is constrained to a small constant.
-% Meta's Private Computation Solution \cite{FBPCSRepo} serves as a concrete example, 
-% where records are limited to at most four identifiers.
-% If the target set already meets the maximum allowed record length, 
-% the adversary can always rearrange the target set into shorter records and use the newly available space for the snake encoding.
+\heading{Discussion and mitigation.}
+While requiring the same number of protocol invocations and incurring a comparable computational complexity to the other attacks, \snakeattack{} stands out for requiring only minimal modifications to the target set and is applicable to scenarios where the record length is constrained to a small constant.
+Meta's Private Computation Solution \cite{FBPCSRepo} serves as a concrete example, where records are limited to at most four identifiers. If the target set already meets the maximum allowed record length, the adversary can always rearrange the target set into shorter records and use the newly available space for the snake encoding.
 
 % Since records are only extended by a small constant, limiting record lengths to mitigate against attacks, 
 % as proposed previously, is ineffective.

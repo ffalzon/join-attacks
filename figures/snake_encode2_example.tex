@@ -1,0 +1,44 @@
+\begin{tikzpicture}
+	[block/.style={
+    draw,
+    minimum width=#1,
+    minimum height=\blockminheight,
+    font=\small,
+    text height=1.2ex,
+    text depth=.25ex
+  	}
+	]
+	% Nodes
+	\node[block=\minwidthid,fill=trow-dark, draw=added-id] (alice0) {$\id_0$};
+	\node[block=\minwidthemail,fill=trow-dark, right=\linecorr of alice0, behind path] (alice1) {alice@mail.com};
+	\node[block=\minwidthphone,fill=trow-dark, right=\linecorr of alice1] (alice2) {+41 98 765 43 21};
+	\node[block=\minwidthid,fill=trow-dark, right=\linecorr of alice2, draw=added-id] (alice3) {$\id_1$};
+
+	\node[block=\minwidthid,fill=trow-light, below=\rowspace of alice0, draw=added-id] (bob0) {$\id_1$};
+	\node[block=\minwidthemail,fill=trow-light, right=\linecorr of bob0, behind path] (bob1) {bob@mail.com};
+	\node[block=\minwidthphone,fill=trow-light, right=\linecorr of bob1] (bob2) {+41 12 345 67 89};
+	\node[block=\minwidthid,fill=trow-light, right=\linecorr of bob2, draw=added-id] (bob3) {$\id_2$};
+
+	\node[block=\minwidthid,fill=trow-dark, below=\rowspace of bob0, draw=added-id] (eve0) {$\id_2$};
+	\node[block=\minwidthemail,fill=trow-dark, right=\linecorr of eve0, behind path] (eve1) {alice@mail.com};
+	\node[block=\minwidthphone,fill=trow-dark, right=\linecorr of eve1] (eve2) {+41 12 345 67 89};
+	\node[block=\minwidthid,fill=trow-dark, right=\linecorr of eve2, draw=added-id] (eve3) {$\id$};
+	% Connections
+	\draw[->] (alice3) to[out=240, in=60, looseness=.3] (bob0);
+	\draw[->] (bob3) to[out=240, in=60, looseness=.3] (eve0);
+
+	% Draw boxes over first row again to cover neighboring border
+	\node at (alice0) [block=\minwidthid, draw=added-id]{};
+	\node at (bob0) [block=\minwidthid, draw=added-id]{};
+	\node at (eve0) [block=\minwidthid, draw=added-id]{};
+
+	% \draw[->] (n1) -- (n2);
+	% \draw[->] (n2) -- (n3);
+	% \draw[->] (n3) -- (n4);
+	% \coordinate (x) at ([yshift=-1cm]n3.south);
+	% \coordinate (y) at (start |- x);
+	% \draw (start) -- (y) (x) edge[->] (n3.south) (x) edge["EXAMPLE"] (y);
+	% {[on background layer]
+    % \fill[red!30] (alice1.north west) rectangle (alice3.south east); 
+    % }
+\end{tikzpicture}
