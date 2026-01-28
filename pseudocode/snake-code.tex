@@ -16,16 +16,26 @@
         (\UID, \MC, (\hXone, \hYone)) \sample \calF_{\LMKPM}(X, Y) \label{lin:snake_evaluation}\\
 			(\hbx_0, \dots, \hbx_{n-1}) \gets \snakerecoverUnique(\hXone, j^*) \label{lin:snake_decode}\pcskipln \\
 			\cmmnt{Construct substitution map $\Dict$. }\\
-			\text{Initialize empty dictionary $\Dict$.} \\
-			\pcfor i = 0, \dots, n-1 \pcdo \label{lin:snake_D_start} \\
-			\t	\pcfor j = 0, \dots |\hbx_i|-1 \pcdo \\
-			\t	\t	\Dict[\hbx_i[j]] \gets \bx_i[j] \label{lin:snake_D_end} \\
-			\recVT \gets \dictInfer(\hYone, \Dict) \\
-			\pcreturn \recVT
+			\text{Initialize empty dictionary $\Dict$.} 
+			% \pcfor i = 0, \dots, n-1 \pcdo \label{lin:snake_D_start} \\
+			% \t	\pcfor j = 0, \dots |\hbx_i|-1 \pcdo \\
+			% \t	\t	\Dict[\hbx_i[j]] \gets \bx_i[j] \label{lin:snake_D_end} \\
+			% \recVT \gets \dictInfer(\hYone, \Dict) \\
+			% \pcreturn \recVT
 		}
     \end{pcvstack}
-    \pchspace
     \begin{pcvstack}
+	%\pcvspace
+	\pcvspace\pcvspace
+	\pchspace
+	\procedure[linenumbering, lnstart=13]{}{
+		\pcfor i = 0, \dots, n-1 \pcdo \label{lin:snake_D_start} \\
+		\t	\pcfor j = 0, \dots |\hbx_i|-1 \pcdo \\
+		\t	\t	\Dict[\hbx_i[j]] \gets \bx_i[j] \label{lin:snake_D_end} \\
+		\recVT \gets \dictInfer(\hYone, \Dict)\\
+		\pcreturn \recVT
+	}
+	\pchspace
  	\procedure[linenumbering]{$\snakeencodeUnique(j, (\bt_0, \dots, \bt_{n-1}))$}{
     \rule{0pt}{2em}%
  		\text{Initialize empty dictionary $\DictE$} \\
@@ -37,25 +47,25 @@
  	}
     \end{pcvstack}
     \pchspace
+	\pcvspace
     \begin{pcvstack}
-	\procedure[linenumbering]{$\snakerecoverUnique(\hXone, j)$}{
+	\procedure[linenumbering]{$\snakerecoverUnique(\hXone, j^*)$}{
     \rule{0pt}{2em}%
  	    \text{Initialize empty dictionary $\loc$}\\
- 		\text{Fix an ordering $\hXone = (\hbx_0, \dots, \hbx_{n-1})$.} \\
-		k' \gets |\hbx_0|\ \cmmnt{$= |\hbx_1| = \dots = |\hbx_{n-1}|$} \pcskipln\\
+ 		\text{Fix an ordering $\hXone = (\hbx_0, \dots, \hbx_{n-1})$} \\
+		k \gets |\hbx_0|\ \ \cmmnt{$= |\hbx_1| = \dots = |\hbx_{n-1}|$} \pcskipln\\
  		\cmmnt{Store locations of linked identifiers.}\\
  			\pcfor i = 0, \dots, n-1 \pcdo \\
-				\t	\loc[\hbx_i[j]] \gets i \pcskipln\\
- 				\cmmnt{Find start index $c$ of the linked list.} \\
- 				\text{Find $\ell \leq n-1$ s.t. $\hbx_\ell[j]\not\in\{\hbx_i[k'] \setdsc i \in [n]\}$} \label{lin:snake_recover_c} \pcskipln\\
- 				\pclinecomment{Traverse linked list to recover original ordering.}\\
-% 				i \gets 1 \\
-% 				\pcdo \label{lin:snake_recover_dowhile}\\
-% 				\t	t^*_i := h_{c} \label{lin:snake_recover_assign_t_star}\\
-% 				\t	c \gets \loc[h_c[k']] \label{lin:snake_recover_updt_c}\\
-% 				\t	i \gets i + 1\\
-% 				\pcwhile h_{c}[k'] \in \loc \label{lin:snake_recover_dowhile_end}\\
-% 				\pcreturn (t^*_1, \dots, t^*_n)
+				\t	\loc[\hbx_i[j^*]] \gets i \pcskipln\\
+ 				\cmmnt{Find start index $\ell$ of the linked list.} \\
+ 				\text{Find $\ell \leq n-1$ s.t. $\hbx_\ell[j^*]\not\in\{\hbx_i[k] \setdsc i \in [n]\}$} \label{lin:snake_recover_c} \pcskipln\\
+ 				\cmmnt{Recover original ordering.}\\
+ 				i \gets 0 \\
+				\pcwhile \hbx_{\ell}[k] \in \loc \pcdo\label{lin:snake_recover_dowhile}\\
+ 				\t	\bs_i \gets \hbx_{\ell} \label{lin:snake_recover_assign_t_star}\\
+ 				\t	\ell \gets \loc[\hbx_\ell[k]] \label{lin:snake_recover_updt_c}\\
+ 				\t	i \gets i + 1\label{lin:snake_recover_dowhile_end}\\
+ 				\pcreturn (\bs_0, \dots, \bs_{n-1})
 }
 \end{pcvstack}
 \end{pchstack}
