@@ -190,14 +190,14 @@ Overall, the attack runs in time \bigO{n (\log_2 n + \lambda) + \lambda m} and--
 \end{figure}
 
 
-While the record enumeration attack improves over the baseline in terms of detectability, it still requires an input whose record lengths grow with the target set size. We address this limitation by observing that it suffices to impose an order on the records without explicitly assigning a unique index to each one. This approach extends each record by only two identifiers, so every record in the modified input set $X$ is larger than its counterpart in $T$ by only a constant additive factor.
+While the record enumeration attack improves over the baseline in terms of detectability, it still requires an input whose record lengths grow with the target set size. We address this limitation by imposing an order on the records without explicitly assigning a unique index to each one. This approach extends each record by only two identifiers.
 
-To start, that there exists a column $j^*$ in $T$ in which every identifier is unique, i.e., $|\{\bt[j^*] \setdsc \bt \in T\}| = |T|$.
-This is not unreasonable, since many identifiers such as email addresses are usually unique across user data.
-If not such column exists, the adversary can create one by sampling $n$ distinct identifiers
+The attack starts by checking whether there exists a column $j^*$ in $T$ in which every identifier is unique, i.e., $|\{\bt[j^*] \setdsc \bt \in T\}| = |T|$.
+This is a reasonable assumption, since many identifiers such as email addresses are usually unique across users.
+If no such column exists, the adversary can create one by sampling $n$ distinct identifiers
 and prepending each identifier to a distinct  record in $T$ (in this case $j^* = 0$).
 
-% We can then link the records of \setT{} by first choosing some arbitrary ordering $\setT = \{t_1, \dots, t_n\}$ 
+We can then link the records of $T$ by first choosing some arbitrary ordering $T= \{\bt_0, \dots, \bt_{n-1}\}$ 
 % and appending the unique index of the $i+1$-th record to the $i$-th record for all $i \in [n-1]$.
 % See \cref{subfig:snake_example_unique} for a small example. The linking procedure \snakeencodeUnique{} 
 % is implemented in \cref{fig:snakeencode1}.
