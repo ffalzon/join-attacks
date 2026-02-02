@@ -6,22 +6,17 @@
         n \gets |T| \\
         \text{Fix an ordering } T = (\bt_0,\ldots,\bt_{n-1}). \\
         \pcif \text{$\not\exists j^*$ s.t. $|\{\bt_i[j^*] \setdsc \bt_i\in T\}| = n$} \pcthen \label{lin:distinctIDs_j*} \\
-        \t 	\text{Pick $n$ distinct $\id_1, \dots \id_n \gets \Ispace{}$.} \\
+        \t 	\text{Pick $n$ distinct $\id_1, \dots \id_n \gets \Ispace{}$} \\
         \t 	\pcforeach i \in [0,n-1] \pcdo\\
-        \t \t \bt_i' \gets \id_i \| \bt_i  \\
+        \t \t \bt_i \gets \id_i \| \bt_i  \\
         \t \t j^* \gets 0 \\
         \pcelse \\
-        \t \text{Pick $j^*\in[0,n-1]$ s.t. $|\{\bt_i[j^*] \setdsc \bt_i\in T\}| = n$} \\
-        X \gets \snakeencodeUnique(j^*, (\bt'_1, \dots, \bt'_n)) \label{lin:snake_encode}\\
+        \t \text{Pick $j^*\leq n-1$ s.t. $|\{\bt_i[j^*] \setdsc \bt_i\in T\}| = n$} \\
+        X \gets \snakeencodeUnique(j^*, (\bt_0, \dots, \bt_{n-1})) \label{lin:snake_encode}\\
         (\UID, \MC, (\hXone, \hYone)) \sample \calF_{\LMKPM}(X, Y) \label{lin:snake_evaluation}\\
-			(\hbx_0, \dots, \hbx_{n-1}) \gets \snakerecoverUnique(\hXone, j^*) \label{lin:snake_decode}\pcskipln \\
+			(\hbx_0, \dots, \hbx_{n-1}) \gets \snakerecoverUnique(j^*,\hXone) \label{lin:snake_decode}\pcskipln \\
 			\cmmnt{Construct substitution map $\Dict$. }\\
-			\text{Initialize empty dictionary $\Dict$.} 
-			% \pcfor i = 0, \dots, n-1 \pcdo \label{lin:snake_D_start} \\
-			% \t	\pcfor j = 0, \dots |\hbx_i|-1 \pcdo \\
-			% \t	\t	\Dict[\hbx_i[j]] \gets \bx_i[j] \label{lin:snake_D_end} \\
-			% \recVT \gets \dictInfer(\hYone, \Dict) \\
-			% \pcreturn \recVT
+			\text{Initialize empty dictionary $\Dict$} 
 		}
     \end{pcvstack}
     \begin{pcvstack}
@@ -35,9 +30,11 @@
 		\recVT \gets \dictInfer(\hYone, \Dict)\\
 		\pcreturn \recVT
 	}
+	\pcvspace
 	\pchspace
- 	\procedure[linenumbering]{$\snakeencodeUnique(j, (\bt_0, \dots, \bt_{n-1}))$}{
+ 	\procedure[linenumbering, lnstart=18]{$\snakeencodeUnique(j, T)$}{
     \rule{0pt}{2em}%
+		(\bt_0, \dots, \bt_{n-1})\gets T\\
  		\text{Initialize empty dictionary $\DictE$} \\
  			\pcfor i = 0, \dots, n - 2 \pcdo \\
  				\t	\bx_i \gets \bt_i \| \bt_{i+1}[j] \\
@@ -47,9 +44,8 @@
  	}
     \end{pcvstack}
     \pchspace
-	\pcvspace
     \begin{pcvstack}
-	\procedure[linenumbering]{$\snakerecoverUnique(\hXone, j^*)$}{
+	\procedure[linenumbering, lnstart=25]{$\snakerecoverUnique( j^*, \hXone)$}{
     \rule{0pt}{2em}%
  	    \text{Initialize empty dictionary $\loc$}\\
  		\text{Fix an ordering $\hXone = (\hbx_0, \dots, \hbx_{n-1})$} \\
@@ -57,13 +53,13 @@
  		\cmmnt{Store locations of linked identifiers.}\\
  			\pcfor i = 0, \dots, n-1 \pcdo \\
 				\t	\loc[\hbx_i[j^*]] \gets i \pcskipln\\
- 				\cmmnt{Find start index $\ell$ of the linked list.} \\
- 				\text{Find $\ell \leq n-1$ s.t. $\hbx_\ell[j^*]\not\in\{\hbx_i[k] \setdsc i \in [n]\}$} \label{lin:snake_recover_c} \pcskipln\\
+ 				\cmmnt{Find start index $\ind$ of the linked list.} \\
+ 				\text{Find $\ind \leq n-1$ s.t. $\hbx_\ind[j^*]\not\in\{\hbx_i[k] \setdsc i \in [n]\}$} \label{lin:snake_recover_c} \pcskipln\\
  				\cmmnt{Recover original ordering.}\\
  				i \gets 0 \\
-				\pcwhile \hbx_{\ell}[k] \in \loc \pcdo\label{lin:snake_recover_dowhile}\\
- 				\t	\bs_i \gets \hbx_{\ell} \label{lin:snake_recover_assign_t_star}\\
- 				\t	\ell \gets \loc[\hbx_\ell[k]] \label{lin:snake_recover_updt_c}\\
+				\pcwhile \hbx_{\ind}[k] \in \loc \pcdo\label{lin:snake_recover_dowhile}\\
+ 				\t	\bs_i \gets \hbx_{\ind} \label{lin:snake_recover_assign_t_star}\\
+ 				\t	\ind \gets \loc[\hbx_\ind[k]] \label{lin:snake_recover_updt_c}\\
  				\t	i \gets i + 1\label{lin:snake_recover_dowhile_end}\\
  				\pcreturn (\bs_0, \dots, \bs_{n-1})
 }

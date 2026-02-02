@@ -1,6 +1,93 @@
 \section{Preliminaries}
 
 
+\subsection{The PrivateID Functionality}
+
+
+Meta's PrivateID protocol~\cite{PMC} implements a Single-Key Private Matching (SKPM) functionality which we denote as $\calF_{\SKPM}$.
+
+The functionality $\calF_{\SKPM}$ involves two parties, $P_1$ and $P_2$, each with input sets $X \subseteq \Ispace{}$ and $Y \subseteq \Ispace{}$, respectively. The functionality computes $Z := X \cup Y$ and assigns new identifiers to the elements of $Z$ by evaluating them under an injective random function, producing the set $\UID{}$. It then computes two maps $\MX: \UID{} \to X \cup \{\bot\}$ and $\MY: \UID{} \to Y \cup \{\bot\}$, which locally map elements in $\UID{}$ to the original elements in $X$ and $Y$ (or $\bot$ if the element only occurs in the other party's set). In the end, party $P_1$ receives the set of UIDs, $\UID{}$, and dictionary $\MX$; party $P_2$ receives $\UID{}$ and $\MY$.
+
+See Figure~\ref{fig:SKPM_definition} for the formal definition.
+
+\begin{figure}
+	\fbox{%
+    \begin{minipage}[t]{0.98\columnwidth}
+		\textbf{Parameters:} Two parties, $C$ and $P$.\\
+		\noindent\textbf{Functionality:} $\calF_{\SKPM}(X, Y)$: 
+        \hfill \begin{enumerate}
+			\item Receive the input from party $P_1$: $X = \{x_i \setdsc i \in [n]\}$
+			\item Receive the input from party $P_2$: $Y = \{y_i \setdsc i \in [m]\}$
+			\item Compute $Z := X \cup Y$.
+			\item Sample $f \sample \InjFuncs[\Ispace, \calG]$.
+			\item Compute dictionaries
+            $\MX : \calG \to X \cup \{\bot\}$ and $\MY : \calG \to Y \cup \{\bot\}$ s.t. for all $z \in Z$:
+			\[
+				\MX[f(z)] = \begin{cases*}
+					z & if $z \in X$ \\
+					\bot & otw.
+				\end{cases*} \\
+            \]
+            \[
+				\MY[f(z)] = \begin{cases*}
+					z & if  $z \in Y$ \\
+					\bot & otw.
+				\end{cases*}
+            \]
+		\item Compute $\UID \gets \{f(z) \setdsc z \in Z\}$.
+		\item Output:
+            \begin{itemize}
+                \item Send $\UID, \MX$ to $P_1$.
+                \item Send $\UID, \MY$ to $P_2$.
+			\end{itemize}
+	\end{enumerate}  
+    \end{minipage}
+    }
+	\caption{The Single-Key Private Matching functionality $\calF_{\SKPM}$, implemented by Meta's PrivateID protocol \cite{PMC}.}\label{fig:SKPM_definition}
+\end{figure}
+\begin{figure}
+    \fbox{%
+    \begin{minipage}[t]{0.98\columnwidth}
+		\textbf{Parameters:} Two parties, $P_1$ and $P_2$, set sizes $n, m\in \NN$ and
+		record lengths $n_i, m_j \in \NN$ for $i\in[n]$ and $j\in[m]$.\\
+		\textbf{Functionality} $\calF_{\MKPM}(X; Y)$ \dbox{$\calF_{\LMKPM}(X; Y)$}~: 
+        %%%
+        \begin{enumerate}
+			\item Receive the input from party $P_1$: $X = \{\bx_i \setdsc i \in [n]\}$
+			\item Receive the input from party $P_2$: $Y = \{\by_i \setdsc i \in [m]\}$
+			\item Sample $\pi_X \sample \Perms[[n]]$ and $\pi_Y \sample \Perms[[m]]$
+			\item Let $X' := \{\bx'_i \setdsc i \in [n]\}$, where $\bx'_i := \bx_{\pi_X(i)}$
+			\item Let $Y' := \{\by'_i \setdsc i \in [m]\}$, where $\by'_i := \by_{\pi_Y(i)}$
+			\item Shuffle the identifiers in $\by'_i$ for all $i \in [m]$
+			\item Compute $\UID, \MX, \MY \gets \match(X', Y')$ (Figure \ref{fig:match_logic})
+		\end{enumerate}
+        \begin{adjustbox}{minipage=0.98\textwidth,precode=\dbox}
+        \begin{enumerate}
+				\addtocounter{enumi}{7}
+				\item  Sample $f_1, f_2 \sample \InjFuncs[\Ispace,\; \calG]$
+				\item  $\hXone := \{(f_1(\bx'_i[1]), \dots, f_1(\bx'_i[n_i])) \setdsc i \in [n]\}$.
+				\item  $\hYone := \{(f_1(\by'_i[1]), \dots, f_1(\by'_i[m_i])) \setdsc i \in [m]\}$.
+				\item  $\pi \sample \Perms[[n]]$.
+				\item  $X'' := \{\bx''_i \setdsc i \in [n]\}$, where $\bx''_i := \bx_{\pi(i)}$.
+				\item  $\hXtwo := \{(f_2(\bx''_i[1]), \dots, f_2(\bx''_i[n_i])) \setdsc i \in [n]\}$.
+				\item $\leak_1 \gets (\hXone,\hYone)$,\ \  $\leak_2 \gets \hXtwo$
+			\end{enumerate}
+		\end{adjustbox}
+			\begin{enumerate}
+			\addtocounter{enumi}{13}
+			\item Output:\hfill \begin{itemize}
+					\item Send $\UID, \MX$ \dbox{$,\leak_1$} to $P_1$.
+					\item Send $\UID, \MY$ \dbox{$,\leak_2$} to $P_2$.
+			\end{itemize}
+		\end{enumerate}
+    \end{minipage}
+    }
+	\caption{The Multi-Key Private Matching functionality $\calF_{\MKPM}(X; Y)$. The additional steps of the leakage-aware functionality $\calF_{\LMKPM}(X; Y)$ are shown in \protect\dbox{dashed boxes}.
+	The record-matching procedure \match{} is defined in Figure~\ref{fig:match_logic}.}
+\label{fig:MKPM}
+\end{figure}
+
+
 \subsection{The MK-PrivateID Functionality}
 \label{sec:MK-PID}
 
@@ -66,47 +153,7 @@ The detailed description of $\calF_{\MKPM}$ can be found in Figure~\ref{fig:MKPM
 \end{figure*}
 
 
-\begin{figure}
-    \fbox{%
-    \begin{minipage}[t]{0.98\columnwidth}
-		\textbf{Parameters:} Two parties, $P_1$ and $P_2$, set sizes $n, m\in \NN$ and
-		record lengths $n_i, m_j \in \NN$ for $i\in[n]$ and $j\in[m]$.\\
-		\textbf{Functionality} $\calF_{\MKPM}(X; Y)$ \dbox{$\calF_{\LMKPM}(X; Y)$}~: 
-        %%%
-        \begin{enumerate}
-			\item Receive the input from party $P_1$: $X = \{\bx_i \setdsc i \in [n]\}$.
-			\item Receive the input from party $P_2$: $Y = \{\by_i \setdsc i \in [m]\}$.
-			\item Sample $\pi_X \sample \Perms[[n]]$ and $\pi_Y \sample \Perms[[m]]$.
-			\item Let $X' := \{\bx'_i \setdsc i \in [n]\}$, where $\bx'_i := \bx_{\pi_X(i)}$.
-			\item Let $Y' := \{\by'_i \setdsc i \in [m]\}$, where $\by'_i := \by_{\pi_Y(i)}$.
-			\item Shuffle the identifiers in $\by'_i$ for all $i \in [m]$.
-			\item Compute $\UID, \MX, \MY \gets \match(X', Y')$ (Figure \ref{fig:match_logic}).
-		\end{enumerate}
-        \begin{adjustbox}{minipage=0.98\textwidth,precode=\dbox}
-        \begin{enumerate}
-				\addtocounter{enumi}{7}
-				\item  $f_1, f_2 \sample \InjFuncs[\Ispace,\; \calG]$.
-				\item  $\hXone := \{(f_1(\bx'_i[1]), \dots, f_1(\bx'_i[n_i])) \setdsc i \in [n]\}$.
-				\item  $\hYone := \{(f_1(\by'_i[1]), \dots, f_1(\by'_i[m_i])) \setdsc i \in [m]\}$.
-				\item  $\pi \sample \Perms[[n]]$.
-				\item  $X'' := \{\bx''_i \setdsc i \in [n]\}$, where $\bx''_i := \bx_{\pi(i)}$.
-				\item  $\hXtwo := \{(f_2(\bx''_i[1]), \dots, f_2(\bx''_i[n_i])) \setdsc i \in [n]\}$.
-				\item $\leak_1 \gets (\hXone,\hYone)$,\ \  $\leak_2 \gets \hXtwo$
-			\end{enumerate}
-		\end{adjustbox}
-			\begin{enumerate}
-			\addtocounter{enumi}{13}
-			\item Output:\hfill \begin{itemize}
-					\item Send $\UID, \MX$ \dbox{$,\leak_1$} to $P_1$.
-					\item Send $\UID, \MY$ \dbox{$,\leak_2$} to $P_2$.
-			\end{itemize}
-		\end{enumerate}
-    \end{minipage}
-    }
-	\caption{The Multi-Key Private Matching functionality $\calF_{\MKPM}(X; Y)$. The additional steps of the leakage-aware functionality $\calF_{\LMKPM}(X; Y)$ are shown in \protect\dbox{dashed boxes}.
-	The record-matching procedure \match{} is defined in Figure~\ref{fig:match_logic}.}
-\label{fig:MKPM}
-\end{figure}
+
 
 \subsubsection{Leakage.}
 In favor of higher efficiency, MK-PrivateID leaks additional information which we capture with an extended ``leaky'' functionality $\calF_{\LMKPM{}}$. 

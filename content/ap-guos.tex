@@ -1,0 +1,184 @@
+\section{Guo et al.'s Attack on PSI-CA}
+\label{ch:PSICA_attack}
+The PSI-CA functionality is particularly interesting, since many protocols implementing PSI-related functionalities
+also leak the cardinality of the intersection, making attacks on PSI-CA applicable to a broad range of protocols.   
+Guo et al. \cite{USENIX:GHLWJL22} initiated a line of work on the privacy-implications of PSI-CA
+by presenting an intersection-recovery attack against it.
+We will show two adaptations of this attack later in this work, 
+which is why we briefly introduce it here.
+
+The authors of \cite{USENIX:GHLWJL22} assume an input-malicious party $A$ with a target set $X$, 
+which may evaluate $\PSUCA(X', Y) = |X' \cap Y|$ for arbitrarily many $X'$ and a static victim set $Y$. 
+The goal of $A$ is to determine $X \cap Y$.
+They present two search tree-based attacks against PSI-CA: 
+(1) a generic attack assuming no prior knowledge about the victim set and 
+(2) a feature-aware attack, where the membership in the victim set is correlated with a set of features that are known to the adversary.
+The two attacks differ only in their approach to building the search tree.
+We focus on the former.
+
+The attack is based on two observations regarding the size of set intersections.
+First, there are two cases, where the intersection cardinality immediately implies the intersection:
+(a) if $|X \cap Y| = 0$, then $X \cap Y = \emptyset$ and (b) if $|X \cap Y| = |X|$, then $X \cap Y = X$.
+Naturally, these cases are unlikely for general $X$ and $Y$, but note that they generalize to subsets of $X$:
+\begin{proposition}\label{prop:PSICA_termination}
+	Let $X$ and $Y$ be arbitrary sets and let $X' \subseteq X$ be a non-empty subset of $X$. 
+\begin{enumerate}
+	\item[(a)] If $|X' \cap Y| = 0$, then $X' \not\subseteq X \cap Y$
+	\item[(b)] If $|X' \cap Y| = |X'|$, then $X' \subseteq Y$ and, thus, $X' \subseteq X \cap Y$
+\end{enumerate}	
+\end{proposition} 
+
+An adversary wishing to learn which elements of $X$ are contained in $Y$ can leverage this observation
+by evaluating $\PSICA$ on subsets of $X$, where one of the two cases of \ref{prop:PSICA_termination} applies.
+The main challenge of the attack lies in finding such subsets.
+To this end, the adversary can recursively subdivide the target set $X$, constructing a balanced binary search tree
+such that the root node contains $X$ and any two siblings form a partition of their parent.
+The two subsets comprising the partition are randomly chosen and of roughly equal size.
+See Figure~\ref{fig:guo_basline_tree} for an illustration with $|X| = 6$.
+Recall that for any tree node $N$, we denote its children with $N.\treeLeftChild$ and $N.\treeRightChild$,
+and the subset of $X$ stored at $N$ with $N.\treeSet$.
+
+Evaluating $\PSUCA$ on every node in this tree -- although posing a valid approach -- is inefficient.
+However, we can save half of the evaluations with the following, second assumption.
+Consider any set $X'\subseteq X$ and a partition $X'_1, X'_2$ of $X'$, 
+i.e., $X'_1 \cup X'_2 = X'$ and $X'_1 \cap X'_2 = \emptyset$.
+Then, $|X'\cap Y| = |X'_1 \cap Y| + |X'_2 \cap Y|$.
+The adversary can therefore infer $|X'_2 \cap Y| = |X' \cap Y| - |X'_1 \cap Y|$
+if it knows $|X'\cap Y|$ and $|X'_1 \cap Y|$.
+Choosing the right way to traverse the tree at least ensures the former.
+
+\begin{figure}
+	\centering
+	{	\colorlet{positive}{LimeGreen}
+	 	\colorlet{negative}{BrickRed}
+		\newcommand{\pos}[1]{\raisebox{.9pt}{#1}}
+		\newcommand{\fullcirc}{\position{\tikz{\draw[line width=.5pt, color=black, fill=black] circle(1.1pt);}}}
+		\newcommand{\ocirc}{\position{\tikz[]{\draw[line width=.5pt, color=black, fill=none] circle(1.1pt);}}}
+
+		\begin{tikzpicture}
+		[
+			level 1/.style = {sibling distance = 4cm},
+			level 2/.style = {sibling distance = 2cm},
+			level 3/.style = {sibling distance = 1.5cm}
+		]
+		{	\tiny
+			\node {\fullcirc\;$X = \{1, 2, 3, 4, 5, 6\}$}[level distance =.8cm]
+				child {node {\fullcirc\;$X_{1,1} = \{1, 2, 3\}$}
+					child {node {\fullcirc\;\color{positive}$X_{2,1} = \{1, 2\}$} {
+						child {node {\color{positive}$X_{3,1} = \{1\}$}}
+						child {node {\color{positive}$X_{3,2} = \{2\}$}}
+					}}
+					child {node {\ocirc\;\color{negative}$X_{2,2} = \{3\}$}}}
+				child {node {\ocirc\;\color{negative}$X_{1,2} = \{4, 5, 6\}$}
+					child {node {\color{negative}$X_{2,3} = \{4, 5\}$} {
+						child {node {\color{negative}$X_{3,3} = \{4\}$}}
+						child {node {\color{negative}$X_{3,4} = \{5\}$}}
+					}}
+					child {node {\color{negative}$X_{2,4} = \{6\}$}}};}
+		\end{tikzpicture}
+		\caption{
+		Binary search tree for a set $X = \{1, 2, 3, 4, 5, 6\}$, 
+		as constructed for the generic intersection recovery attack from~\cite{Guo22}.
+		We depict the attack behavior for a victim set $Y = \{1, 2\}$. The PSI-CA functionality is invoked at nodes marked with {\protect\fullcirc{}}.
+		The intersection cardinality for nodes marked with {\protect\ocirc{}} is inferred from their sibling and parent node's intersection sizes.
+		Early DFS path terminations occur at $X_{2,1}$ and $X_{1,2}$. 
+		The inferred membership information is highlighted in {\color{positive} green} for elements in $X\cap Y$
+		and {\color{negative} red} for elements in $X\setminus Y$.}
+		\label{fig:guo_basline_tree}
+	}
+\end{figure}
+
+We now combine the two observations to obtain the full intersection-recovery attack.
+The full pseudocode is depicted in \ref{fig:PSICA_attack}.
+The attack starts by initializing an empty set $S$, 
+to which elements of the intersection are added over the course of the attack.
+Next, $|X \cap Y|$ is determined by evaluating $\PSICA(X, Y)$.
+We then traverse the binary tree in a DFS-style manner, starting at the root. 
+Let $N$ be some node along a DFS path.
+$|N.\treeSet \cap Y|$ is known, either from evaluating $\PSICA{}$ at the tree's root or, 
+by induction, from the previous iteration of the path traversal. 
+Let $L := N.\treeLeftChild$ and $R := N.\treeRightChild$ be the left and right children of $N$ respectively.
+We can determine $|L.\treeSet \cap Y|$ by evaluating $\PSICA(L.\treeSet, Y)$ and then
+compute $|R.\treeSet \cap Y| = |N.\treeSet \cap Y| - |L.\treeSet \cap Y|$, 
+thus leveraging the second observation from above.
+
+To decide with which child to continue the path traversal, 
+we compute the heuristic $p_{\PSICA}(|Z \cap Y|, |Z|) := |Z\cap Y| / |Z|$ 
+for both child sets $Z \in \{L.\treeSet, R.\treeSet\}$ 
+and continue with the child that has the larger value.
+This prioritizes subsets with a larger ratio of matched identifiers.
+As elaborated below, this aids in the early termination of DFS path traversals. 
+The other node is entered into a priority queue that is sorted by the same heuristic for later treatment.
+Continuing the example mentioned above, Figure~\ref{fig:guo_basline_tree} contains markers that indicate at which nodes
+the intersection size is determined by evaluating the PSI-CA functionality and at which nodes
+it can be inferred from its sibling and parent nodes.
+
+A DFS path traversal can be aborted at some node $N^*$, if either case of Proposition~\ref{prop:PSICA_termination} applies, i.e.,
+if $|N^*.\treeSet \cap Y| \in \{0, |N^*.\treeSet|\}$,
+since either none or all of the elements stored at $N^*$ lie in the intersection. 
+If case (1b) applies, the elements of $N^*.\treeSet$ are added to $S$.
+In the worst case, this happens if $N^*$ only stores a single element, 
+but is likely to occur earlier, as the authors of \cite{Guo22} point out.
+In the example in Figure~\ref{fig:guo_basline_tree}, early terminations occur at the nodes $X_{2, 1}$ and $X_{1,2}$,
+as indicated by the missing markers in the respective subtrees.
+
+Upon the completion of a DFS path traversal, the next node to be processed is popped from the aforementioned priority queue.
+As the probability for an early termination is correlated with the heuristic $p_{\PSICA}$, 
+with which subsets are inserted into the queue, 
+paths that are more likely to terminate early are processed first.
+This increases the recovered fraction of the intersection
+in case the adversary has a limited query budget, i.e., it can only make a limited number of $\PSICA{}$ evaluations.
+
+In the worst case, when no early path terminations occur, 
+the attack evaluates $\PSICA{}$ once for the tree root and once for half of the nodes of any given depth in the tree.
+Since a balanced binary tree with $n := |X|$ leaf nodes contains
+exactly $2n - 2^{\lceil \log_2 n\rceil}$ nodes of depth $\lceil \log_2 n \rceil$,
+the attack evaluates $\PSICA{}$ at most $1 + \sum_{d=1}^{\lceil \log_2 n\rceil - 1} 2^{d-1} + (2n - 2^{\lceil \log_2 n\rceil}) / 2 = n$ times.
+While this is not better than querying every element of $X$ separately,
+the authors of~\cite{USENIX:GHLWJL22} highlight that we can expect the number of functionality evaluations to be smaller, 
+due to the aforementioned early termination of path traversals. 
+
+% \begin{figure}
+% 	{
+% 	\begin{pchstack}[boxed, center]
+% 		\procedure[linenumbering]{$\PSICAattack^{\PSICA(\cdot, Y)}(X)$}{
+% 			\text{Initialize empty set $S$.} \\
+% 			\text{Initialize max-priority queue $Q$.} \\
+% 			T \gets \mathsf{buildTree}(X) \\
+% 			k \gets \PSICA(X, Y) \\
+% 			Q.\push(p_{\PSICA}(k, |X|), (T.\treeRoot, k)) \\
+% 			\pcwhile Q \text{ is not empty} \pcdo \\
+% 			\t	(T_c, k_c) \gets Q.\pop() \pcskipln\\
+% 			\t	X_c \gets T_c.\treeSet \\
+% 			\t 	\pclinecomment{DFS path traversal} \\
+% 			\t	\pcwhile 0 < k_c < |X_c| \pcdo \\
+% 			\t	\t	T_L \gets T_c.\treeLeftChild; \; T_R \gets T_c.\treeRightChild \\
+% 			\t	\t	X_L \gets T_L.\treeSet; \; X_R \gets T_R.\treeSet \\
+% 			\t 	\t	k_L \gets \PSICA(X_L, Y) \\
+% 			\t	\t	k_R \gets k_c - k_L \\
+% 			\t	\t	p_L \gets p_{\PSICA}(k_L, |X_L|) \\
+% 			\t 	\t	p_R \gets p_{\PSICA}(k_R, |X_R|) \\
+% 			\t	\t	\pcif p_L > p_R \pcthen \pcskipln \\
+% 			\t	\t	\t	\pclinecomment{Continue with left child} \\
+% 			\t	\t	\t	T_c \gets T_L; \; k_c \gets k_L \\
+% 			\t	\t	\t	Q.\push(p_R, (T_R, k_R)) \\
+% 			\t	\t	\pcelse \pcskipln\\
+% 			\t	\t	\t	\pclinecomment{Continue with right child} \\
+% 			\t	\t	\t	T_c \gets T_R; \; k_c \gets z_R \\
+% 			\t	\t	\t	Q.\push(p_L, (T_L, k_L)) \\
+% 			\t	\pcif k_c = |T_c| \pcthen \\
+% 			\t	\t	S \gets S \cup X_c\\
+% 			\pcreturn S
+% 		}
+% 		\pchspace	
+% 		\procedure[linenumbering]{$\mathsf{buildTree}(\setT)$}{
+% 			\text{Initialize a tree $T$ with a single}\pcskipln\\
+% 			\pcparbox{node $\treeRoot$, which stores \setT. 
+% 			Build a balanced binary search tree by recursively dividing the set stored at a node 
+% 			into two disjoint subsets of roughly equal size.} \\
+% 			\pcreturn T
+% 		}
+% 	\end{pchstack}}
+% 	\caption{Intersection-recovery attack $\PSICAattack{}$ with oracle access to $\PSICA(\cdot, Y)$ for a fixed victim set $Y$.
+% 	Note that $Y$ is part of the oracle and unknown to the adversary. Adapted from \cite{USENIX:GHLWJL22}.}\label{fig:PSICA_attack}
+% \end{figure}

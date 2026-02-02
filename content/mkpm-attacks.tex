@@ -29,9 +29,9 @@ We omit a full proof of correctness, as the construction directly follows from t
 
 
 \heading{Time and query complexity.}
-Let $\lambda$ denote the maximum record length in $T$ and $Y$, and let $n := |T|$ and $m := |Y|$.
+Let $\ell_{\rec}$ denote the maximum record length in $T$ and $Y$, and let $n := |T|$ and $m := |Y|$.
 The attack has an asymptotic time complexity of
-$\bigO{(n\lambda)^2 + \lambda m}$.
+$\bigO{(n\ell_{\rec})^2 + \ell_{\rec} m}$.
 The membership check can be reduced to constant time by maintaining an auxiliary set of already added identifiers, as set membership can be tested in constant time.
 The attack requires only one protocol invocation and therefore establishes a tight lower bound on the number of queries needed to achieve MR.
 
@@ -93,13 +93,13 @@ Specifically, the identifiers in the target set $T$ can be partitioned into mult
 Because each record has a distinct length and the identifier order within records is preserved, the adversary can still establish a unique correspondence between the values in ${\hXone}'$ and the plaintext identifiers in $X'$. Consequently, any identifier shared between $Y$ and $X'$ can be inferred by identifying values common to $\hYone$ and ${\hXone}'$ and then mapping them back to their plaintext identifiers via $X'$.
 
 
-\heading{Time and query complexity.} This optimized attack also requires one protocol query and has a time complexity of \bigO{(n\lambda)^2 + \lambda m}.
+\heading{Time and query complexity.} This optimized attack also requires one protocol query and has a time complexity of \bigO{(n\ell_{\rec})^2 + \ell_{\rec} m}.
 However, the maximum record length has decreased from $|\Ispace{T}|$ to $\frac{\sqrt{1+8|\Ispace{T}|}-1}{2} \approx \sqrt{2|\Ispace{T}|}$. While (arguably) less conspicuous than the single-record variant,  the victim can still detect such an attack by checking whether the adversary's input contains no two records with the same length. In our next two attacks, we thus remove this assumption.
 
 \subsection{Record Enumeration Attack}\label{sec:rec_enum_attack}
 
 In this subsection, we present a more general attack that applies even when all records in the target set have equal length.
-For clarity, we assume that every record in the target set $T$ contains exactly $\lambda$ identifiers for some $\lambda \in \NN$; however, the attack extends directly to target sets with records of varying lengths.
+For clarity, we assume that every record in the target set $T$ contains the same number of identifiers, however, the attack extends directly to target sets with records of varying lengths.
 
 We refer to this attack as the \emph{Record Enumeration Attack}. It relies only on two properties of the extended functionality $\calF_{\LMKPM}$: (i) the order of identifiers within each target record is preserved in the leakage, and (ii) identifiers are hidden deterministically, so that repeated occurrences of the same identifier yield the same hidden value within a single protocol execution.
 
@@ -193,30 +193,20 @@ Overall, the attack runs in time \bigO{n (\log_2 n + \lambda) + \lambda m} and--
 While the record enumeration attack improves over the baseline in terms of detectability, it still requires an input whose record lengths grow with the target set size. We address this limitation by imposing an order on the records without explicitly assigning a unique index to each one. This approach extends each record by only two identifiers.
 
 The attack starts by checking whether there exists a column $j^*$ in $T$ in which every identifier is unique, i.e., $|\{\bt[j^*] \setdsc \bt \in T\}| = |T|$.
-This is a reasonable assumption, since many identifiers such as email addresses are usually unique across users.
+This is a reasonable assumption since many identifiers such as email addresses are usually unique across users.
 If no such column exists, the adversary can create one by sampling $n$ distinct identifiers
 and prepending each identifier to a distinct  record in $T$ (in this case $j^* = 0$).
 
-We can then link the records of $T$ by first choosing some arbitrary ordering $T= \{\bt_0, \dots, \bt_{n-1}\}$ 
-% and appending the unique index of the $i+1$-th record to the $i$-th record for all $i \in [n-1]$.
-% See \cref{subfig:snake_example_unique} for a small example. The linking procedure \snakeencodeUnique{} 
-% is implemented in \cref{fig:snakeencode1}.
-% The procedure outputs the modified target set $\setT'$ as a list $(t'_1, \dots, t'_n)$,
-% such that $t'_i$ is located at the $i$-th position in the (implicit) linked list.
+We can then link the records of $T$ by first choosing some arbitrary ordering $T= \{\bt_0, \dots, \bt_{n-1}\}$ and appending the unique index of the $i+1$-th record to the $i$-th record for all $i \in [n-1]$.
+See Figure~\ref{subfig:snake_example_unique} for a small example. The linking procedure \snakeencodeUnique{} outputs the modified target set $X$ as a list $(\bx_0, \dots, \bx_{n-1})$, such that $\bt_i$ corresponds to $\bx_i$ in the (implicit) linked list.
+
+Since the identifier hiding function in $\calF_\LMKPM$ is injective and deterministic for repeating identifiers, the pointers are preserved in the leakage $\hXone$.
+The adversary can therefore find the start of the linked list by finding the (unique) record whose $j^*$-th identifier is not appended to any other record and traverse the linked list to recover the original ordering of $X$.
 
 
+The procedure \snakerecoverUnique{} takes the input set leakage $\hXone$ and $j^*$ and outputs the elements of $\hXone$ as a list $(\bs_0, \dots, \bs_{n-1})$ such that $\bs_i$ has index $i$ in the linked list. Once the hidden records in $\hXone$ are matched with the corresponding plaintext records in $X$, we can apply a substitution-based transformation to recover a maximum reconstruction from $\hYone$.
 
-% Since the identifier hiding function in \LMKPM{} (see \cref{fig:MKPM}) is injective and deterministic for repeating identifiers, 
-% this linkage is preserved in the protocol leakage $\leak_{\setT'}$, where $(\leak_{\setT'}, \leakV) = \leak(\setT', \setV)$.
-% The adversary can therefore find the start of the linked list by finding the (unique) record whose $j^*$-th identifier
-% is not appended to any other record and traverse the linked list to recover the original ordering of $\setT$.
-% See procedure \snakerecoverUnique{} in \cref{fig:snakedecode1}.
-% The procedure takes the target set leakage $\leak_{\setT'}$ and $j^*$ and 
-% outputs the elements of $\leak_{\setT'}$ as a list $(t^*_1, \dots, t^*_n)$ such that $t^*_i$
-% has index $i$ in the linked list.
-% Having matched the hidden records in $\leak_{\setT'}$ with the plain records in $\setT'$,
-% we can then apply the usual substitution-based transformation to infer a maximum reconstruction from \leakV{}.
-% The full attack is displayed in \cref{fig:snakeattack}.
+The pseudocode for the full attack are given in Figure~\ref{fig:snakeattack}.
 
 
 
@@ -228,22 +218,9 @@ We can then link the records of $T$ by first choosing some arbitrary ordering $T
 The proof of Theorem~\ref{thm:snakeattack:correctness} can be found in Appendix~\ref{sec:snakeattack:correctness}.
 
 \heading{Time and query complexity.} 
-\snakeencodeUnique{} has an asymptotic average-case time complexity of \bigO{n} for $n = |T|$,
-% assuming \id{} in line \ref{lin:snake_encode_last_id} can be found in constant time\footnote{This is feasible with some additional assumptions on \setT. For instance, if \setT{} only contains email addresses, one may simply pick a single character for $\id$.}.
-% The same holds for \snakerecoverUnique{}.
-% In particular, $c$ in line~\ref{lin:snake_recover_c} can be found by inserting the last identifier of every record into a dictionary 
-% and then checking for the presence of the $j^*$-th identifier of every record.
-% Moreover, note that the loop in lines~\ref{lin:snake_recover_dowhile}~-~\ref{lin:snake_recover_dowhile_end}
-% traverses the linked list once, executing exactly $n$ iterations.
+Assuming \id{} in line \ref{lin:snake_encode_last_id} can be located in constant time, \snakeencodeUnique{} has an average-case time complexity of \(\bigO{n}\) for \(n = |T|\). The same applies to \snakerecoverUnique. Finding the starting index in line \ref{lin:snake_recover_c} involves inserting the last identifier of each record into a dictionary and checking for the presence of the \(j^*\)-th identifier, while the loop in lines \ref{lin:snake_recover_dowhile}--\ref{lin:snake_recover_dowhile_end} performs \(n\) iterations, traversing the linked list once.
 
-% Let $\lambda$ denote the length of the largest record in \setT{} or \setV.
-% Determining whether there exists a column in \setT{} that contains only unique identifiers
-% can be done in time \bigO{\lambda n}, also assuming that dictionary insertions and lookups can be done in average-case constant time.
-% Computing the dictionary $D$ requires at most $\lambda n$ write operations.
-% Adding the complexity of \dictInfer{}, \bigO{\lambda m} with $m = |\setV|$,
-% results in an overall average-case time complexity of \bigO{\lambda (n + m)} for \snakeattack.
-
-% Like \toyattack{} and \recenumattack{}, \snakeattack{} requires only one protocol invocation.
+Let \(\ell_{\rec}\) denote the length of the largest record in either \(T\) or \(Y\). Determining whether a column in \(T\) contains only unique identifiers can be done in $\bigO{\ell_{\rec} n}$ time, assuming that dictionary operations are average-case constant time. Constructing the dictionary $\Dict$ involves up to \(\ell_{\rec} n\) writes. Factoring in \dictInfer's \(\bigO{\ell_{\rec} m}\) complexity with \(m = |Y|\), the overall average-case time complexity for \snakeattack{} is \(\bigO{\ell_{\rec} (n + m)}\). Similar to the previous attacks, \snakeattack{} requires only one protocol invocation.
 
 \heading{Discussion and mitigation.}
 While requiring the same number of protocol invocations and incurring a comparable computational complexity to the other attacks, \snakeattack{} stands out for requiring only minimal modifications to the target set and is applicable to scenarios where the record length is constrained to a small constant.
