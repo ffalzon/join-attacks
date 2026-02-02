@@ -1,8 +1,33 @@
 \section{Discussion}
+\heading{Extensions.} \tianxin{What should we include here?} Following the
+two-party join work \cite{}, multi-party \cite{} and designated-party \cite{}
+variants have been proposed. Their security relies on a trust assumption, namely
+non-collusion between two parties. However, certain attacks such as learning
+honest-party inputs via adversarially chosen inputs are often left
+unaddressed. This raises a critical question: if such attacks are allowed, in
+which application scenarios do they genuinely not arise? The scope should
+therefore be made explicit at the time of proposal. Otherwise, this effectively
+renders the security proof of limited practical meaning, risking misuse in
+unintended settings. \tianxin{Maybe merge this with the next paragraph?}
 
-\subsection{Extensions}
+\heading{Mitigations.} As hinted in the introduction, standard security models
+in the MPC literature do not account for inference attacks arising from
+functionality outputs. Such attacks are often addressed only indirectly, for
+example through countermeasures such as set-size thresholds or restrictions on
+authorized inputs. However, our results show that in the PSU setting, an
+adversary can arbitrarily choose its input set and recover the other party's
+input set. For multi-key join operations, similar risks reappear and are not
+mitigated. These findings underscore the need for a deeper examination of
+existing countermeasures. In addition, several follow-up works rely on a strict
+non-collusion assumption to enable efficient designs. In practice, however, this
+assumption may fail; for example, under subpoena power or single-administrator
+access, thereby giving rise to risks similar to those identified in our
+analysis. \tianxin{Is it standard join instead?}
 
-\subsection{Mitigations}
+More broadly, our study reiterates that functionality outputs must be th
+explicitly incorporated into the security model. Failing to do so results in
+weak input privacy guarantees: in the worst case, a single query may suffice to
+recover another party's entire input. \tianxin{Check.}
 
 % The mitigation of the record enumeration attack is clearly more 
 % involved than with the baseline attack,
@@ -25,4 +50,8 @@
 % since certain types of identifiers may naturally occur often.
 % IP addresses behind a Network Address Translation (NAT) device serve as an immediate example.
 
-\subsection{Looking towards Deployment}
+\heading{Looking towards Deployment.} We observe a growing adoption of MPC
+technologies by large companies. At the same time, this raises concerns about
+users' privacy expectations. When the limitations of the security model are not
+clearly communicated, users may contribute their data under a false sense of
+privacy, potentially leading to unintended data exposure.
