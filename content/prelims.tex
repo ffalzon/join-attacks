@@ -1,14 +1,6 @@
 \section{Preliminaries}
 
 
-\subsection{Single-Key Private Matching Functionality}
-
-
-Meta's PrivateID protocol~\cite{PMC} implements the \emph{Single-Key Private Matching (SKPM)} functionality which we denote as $\calF_{\SKPM}$.
-
-The functionality $\calF_{\SKPM}$ involves two parties, $P_1$ and $P_2$, each with input sets $X \subseteq \Ispace{}$ and $Y \subseteq \Ispace{}$, respectively. The functionality computes $Z := X \cup Y$ and assigns new identifiers to the elements of $Z$ by evaluating them under an injective random function, producing the set $\UID{}$. It then computes two maps $\MX: \UID{} \to X \cup \{\bot\}$ and $\MY: \UID{} \to Y \cup \{\bot\}$, which locally map elements in $\UID{}$ to the original elements in $X$ and $Y$ (or $\bot$ if the element only occurs in the other party's set). In the end, party $P_1$ receives the set of UIDs, $\UID{}$, and dictionary $\MX$; party $P_2$ receives $\UID{}$ and $\MY$.
-
-See Figure~\ref{fig:SKPM_definition} for the formal definition.
 
 \begin{figure}
     \fbox{%
@@ -54,7 +46,7 @@ See Figure~\ref{fig:SKPM_definition} for the formal definition.
 
 
 \subsection{Multi-key Private Matching Functionality}
-\label{sec:MK-PID}
+\label{sec:MKPM-functionality}
 
 The Multi-Key PrivateID (MK-PrivateID) protocol~\cite{MKPMC} extends the single-key PrivateID protocol~\cite{PMC} to support matching on multiple identifiers. We call the functionality that MK-PrivateID implements the \emph{Multi-key Private Matching (MKPM)} functionality. In this setting, two parties $P_1$ and $P_2$ hold tables of records $X$ and $Y$, respectively, where each record contains multiple identifiers (e.g., names or email addresses). The matching process produces a one-to-one correspondence between records in $X$ and $Y$ such that each matched pair shares at least one identifier.
 

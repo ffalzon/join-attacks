@@ -1,47 +1,38 @@
 
-\section{Applications to Private Record Matching}\label{sec:PSUCA_to_matching}
-In this section, we demonstrate how the $\PSUCAattack{}$ attack can be applied to the functionality of Meta's PrivateID protocol, $\calF_{\SKPM}$, and (with some additional assumptions) to the $\calF_{\MKPM}$ functionality formalized in Figure~\ref{fig:SKPM_definition}.
+\section{Analysis of the MKPM Functionality}\label{sec:PSUCA_to_matching}
+In this section, we show how to apply the $\PSUCAattack{}$ attack to the functionality $\calF_{\MKPM}$---with some additional assumptions---to achieve MRR (Definition~\ref{def:matchable_records_recovery}).
+In Appendix~\ref{sec:psuca-privateID-attack} we also explain how $\PSUCAattack{}$ can be applied to the single key private matching functionality $\calF_{\SKPM}$ realized by PrivateID~\cite{PMC}.
 
-\subsection{Applying the PSU-CA Attack to PrivateID}
-Recall the functionality $\calF_{\SKPM}$ defined in Figure~\ref{fig:SKPM_definition}. Since each element $z \in Z = X \cup Y$ is mapped to its unique identifier under an injective function $f$, the relationship $|\UID| = |X \cup Y|$ holds for any sets $X$ and $Y$. Consequently, we can directly apply $\PSUCAattack{}$ to $\calF_{\SKPM}$ to recover $X \cap Y$ in at most $|X| + 1$ protocol invocations. Guo et al.~\cite{USENIX:GHLWJL22} examined PrivateID in the context of their intersection recovery attack on $\PSICA{}$, where they recover $X \cap Y$ in at most $|X|$ protocol invocations. However, their approach relies on the fact that PrivateID leaks $|X \cap Y|$ during protocol execution, whereas our attack depends solely on the functionality output.
 
-\subsection{Applying the PSU-CA Attack to MKPM}
-Meta's MK-PrivateID protocol~\cite{MPMC} implements the Multi-Key Private Matching (MKPM) functionality we defined in \ref{sec:prel_leakage}.
-We show in this section that $\PSUCAattack{}$ can be applied to MKPM to 
-learn which records in the target set contain an identifier that also occurs in the victim set.
-This corresponds the \emph{Matchable Record Recovery} goal we formalized in Figure~\ref{sec:MRR_goal}.
-Recall that the attacker is given a set of records $Y$, the target set, and can evaluate $\calF_{\MKPM}(X, Y)$
-for arbitrarily many inputs $X$, while the victim set $Y$ remains static.
-The adversary's goal is to determine the set $T \sqcap Y  = 
-\{\bt \in T \setdsc \exists v \in 
-Y \; \exists j, \ell \in \NN : t[j] = v[\ell]\}$.
+Recall that the adversary is given a target set of records $\setT\subseteq\Ispace{}^n$, and can evaluate $\calF_{\MKPM}(\setX, \setY)$
+for arbitrarily many inputs $\setX$, while the set $\setY$ remains static.
+Its goal is to determine the set $\setT \sqcap \setY$.
 
-% Similar to its single-key counterpart SKPM, 
-% MKPM outputs a set $\UID$. However, instead of assigning a common uid to two identical records it matches records
-% using a matching logic (see \cref{fig:match_logic}) and assigns a common uid to pairs of matching records,
-% as well as a separate uid to every unmatched record in \setT{} and \setV{}.
-% Thus, taking $|\UID|$ as the the union cardinality to carry out \PSUCAattack{} seems to be a natural approach 
-% to identify matching records in \setT{}.
+$\mathcal F_{\mathrm{MKPM}}$ outputs the set~$\UID$ of universal identifiers
+assigned to all records held by the parties. Rather than assigning a common UID
+to two identical records, it applies a matching logic (see
+Figure~\ref{fig:match_logic}) and assigns a common UID to each pair of matched records,
+while assigning a distinct UID to every unmatched record in~$\setT$ and~$\setY$. Thus,
+using $|\UID|$ as the cardinality for carrying out the
+$\PSUCAattack{}$ appears to be a natural approach for identifying matching records
+in~$\setT$.
+
  
-% Recall that the \PSUCAattack{} attack relies on the observation that $|X \cap Y| = |X_1 \cap Y| + |X_2 \cap Y|$,
-% where $X$ and $Y$ are arbitrary sets and $X_1, X_2$ form a partition of $X$.
-% Applying \cref{eqn:union_intersect_cardinalities}, this is equivalent to $|X \cup Y| = |X_1 \cup Y| + |X_2 \cup Y| - |Y|$.
-% Translating this to the multi-key setting, let $\setX \subseteq \setT$ and let $\setX_1, \setX_2$ be a partition of \setX{}.
-% Moreover, let \UID{}, $\UID_1$, and $\UID_2$ result from evaluating $\MKPM(\setX, \setV)$ and $\MKPM(\setX_i, \setV)$ for $i \in \{1,2\}$ respectively.
-% Then, the following relation needs to hold:
-% \begin{equation}
-% 	\label{eqn:MKPM_PSUCA_condition}
-% 	|\UID| = |\UID_1| + |\UID_2| - |\setV|
-% \end{equation}
+Recall that the $\PSUCAattack{}$ attack relies on the observation that $|X \cap Y| = |X_1 \cap Y| + |X_2 \cap Y|$, where $X$ and $Y$ are arbitrary sets and $X_1, X_2$ form a partition of $X$.
+Applying Eq.~\ref{eqn:union_intersect_cardinalities}, this is equivalent to $|X \cup Y| = |X_1 \cup Y| + |X_2 \cup Y| - |Y|$.
+Translating this to the multi-key setting, let $\setX \subseteq \setT$ and let $\setX_1, \setX_2$ be a partition of $\setX$.
+Moreover, let $\UID$, $\UID_1$, and $\UID_2$ be the result from evaluating $\calF_{\MKPM}(\setX, \setY)$ and $\MKPM(\setX_i, \setY)$ for $i \in \{1,2\}$ respectively.
+Then we require the following relation to hold:
+\begin{equation}
+	\label{eqn:MKPM_PSUCA_condition}
+	|\UID| = |\UID_1| + |\UID_2| - |\setY|
+\end{equation}
 
-% Unfortunately, this does not hold for general inputs for two reasons.
-% First, as we elaborated in \cref{sec:MRR_goal}, the MKPM functionality shuffles the inputs before 
-% evaluating the matching logic on them. 
-% As a result, the record matching logic does not consistently match the same number of records in different protocol runs for some fixed inputs,
-% i.e., different evaluations of \MKPM{} with the same inputs result in \UID{} sets with different cardinalities.
-% And second, the matching logic violates \cref{eqn:MKPM_PSUCA_condition} even in cases where shuffling the inputs has no effect on the former.
+Unfortunately, this does not hold for general inputs for two reasons.
+First, the MKPM functionality shuffles the inputs before evaluating the matching logic on them. As a result, the record matching logic does not consistently match the same number of records in different protocol runs for some fixed inputs, i.e., different evaluations of $\calF_\MKPM$ with the same inputs may result in $\UID$ sets with different cardinalities.
+Second, the matching logic violates Eq.~\ref{eqn:MKPM_PSUCA_condition} even in cases where shuffling the inputs has no effect on the former.
 
-% Consider the situation depicted in \cref{fig:MPMK_PSUCA_counterexample}.
+Consider the example depicted in Figure~\ref{fig:MPMK_PSUCA_counterexample}.
 % On the left, we show an example of a target set \setT{} and victim set \setV{}, 
 % where two records in the target set share an identifier with the same record in the victim set.
 % We call this a \emph{many-to-one relation}.

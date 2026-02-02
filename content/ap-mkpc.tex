@@ -1,42 +1,5 @@
 \section{Preliminaries Supplementary Content}\label{ap:mkpc}
 
-\begin{figure}[H]
-	\fbox{%
-    \begin{minipage}[t]{0.98\columnwidth}
-		\textbf{Parameters:} Two parties, $C$ and $P$.\\
-		\noindent\textbf{Functionality:} $\calF_{\SKPM}(X, Y)$: 
-        \hfill \begin{enumerate}
-			\item Receive the input from party $P_1$: $X = \{x_i \setdsc i \in [n]\}$
-			\item Receive the input from party $P_2$: $Y = \{y_i \setdsc i \in [m]\}$
-			\item Compute $Z := X \cup Y$.
-			\item Sample $f \sample \InjFuncs[\Ispace, \calG]$.
-			\item Compute dictionaries
-            $\MX : \calG \to X \cup \{\bot\}$ and $\MY : \calG \to Y \cup \{\bot\}$ s.t. for all $z \in Z$:
-			\[
-				\MX[f(z)] = \begin{cases*}
-					z & if $z \in X$ \\
-					\bot & otw.
-				\end{cases*} \\
-            \]
-            \[
-				\MY[f(z)] = \begin{cases*}
-					z & if  $z \in Y$ \\
-					\bot & otw.
-				\end{cases*}
-            \]
-		\item Compute $\UID \gets \{f(z) \setdsc z \in Z\}$.
-		\item Output:
-            \begin{itemize}
-                \item Send $\UID, \MX$ to $P_1$.
-                \item Send $\UID, \MY$ to $P_2$.
-			\end{itemize}
-	\end{enumerate}  
-    \end{minipage}
-    }
-	\caption{The Single-Key Private Matching functionality $\calF_{\SKPM}$, implemented by Meta's PrivateID protocol \cite{PMC}.}\label{fig:SKPM_definition}
-\end{figure}
-
-
 
 \begin{figure}[H]
 	\begin{pchstack}[boxed, center]
