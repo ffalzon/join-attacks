@@ -1,50 +1,15 @@
 \section{Preliminaries}
 
 
-\subsection{The PrivateID Functionality}
+\subsection{Single-Key Private Matching Functionality}
 
 
-Meta's PrivateID protocol~\cite{PMC} implements a Single-Key Private Matching (SKPM) functionality which we denote as $\calF_{\SKPM}$.
+Meta's PrivateID protocol~\cite{PMC} implements the \emph{Single-Key Private Matching (SKPM)} functionality which we denote as $\calF_{\SKPM}$.
 
 The functionality $\calF_{\SKPM}$ involves two parties, $P_1$ and $P_2$, each with input sets $X \subseteq \Ispace{}$ and $Y \subseteq \Ispace{}$, respectively. The functionality computes $Z := X \cup Y$ and assigns new identifiers to the elements of $Z$ by evaluating them under an injective random function, producing the set $\UID{}$. It then computes two maps $\MX: \UID{} \to X \cup \{\bot\}$ and $\MY: \UID{} \to Y \cup \{\bot\}$, which locally map elements in $\UID{}$ to the original elements in $X$ and $Y$ (or $\bot$ if the element only occurs in the other party's set). In the end, party $P_1$ receives the set of UIDs, $\UID{}$, and dictionary $\MX$; party $P_2$ receives $\UID{}$ and $\MY$.
 
 See Figure~\ref{fig:SKPM_definition} for the formal definition.
 
-\begin{figure}
-	\fbox{%
-    \begin{minipage}[t]{0.98\columnwidth}
-		\textbf{Parameters:} Two parties, $C$ and $P$.\\
-		\noindent\textbf{Functionality:} $\calF_{\SKPM}(X, Y)$: 
-        \hfill \begin{enumerate}
-			\item Receive the input from party $P_1$: $X = \{x_i \setdsc i \in [n]\}$
-			\item Receive the input from party $P_2$: $Y = \{y_i \setdsc i \in [m]\}$
-			\item Compute $Z := X \cup Y$.
-			\item Sample $f \sample \InjFuncs[\Ispace, \calG]$.
-			\item Compute dictionaries
-            $\MX : \calG \to X \cup \{\bot\}$ and $\MY : \calG \to Y \cup \{\bot\}$ s.t. for all $z \in Z$:
-			\[
-				\MX[f(z)] = \begin{cases*}
-					z & if $z \in X$ \\
-					\bot & otw.
-				\end{cases*} \\
-            \]
-            \[
-				\MY[f(z)] = \begin{cases*}
-					z & if  $z \in Y$ \\
-					\bot & otw.
-				\end{cases*}
-            \]
-		\item Compute $\UID \gets \{f(z) \setdsc z \in Z\}$.
-		\item Output:
-            \begin{itemize}
-                \item Send $\UID, \MX$ to $P_1$.
-                \item Send $\UID, \MY$ to $P_2$.
-			\end{itemize}
-	\end{enumerate}  
-    \end{minipage}
-    }
-	\caption{The Single-Key Private Matching functionality $\calF_{\SKPM}$, implemented by Meta's PrivateID protocol \cite{PMC}.}\label{fig:SKPM_definition}
-\end{figure}
 \begin{figure}
     \fbox{%
     \begin{minipage}[t]{0.98\columnwidth}
@@ -88,14 +53,14 @@ See Figure~\ref{fig:SKPM_definition} for the formal definition.
 \end{figure}
 
 
-\subsection{The MK-PrivateID Functionality}
+\subsection{Multi-key Private Matching Functionality}
 \label{sec:MK-PID}
 
-The Multi-Key PrivateID (MK-PrivateID) protocol~\cite{MKPMC} extends the single-key PrivateID protocol~\cite{PMC} to support matching on multiple identifiers. In this setting, two parties $P_1$ and $P_2$ hold tables of records $X$ and $Y$, respectively, where each record contains multiple identifiers (e.g., names or email addresses). The matching process produces a one-to-one correspondence between records in $X$ and $Y$ such that each matched pair shares at least one identifier.
+The Multi-Key PrivateID (MK-PrivateID) protocol~\cite{MKPMC} extends the single-key PrivateID protocol~\cite{PMC} to support matching on multiple identifiers. We call the functionality that MK-PrivateID implements the \emph{Multi-key Private Matching (MKPM)} functionality. In this setting, two parties $P_1$ and $P_2$ hold tables of records $X$ and $Y$, respectively, where each record contains multiple identifiers (e.g., names or email addresses). The matching process produces a one-to-one correspondence between records in $X$ and $Y$ such that each matched pair shares at least one identifier.
 
 MK-PrivateID’s strength lies in handling one-to-many and many-to-one matches i.e., when a record from one party shares identifiers with multiple records from the other. The protocol resolves many-to-one matches using a ranked, deterministic join, and resolves one-to-many matches randomly. Each party outputs a mapping of universal identifiers (UIDs) to their records such that matching records are assigned the same UID, while unmatched records receive distinct UIDs. These UIDs enable further downstream computation over the associated data. Figure~\ref{fig:matching-logic-example} illustrates an example input featuring a one-to-many match (Fig.~\ref{fig:match-input}) that is resolved to a one-to-one correspondence, along with the resulting output (Fig.~\ref{fig:match-output}).
 
-The original work~\cite{MKPMC} provides a proof sketch for security against a semi-honest adversary, along with a functionality description. We note that the specified functionality leaks more information than desired ouput. We therefore distinguish the intended functionality---which computes the set of UIDs and the mapping of UIDs to records ($\calF_{\MKPM{}}$)---from the real functionality ($\calF_{\LMKPM{}}$), which additionally leaks the entire bipartite graph of all matches. Returning to our example, given the tables in Figure~\ref{fig:match-input}, $\calF_{\MKPM{}}$ outputs only the maps and UID sets shown in Figure~\ref{fig:match-output}, whereas $\calF_{\LMKPM{}}$ additionally leaks to party $P_1$ a graph isomorphic to that comprising the green and red edges in Figure~\ref{fig:match-input}.
+The original work~\cite{MKPMC} provides a proof sketch for security against a semi-honest adversary. We note that the specified functionality leaks more information than desired ouput. We therefore distinguish the intended functionality---which computes the set of UIDs and the mapping of UIDs to records ($\calF_{\MKPM{}}$)---from the real functionality ($\calF_{\LMKPM{}}$), which additionally leaks the entire bipartite graph of all matches. Returning to our example, given the tables in Figure~\ref{fig:match-input}, $\calF_{\MKPM{}}$ outputs only the maps and UID sets shown in Figure~\ref{fig:match-output}, whereas $\calF_{\LMKPM{}}$ additionally leaks to party $P_1$ a graph isomorphic to that comprising the green and red edges in Figure~\ref{fig:match-input}.
 
 \subsubsection{Functionality}
 \label{sec:mkpmc_functionality}
@@ -109,8 +74,7 @@ Y := \{\by_k = (y_{k,1}, \ldots, y_{k,m_k}) \mid k \in [m]\},
 \]
 where all identifiers $x_{i,j}$ and $y_{k,\ell}$ are in $\calI$.
 
-The functionality takes $X$ and 
-$Y$ as inputs from the respective parties and then applies a random permutation. The records of $X$ are permuted while preserving the order of identifiers within each record, whereas in $Y$ both the records and the identifiers within each record are permuted. We denote the resulting collections by $X'$ and $Y'$, respectively.\footnote{Although sets are unordered, the implementation~\cite{PIDRepo} treats inputs as ordered lists of records; we follow the authors of~\cite{MKPMC} in adopting this terminology.}
+The functionality takes $X$ and $Y$ as inputs from the respective parties and then applies a random permutation. The records of $X$ are permuted while preserving the order of identifiers within each record, whereas in $Y$ both the records and the identifiers within each record are permuted. We denote the resulting collections by $X'$ and $Y'$, respectively.\footnote{Although sets are unordered, the implementation~\cite{PIDRepo} treats inputs as ordered lists of records; we follow the authors of~\cite{MKPMC} in adopting this terminology.}
 
 The core of the protocol is the record-matching procedure $\match$ (see Appendix~\ref{ap:mkpc} for detailed pseudocode), which takes shuffled inputs $X'$ and $Y'$. Each record in $X'$ (resp. $Y'$) is matched with at most one record in $Y'$ (resp. $X'$). For each identifier position $j$ in $X'$, $\match$ scans all $\by_k \in y'$ and matches $\by_k$ to the first $\bx_i \in X'$ whose $j$-th identifier appears in $\by_k$ i.e., for which there exists $\ell$ such that
 \[
@@ -175,54 +139,3 @@ $P_2$ observes the hidden and re-shuffled set $X''$.
 
 The pseudocode can be found in Figure~\ref{fig:MKPM} with the additional leakage contained in a dashed boxed.
 
-\subsection{Recovery Goals}
-\label{sec:recovery-goals}
-
-Throughout this work, we consider a setting with two parties, where one party (the \emph{victim}) behaves honestly and holds a fixed, static input, while the other party is \emph{input-malicious}. The malicious party follows the protocol specification but may evaluate the functionality arbitrarily many times and adaptively choose its own inputs. 
-The adversary is given some target set $T$ and oracle access to $\calF(\cdot; Y)$ and tries to infer as much information about $Y$ with respect to $T$ as possible. The adversary’s precise objective depends on the targeted functionality, which we specify below.
-
-
-
-\subsubsection{Maximum Set Reconstruction}\label{sec:MR_goal}
-
-Recovering the full victim records that exactly match records in the target set is unlikely to yield satisfactory results. Instead, we relax our recovery goal to identifying which identifiers in the target set also occur in the victim set. 
-\ff{satisfactory is not clear; make it clear that we cannot do better with respect to plaintext recovery}
-Specifically, the adversary aims to reconstruct all victim records that contain at least one identifier appearing in $T$. We refer to this goal as \emph{Maximum Set Reconstruction} (MSR). See Figure~\ref{fig:maximum-reconstruction-example} for an illustration.
-
-\begin{definition}[Maximum Set Reconstruction]\label{def:max_recons}
-	Let $T$ and $Y$ be sets of records. An adversary $\adv$, given $T$ and oracle access to the functionality $\calF_{\LMKPM}(\ \cdot\ ; Y)$, achieves \textbf{maximum set reconstruction (MSR)} of $Y$ with respect to $T$ if it outputs a multiset $R_Y$ for which there exists an injective mapping $\varphi : R_Y \to Y$ such that
-	\begin{enumerate}
-		\item For all $\by^* \in R_Y$ and all $\id \in \by^*$ we have $\id \in \varphi(\by^*)$.
-		\item For all $\by^* \in R_Y$ 
-		and all $\id \in\varphi(\by^*)$ we have if $\id \in \Ispace{T}$ 
-		then $\id \in \by^*$.
-		\item For all $\by \in Y$, if there is some $\id \in \by$ 
-		with $\id \in \Ispace{T}$ then $\by \in \varphi\left(R_Y\right)$. 
-	\end{enumerate} 
-\end{definition}
-
-Injectivity of $\varphi$ ensures that each $\by^* \in R_Y$ corresponds to exactly one $\by \in Y$.
-Condition~(1) enforces per-record soundness, i.e., every identifier in a reconstructed record
-appears in the corresponding original record.
-Condition~(2) captures $\Ispace{T}$-restricted per-record completeness i.e., each reconstructed record contains all identifiers from its original record that also appear in $\Ispace{T}$.
-Finally, Condition~(3) enforces $\Ispace{T}$-restricted global completeness i.e., all records
-containing an identifier from $\Ispace{T}$ are at least partially reconstructed.
-
-
-\begin{figure}[t]
-    \centering
-    \subfloat[\label{fig:target-set-example}Target set $T$.]%
-    {
-    \includegraphics[width=0.29\columnwidth]{figures/target-set.pdf}} 
-    \quad
-	\subfloat[\label{fig:victim-set-example}Victim set $Y$.]%
-    {
-    \includegraphics[width=0.294\columnwidth]{figures/victim-set.pdf}} 
-    \quad
-    \subfloat[\label{fig:max-recon-output} Max recon. ]%
-    {
-    \includegraphics[width=0.195\columnwidth]{figures/max-recon.pdf}}
-    \caption{
-    A maximum reconstruction $R_Y$. Each matched record in $Y$ corresponds to exactly one record in $R_Y$, and all identifiers shared between the matched record and the target set $T$ appear in the corresponding record $R_Y$.
-    \label{fig:maximum-reconstruction-example}}
-\end{figure}

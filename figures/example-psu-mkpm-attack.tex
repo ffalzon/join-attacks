@@ -1,0 +1,68 @@
+{\def\linecorr{-.1pt} % Reduced correction for tighter placement
+	\def\rowspace{1cm} % Adjust row space
+	\def\colspace{3cm} % Widen the figures
+	\def\setspace{0.2cm} % Reduce space between figures
+	\def\setvertspace{.5cm} % Adjust vertical space between figure rows
+	\def\minwidthid{1cm} % Wider blocks
+	\def\blockminheight{2em} % Taller blocks
+	\begin{tikzpicture}
+		[block/.style={draw,minimum width=#1, minimum height=\blockminheight,font={\small}},
+		block/.default=10em,high/.style={},auto,
+		node distance=0, % Initially 0 to control spacing
+		>=Stealth]
+		
+		% Top Figure
+		% Nodes
+		\node[block=\minwidthid,fill=trow-dark] (alice1) {$\id_1$};
+		\node[block=\minwidthid,fill=trow-dark, right=\linecorr of alice1] (alice2) {$\id_2$};
+
+		\node[block=\minwidthid,fill=trow-light, below=\rowspace of alice1] (bob1) {$\id_3$};
+		\node[block=\minwidthid,fill=trow-light, right=\linecorr of bob1] (bob2) {$\id_4$};
+
+		\coordinate (mid) at ($(alice2)!0.5!(bob2)$);
+
+		\node[block=\minwidthid,fill=trow-dark, right=\colspace of mid] (vic1) {$\id_3$};
+		\node[block=\minwidthid,fill=trow-dark, right=\linecorr of vic1] (vic2) {$\id_2$};
+
+
+		% Connections
+		\draw[dashed] (alice2) to (vic1);
+		\draw (bob2) to (vic1);
+
+		% Labels and descriptions
+		\coordinate (center1) at ($(alice2.south east)!0.5!(vic1.west)$);
+		
+		\node[above=.3cm of alice1.east] (Tlabel) {$T$};
+		\node[above=.3cm of vic1.east] (Vlabel1) {$Y$};
+		\node[below=.8cm of center1] (UIDlabel) {$|\UID| = 2$};
+
+		% Bottom Figure
+		% Adjust vertical placement by node distance and below distance
+		\coordinate (bottom_start) at ($(bob1.south) + (0,-\setspace)$);
+
+		\node[block=\minwidthid,fill=trow-dark, below=\setvertspace of bottom_start] (alicesub1) {$\id_1$};
+		\node[block=\minwidthid,fill=trow-dark, right=\linecorr of alicesub1] (alicesub2) {$\id_2$};
+		\node[block=\minwidthid,fill=trow-dark, right=\colspace of alicesub2] (vicsub1) {$\id_3$};
+		\node[block=\minwidthid,fill=trow-dark, right=\linecorr of vicsub1] (vicsub2) {$\id_2$};
+
+		\node[block=\minwidthid,fill=trow-dark, below=\setvertspace of alicesub1] (bobsub1) {$\id_3$};
+		\node[block=\minwidthid,fill=trow-dark, right=\linecorr of bobsub1] (bobsub2) {$\id_4$};
+		\node[block=\minwidthid,fill=trow-dark, right=\colspace of bobsub2] (vicsub3) {$\id_3$};
+		\node[block=\minwidthid,fill=trow-dark, right=\linecorr of vicsub3] (vicsub4) {$\id_2$};
+
+		% Connections
+		\draw (alicesub2) to (vicsub1);
+		\draw (bobsub2) to (vicsub3);
+
+		% Labels and descriptions
+		\coordinate (center2) at ($(alicesub2.east)!0.5!(vicsub1.west)$);
+		\coordinate (center3) at ($(bobsub2.east)!0.5!(vicsub3.west)$);
+
+		\node [above=.3cm of alicesub1.east] (Tlabel2) {$T_1$};
+		\node [above=.3cm of vicsub1.east] (Vlabel2) {$Y$};
+		\node [below=0cm of center2] (UIDlabel1) {$|\UID_1| = 1$};
+
+		\node [above=.3cm of bobsub1.east] (Tlabel3) {$T_2$};
+		\node [above=.3cm of vicsub3.east] (Vlabel3) {$Y$};
+		\node [below=0cm of center3] (UIDlabel2) {$|\UID_2| = 1$};
+\end{tikzpicture}}

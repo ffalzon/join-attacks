@@ -1,3 +1,31 @@
+\subsection{Proof of Correctness of PSU-CA attack applied to MKPM}
+\label{sec:psu-mkpm:correctness}
+
+% \begin{proof}
+% 	Let \posSet{} and \negSet{} be the two sets output by $\PSUCAattack^{\MKPM(\cdot, \setV)}(\setT)$.
+% 	Note all records of \setT{} are contained in some subset $\setT_c\subseteq \setT$ that will eventually reach line~\ref{lin:PSUCA_add_condition},
+% 	since the attack only terminates once the priority queue is empty. 
+% 	Therefore, every record of \setT{} is added to either \posSet{} or \negSet{}.
+% 	For any $\setT_c$ reaching line~\ref{lin:PSUCA_add_condition} 
+% 	we have that either (1) $k_c = |\setT_c|$ or (2) $k_c  = 0$ by the loop condition on line~\ref{lin:PSUCA_inner_while_condition}.
+% 	Let $\UID_c$ result from evaluating $\MKPM(\setT_c, \setV)$.
+% 	By \cref{eqn:union_intersect_cardinalities} and \cref{lem:set_isolation_inference}, we have $k_c = |\setT_c| + |\setV| - |\UID_c|$.
+% 	\begin{description}
+% 		\item[Case (1)] If $k_c = |\setT_c|$, then we have $|\UID_c| = |\setV|$, i.e., all records of $\setT_c$ are matched. 
+% 		Since records are only added to \posSet{} if this case applies, we have $\posSet \subseteq \setT \sqcap \setV$.
+% 		\item[Case (2)] If $k_c = 0$, then $|\UID_c| = |\setT_c| + |\setV|$, i.e., no records of $\setT_c$ 
+% 		were matched. Therefore, no record in $\setT_c$ shares any identifiers with any record in $\setV{}$.
+% 		Since records are only added to \negSet{} if this case applies, we have $\negSet \subseteq \setT \setminus (\setT \sqcap \setV)$. 
+% 	\end{description}
+% 	We have therefore shown that \posSet{} only contains matchable records, \negSet{} only contains non-matchable records 
+% 	and that every record in \setT{} is contained in either \posSet{} or \negSet{}.
+% 	This proves the theorem.
+% \end{proof}
+
+\subsection{Proof of Correctness of dictinferMR}
+\label{sec:dictinfer:correctness}
+
+
 % \begin{lemma}
 % 	\label{lem:dictinfer_MR}
 % 	Let \setX{} and \setY{} be two sets of records and let $(\leakX, \leakY) \sample \leak(\setX, \setY)$.

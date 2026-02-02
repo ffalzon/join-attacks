@@ -1,0 +1,87 @@
+\section{Threat Model and Recovery Goals}
+\label{sec:recovery-goals}
+
+\subsection{Threat Model}
+Throughout this work, we consider a setting with two parties: the first party, $\tilde{P_1}$ (the adversary), is \emph{input-malicious} and may adaptively modify its inputs, while the second party, $P_2$ (the victim), behaves honestly and holds a fixed, static input. The malicious party, $\tilde{P_1}$, follows the protocol specification but is allowed to evaluate the functionality arbitrarily many times and adaptively choose its inputs.
+The adversary is given a target set $T$ and oracle access to $\calF(\cdot; Y)$, where $Y$ is the input held by $P_2$. The goal of the adversary is to infer as much information about $Y$ as possible, with respect to $T$. The adversary’s specific objective depends on the targeted functionality, which we describe in detail below.
+
+\subsection{Recovery Goals Against $\calF_{\PSU}$ and $\calF_{\PSUCA}$}\label{sec:IR_goal}
+
+The goal of private set union (PSU) is to hide the intersection of the input sets~\cite{USENIX:JSZG24}. The natural recovery goal for attacks against PSU and PSU-CA is to thus recover this intersection.
+
+\begin{definition}[Intersection Recovery]
+	Let $\calF$ be either the $\PSU$ or the $\PSUCA$ functionality and let $X$ and $Y$ be two sets.
+	Given a target set $T$ and oracle access to $\calF(\cdot, Y)$ an adversary $\adv$ achieves \textbf{intersection recovery} if it outputs $T \cap Y$.
+\end{definition}
+
+Recovering the intersection is a goal that was also consisdered by attacks against PSI-related functionalities e.g.,~\cite{USENIX:GHLWJL22,NDSS:JiaDuYan24}.
+
+
+\subsection{Recovery Goal Against $\calF_{\MKPM}$}\label{sec:MRR_goal}
+
+Given that the $\calF_{\MKPM}$ functionality operates on sets of records, a natural recovery goal would be to recover the set of records appearing in both input sets. However, exact matches between records are unlikely in real-world scenarios. We thus adapt the intersection recovery goal to the multi-key setting.
+
+The matching logic in MK-PrivateID (see Figure~\ref{fig:match_logic} for a definition and Figure~\ref{fig:matching-logic-example} for an example) assigns the same UID to matched pairs of records and separate UIDs to unmatched ones. One can think of $\match$ as computing a pseudo-union of records, where a record in the victim's set and one in the target set are considered ``equal'' if they share the same UID. A natural generalization of set intersection is to recover the corresponding pseudo-intersection, i.e., records in the adversary’s target set that are matched with some record in the victim set. However, since $T$ and $Y$ are shuffled before matching, the logic does not consistently pair identical records across different protocol executions with the same inputs, and even the number of matched records may vary.
+
+We relax this pseudo-intersection notion to include all records in the target set sharing at least one identifier with some record in the victim set. These records, which could \emph{potentially} be matched by the logic, are called \textbf{matchable records}. We formalize this as:
+\[
+    T \sqcap Y := \{\bt \in T \setdsc \exists \by \in Y,\ \exists j, \ell \in \NN \text{ s.t. } \bt[j] = \by[\ell]\}
+\]
+For an example, consider the inputs depicted in Figure~\ref{fig:matching-logic-example}. Here $X\sqcap Y = X$ since both records in $X$ are matchable with records in $Y$.
+
+Unlike standard set intersection, $T \sqcap Y$ is not commutative. In particular, $T \sqcap Y \subseteq T$, but $T \sqcap Y \nsubseteq Y$ in general. We therefore adopt the recovery of the matchable records as the attack goal in our analysis of the $\mathcal F_{\MKPM}$ functionality (without leakage).
+
+
+\begin{definition}[Matchable Record Recovery]\label{def:matchable_records_recovery}
+	Let $T$ and $Y$ be two sets of records.
+	An adversary $\adv$, given a target set $T$ and oracle access to $\calF_{\MKPM}(\cdot, Y)$
+	achieves \textbf{matchable record recovery (MRR)} if it outputs $T\sqcap Y$.
+\end{definition}
+
+Note that MRR does not require the adversary to reconstruct identifiers or records in $Y$. Nevertheless, this information is sensitive and should not be recoverable, as simply knowing that an identifier from a user appears in another organization's dataset can compromise the privacy of that user. Furthermore, in the original paper~\cite{MKPMC}, specific precautions against leaking this information are emphasized in the protocol design.
+
+
+\subsection{Recovery Goal Against $\calF_{\LMKPM}$}\label{sec:MR_goal}
+
+We now consider a stronger recovery goal when given access to the \emph{leaky} MKPM functionality $\mathcal F_{\LMKPM}$: identifying all identifiers in the target set that also occur in the victim’s set. This represents the maximum amount of plaintext information an adversary can obtain about $Y$ using only $\tilde{P}_1$’s output of $\mathcal F_{\mathrm{LMKPM}}$. The adversary aims to reconstruct all records in $Y$ that contain at least one identifier from~$T$. We call this \emph{maximum set reconstruction}. Notably, since
+$\mathcal F_{\LMKPM}$ outputs to~$\tilde{P}_1$ a local map~$\MX$ from UIDs to matched records, the maximum plaintext inference possible from the output alone is the recovery of the identifiers in $\tilde{P}_1$’s set.
+
+\begin{definition}[Maximum Set Reconstruction]\label{def:max_recons}
+	Let $T$ and $Y$ be sets of records. An adversary $\adv$, given $T$ and oracle access to the functionality $\calF_{\LMKPM}(\ \cdot\ ; Y)$, achieves \textbf{maximum set reconstruction (MSR)} of $Y$ with respect to $T$ if it outputs a multiset $R_Y$ for which there exists an injective mapping $\varphi : R_Y \to Y$ such that
+	\begin{enumerate}
+		\item For all $\by^* \in R_Y$ and all $\id \in \by^*$ we have $\id \in \varphi(\by^*)$.
+		\item For all $\by^* \in R_Y$ 
+		and all $\id \in\varphi(\by^*)$ we have if $\id \in \Ispace{T}$ 
+		then $\id \in \by^*$.
+		\item For all $\by \in Y$, if there is some $\id \in \by$ 
+		with $\id \in \Ispace{T}$ then $\by \in \varphi\left(R_Y\right)$. 
+	\end{enumerate} 
+\end{definition}
+
+See Figure~\ref{fig:maximum-reconstruction-example} for an illustration.
+
+Injectivity of $\varphi$ ensures that each $\by^* \in R_Y$ corresponds to exactly one $\by \in Y$.
+Condition~(1) enforces per-record soundness, i.e., every identifier in a reconstructed record
+appears in the corresponding original record.
+Condition~(2) captures $\Ispace{T}$-restricted per-record completeness i.e., each reconstructed record contains all identifiers from its original record that also appear in $\Ispace{T}$.
+Finally, Condition~(3) enforces $\Ispace{T}$-restricted global completeness i.e., all records
+containing an identifier from $\Ispace{T}$ are at least partially reconstructed.
+
+
+\begin{figure}[t]
+    \centering
+    \subfloat[\label{fig:target-set-example}Target set $T$.]%
+    {
+    \includegraphics[width=0.3\columnwidth]{figures/target-set.pdf}} 
+    \quad
+	\subfloat[\label{fig:victim-set-example}Victim set $Y$.]%
+    {
+    \includegraphics[width=0.305\columnwidth]{figures/victim-set.pdf}} 
+    \quad
+    \subfloat[\label{fig:max-recon-output} Max recon. $R_Y$ ]%
+    {
+    \includegraphics[width=0.22\columnwidth,trim={-0.1cm 0 -0.1cm 0},clip]{figures/max-recon.pdf}}
+    \caption{
+    A maximum reconstruction $R_Y$. Each matched record in $Y$ corresponds to exactly one record in $R_Y$, and all identifiers shared between the matched record and the target set $T$ appear in the corresponding record $R_Y$.
+    \label{fig:maximum-reconstruction-example}}
+\end{figure}

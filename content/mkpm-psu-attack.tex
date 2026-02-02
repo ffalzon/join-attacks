@@ -1,25 +1,20 @@
 
 \section{Applications to Private Record Matching}\label{sec:PSUCA_to_matching}
-In this section, we demonstrate how the $\PSUCAattack{}$ attack can be applied to the functionality of Meta's PrivateID protocol and (with some additional assumptions) to the $\calF_{\MKPM}$ functionality formalized in Figure~\ref{sec:prel_leakage}.
+In this section, we demonstrate how the $\PSUCAattack{}$ attack can be applied to the functionality of Meta's PrivateID protocol, $\calF_{\SKPM}$, and (with some additional assumptions) to the $\calF_{\MKPM}$ functionality formalized in Figure~\ref{fig:SKPM_definition}.
 
+\subsection{Applying the PSU-CA Attack to PrivateID}
+Recall the functionality $\calF_{\SKPM}$ defined in Figure~\ref{fig:SKPM_definition}. Since each element $z \in Z = X \cup Y$ is mapped to its unique identifier under an injective function $f$, the relationship $|\UID| = |X \cup Y|$ holds for any sets $X$ and $Y$. Consequently, we can directly apply $\PSUCAattack{}$ to $\calF_{\SKPM}$ to recover $X \cap Y$ in at most $|X| + 1$ protocol invocations. Guo et al.~\cite{USENIX:GHLWJL22} examined PrivateID in the context of their intersection recovery attack on $\PSICA{}$, where they recover $X \cap Y$ in at most $|X|$ protocol invocations. However, their approach relies on the fact that PrivateID leaks $|X \cap Y|$ during protocol execution, whereas our attack depends solely on the functionality output.
 
-
-% Clearly, we have $|\UID| = |X \cup Y|$ for any two sets $X$ and $Y$.
-% We can therefore apply \PSUCAattack{} directly to SKPM 
-% to recover $X \cap Y$ in at most $|X| + 1$ SKPM evaluations.
-% Guo et al.~\cite{Guo22} have already examined PrivateID in the context of their intersection recovery attack on \PSICA{},
-% where they recover $X \cap Y$ in at most $|X|$ protocol invocations.
-% However, they rely on the fact that PrivateID leaks $|X \cap Y|$ during the protocol execution, 
-% while our attack relies on the functionality output alone.
-
-% \subsection{MK-PrivateID}
-% Meta's MK-PrivateID protocol~\cite{MPMC} implements the Multi-Key Private Matching (MKPM) functionality we defined in \cref{sec:prel_leakage}.
-% We show in this section that \PSUCAattack{} can be applied to MKPM to 
-% learn which records in the target set contain an identifier that also occurs in the victim set.
-% This corresponds the \emph{Matchable Record Recovery} goal we formalized in \cref{sec:MRR_goal}.
-% Recall that the attacker is given a set of records \setT{}, the target set, and can evaluate $\MKPM(\setT', \setV)$
-% for arbitrarily many inputs $\setT'$, while the victim set \setV{} remains static.
-% The adversary's goal is to determine the set $\setT \sqcap \setV = \{t \in \setT \setdsc \exists v \in \setV\; \exists j, \ell \in \N : t[j] = v[\ell]\}$.
+\subsection{Applying the PSU-CA Attack to MKPM}
+Meta's MK-PrivateID protocol~\cite{MPMC} implements the Multi-Key Private Matching (MKPM) functionality we defined in \ref{sec:prel_leakage}.
+We show in this section that $\PSUCAattack{}$ can be applied to MKPM to 
+learn which records in the target set contain an identifier that also occurs in the victim set.
+This corresponds the \emph{Matchable Record Recovery} goal we formalized in Figure~\ref{sec:MRR_goal}.
+Recall that the attacker is given a set of records $Y$, the target set, and can evaluate $\calF_{\MKPM}(X, Y)$
+for arbitrarily many inputs $X$, while the victim set $Y$ remains static.
+The adversary's goal is to determine the set $T \sqcap Y  = 
+\{\bt \in T \setdsc \exists v \in 
+Y \; \exists j, \ell \in \NN : t[j] = v[\ell]\}$.
 
 % Similar to its single-key counterpart SKPM, 
 % MKPM outputs a set $\UID$. However, instead of assigning a common uid to two identical records it matches records
@@ -60,77 +55,19 @@ In this section, we demonstrate how the $\PSUCAattack{}$ attack can be applied t
 % The resulting sets $\UID_1$ and $\UID_2$ therefore both contain one uid.
 % That is, we have $|\UID| = |\UID_1| + |\UID_2| \neq |\UID_1| + |\UID_2| - |\setV|$, which violates the requirement mentioned above.
 
-% \begin{figure}
-% 	\centering
-% 	{\def\linecorr{-.4pt}
-% 	\def\rowspace{\linecorr}
-% 	\def\colspace{1.2cm}
-% 	\def\setspace{5cm}
-% 	\def\setvertspace{.5cm}
-% 	\def\minwidthid{.6cm}
-% 	\def\blockminheight{1.3em}
-% 	\begin{tikzpicture}
-% 		[block/.style={draw,minimum width=#1, minimum height=\blockminheight,font={\tiny}},
-% 		%block/.default=10em,high/.style={minimum height=3em},auto,
-% 		block/.default=10em,high/.style={},auto,
-% 		node distance=0, % initially 1cm
-% 		>=Stealth]
-% 		%node distance=5em,auto]
-% 		% Nodes
-% 		\node[block=\minwidthid,fill=trow-dark] (alice1) {$\id_1$};
-% 		\node[block=\minwidthid,fill=trow-dark, right=\linecorr of alice1] (alice2) {$\id_2$};
-
-% 		\node[block=\minwidthid,fill=trow-light, below=\rowspace of alice1] (bob1) {$\id_3$};
-% 		\node[block=\minwidthid,fill=trow-light, right=\linecorr of bob1] (bob2) {$\id_4$};
-
-% 		\coordinate (mid) at ($(alice2)!0.5!(bob2)$);
-
-% 		\node[block=\minwidthid,fill=trow-dark, right=\colspace of mid] (vic1) {$\id_3$};
-% 		\node[block=\minwidthid,fill=trow-dark, right=\linecorr of vic1] (vic2) {$\id_2$};
-
-% 		\coordinate (right-center) at ([xshift=(\setspace)]mid);
+\begin{figure}
+	\centering
+	\input{figures/example-psu-mkpm-attack.tex}
+	\caption{Example of a target set $T$ and victim set $Y$, where $\PSUCAattack{}$ cannot be applied.
+	Lines between records indicate potential matches based on matching identifiers. 
+	Solid lines denote the matched records chosen by the matching logic.
+	Clearly, $|\UID| \neq |\UID_1| + |\UID_2| - |Y|$.}
+	\label{fig:MPMK_PSUCA_counterexample}
+\end{figure}
 
 
-% 		\node[block=\minwidthid,fill=trow-dark, above=\setvertspace of right-center] (alicesub1) {$\id_1$};
-% 		\node[block=\minwidthid,fill=trow-dark, right=\linecorr of alicesub1] (alicesub2) {$\id_2$};
-% 		\node[block=\minwidthid,fill=trow-dark, right=\colspace of alicesub2] (vicsub1) {$\id_3$};
-% 		\node[block=\minwidthid,fill=trow-dark, right=\linecorr of vicsub1] (vicsub2) {$\id_2$};
 
-% 		\node[block=\minwidthid,fill=trow-dark, below=\setvertspace of right-center] (bobsub1) {$\id_3$};
-% 		\node[block=\minwidthid,fill=trow-dark, right=\linecorr of bobsub1] (bobsub2) {$\id_4$};
-% 		\node[block=\minwidthid,fill=trow-dark, right=\colspace of bobsub2] (vicsub3) {$\id_3$};
-% 		\node[block=\minwidthid,fill=trow-dark, right=\linecorr of vicsub3] (vicsub4) {$\id_2$};
 
-% 		% Connections
-% 		\draw[dashed] (alice2) to (vic1);
-% 		\draw (bob2) to (vic1);
-
-% 		\draw (alicesub2) to (vicsub1);
-% 		\draw (bobsub2) to (vicsub3);
-
-% 		% \labels and descriptions
-% 		\coordinate (center1) at ($(alice2.south east)!0.5!(vic1.west)$);
-% 		\coordinate (center2) at ($(alicesub2.east)!0.5!(vicsub1.west)$);
-% 		\coordinate (center3) at ($(bobsub2.east)!0.5!(vicsub3.west)$);
-
-% 		\node[above=.3cm of alice1.east] (Tlabel) {\tiny$\setT$};
-% 		\node[above=.3cm of vic1.east] (Vlabel1) {\tiny$\setV$};
-% 		\node[below=.6cm of center1] (UIDlabel) {\tiny$|\UID| = 2$};
-		
-% 		\node[above=.3cm of alicesub1.east] (Tlabel2) {\tiny$\setT_1$};
-% 		\node[above=.3cm of vicsub1.east] (Vlabel2) {\tiny$\setV$};
-% 		\node[below=.3cm of center2] (UIDlabel1) {\tiny$|\UID_1| = 1$};
-		
-% 		\node[above=.3cm of bobsub1.east] (Tlabel3) {\tiny$\setT_2$};
-% 		\node[above=.3cm of vicsub3.east] (Vlabel3) {\tiny$\setV$};
-% 		\node[below=.3cm of center3] (UIDlabel2) {\tiny$|\UID_2| = 1$};
-% 	\end{tikzpicture}}
-% 	\caption{Example of a target set \setT{} and victim set \setV, where \PSUCAattack{} cannot be applied.
-% 	Lines between records indicate potential matches based on matching identifiers. 
-% 	Solid lines denote the matched records chosen by the matching logic.
-% 	Clearly, $|\UID| \neq |\UID_1| + |\UID_2| - |\setV|$.}
-% 	\label{fig:MPMK_PSUCA_counterexample}
-% \end{figure}
 % To avoid such cases, we formalize a restriction on the input sets that 
 % -- if satisfied -- allows us to carry out the attack.
 % Conveniently, the opposite case, where one record in the target set shares identifiers with multiple records in the victim set,
@@ -184,13 +121,14 @@ In this section, we demonstrate how the $\PSUCAattack{}$ attack can be applied t
 % 	Since \MKPM{} only uses randomness to shuffle the inputs, we have proven the lemma.
 % \end{proof}
 
-% \begin{lemma}
-% 	\label{lem:set_isolation_inference}
-% 	Let \setX{} and $\setY \subseteq \Ispace{}^{\leq \lambda}$ be two sets of records and let $\setX_1$ and $\setX_2$
-% 	be a partition of $\setX$. 
-% 	Moreover, let $(\UID, \MC) \sample \MKPM(\setX, \setV)$ and $(\UID_i, M_{C,i}) \sample \MKPM(\setX_i, \setV)$ for $i \in \{1,2\}$.
-% 	If $\setX$ is \setY-isolated, we have $|\UID| = |\UID_1| + |\UID_2| - |\setY|$.
-% \end{lemma}
+\begin{lemma}
+	\label{lem:set_isolation_inference}
+	Let $X$ and $V\subseteq \Ispace{}^{\leq \lambda}$ be two sets of records and let $X_1$ and $X_2$
+	be a partition of $X$. 
+	Moreover, let $(\UID, \MX) \sample \MKPM(X, Y)$ and $(\UID_i, M_{X,i}) \sample \MKPM(X_i, Y)$ for $i \in \{1,2\}$.
+	If $X$ is $V$-isolated, we have $|\UID| = |\UID_1| + |\UID_2| - |V|$.
+\end{lemma}
+
 % \begin{proof}
 % 	We show this by induction on $|\setX_1|$.
 % 	If $|\setX_1| = 0$ all records of $\setY$ are unmatched and, thus, $|\UID_1| = |Y|$.
@@ -221,40 +159,18 @@ In this section, we demonstrate how the $\PSUCAattack{}$ attack can be applied t
 % 	The claim then follows trivially.
 % \end{proof}
 
-% With the necessary properties of isolated input sets established, we can assert the correctness of our adaptation:
+With the necessary properties of isolated input sets established, we can assert the correctness of our adaptation:
 
-% \begin{theorem}
-% 	Let \setT{} and \setV{} be two sets of records.
-% 	If \setT{} is \setV{}-isolated, then \\
-% 	$\PSUCAattack^{\MKPM(\cdot, \setV)}(\setT)$ recovers $\setT \sqcap \setV$.
-% \end{theorem}
-% \begin{proof}
-% 	Let \posSet{} and \negSet{} be the two sets output by $\PSUCAattack^{\MKPM(\cdot, \setV)}(\setT)$.
-% 	Note all records of \setT{} are contained in some subset $\setT_c\subseteq \setT$ that will eventually reach line~\ref{lin:PSUCA_add_condition},
-% 	since the attack only terminates once the priority queue is empty. 
-% 	Therefore, every record of \setT{} is added to either \posSet{} or \negSet{}.
-% 	For any $\setT_c$ reaching line~\ref{lin:PSUCA_add_condition} 
-% 	we have that either (1) $k_c = |\setT_c|$ or (2) $k_c  = 0$ by the loop condition on line~\ref{lin:PSUCA_inner_while_condition}.
-% 	Let $\UID_c$ result from evaluating $\MKPM(\setT_c, \setV)$.
-% 	By \cref{eqn:union_intersect_cardinalities} and \cref{lem:set_isolation_inference}, we have $k_c = |\setT_c| + |\setV| - |\UID_c|$.
-% 	\begin{description}
-% 		\item[Case (1)] If $k_c = |\setT_c|$, then we have $|\UID_c| = |\setV|$, i.e., all records of $\setT_c$ are matched. 
-% 		Since records are only added to \posSet{} if this case applies, we have $\posSet \subseteq \setT \sqcap \setV$.
-% 		\item[Case (2)] If $k_c = 0$, then $|\UID_c| = |\setT_c| + |\setV|$, i.e., no records of $\setT_c$ 
-% 		were matched. Therefore, no record in $\setT_c$ shares any identifiers with any record in $\setV{}$.
-% 		Since records are only added to \negSet{} if this case applies, we have $\negSet \subseteq \setT \setminus (\setT \sqcap \setV)$. 
-% 	\end{description}
-% 	We have therefore shown that \posSet{} only contains matchable records, \negSet{} only contains non-matchable records 
-% 	and that every record in \setT{} is contained in either \posSet{} or \negSet{}.
-% 	This proves the theorem.
-% \end{proof}
+\begin{theorem}\label{thm:psu-mkpm:correctness}
+	Let $T,V\subseteq \Ispace{}^n$ are sets of records.
+	If $T$ is $Y$-isolated, then 
+	$\PSUCAattack^{\calF_{\MKPM}(\cdot, Y)}(T)$ recovers $T \sqcap Y$.
+\end{theorem}
 
+The proof can be find in Appendix~\ref{sec:psu-mkpm:correctness}.
 
-% % \textbf{Time and Query Complexity.}
-% % The adaptations described above merely consist of translating the notion of a set union cardinality to the multi-key scenario.
-% % In particular, the elements of $X$ that lie in the intersection $X\cap Y$ are analogous
-% % to the matchable records in \setT{} and \PSUCAattack{} behaves identically in the two settings.
-% % It therefore also has the same worst-case time complexity and maximum number of MKPM evaluations.
-% % Due to said correspondence between $X \cap Y$ and the matched records of \setT{}, 
-% % we can expect the actual number of functionality evaluations for any given intersection size 
-% % (or number of matchable records) to be similar.
+\heading{Time and query complexity.}
+The above adaptations consist of translating the set union cardinality to the multi-key scenario.
+In particular, the elements of $X$ that lie in the intersection $X\cap Y$ are analogous
+to the matchable records in $T$.
+The $\PSUCAattack{}$ applied to $\calF_{\MKPM}$ therefore has the same worst-case time complexity and maximum number of protocol invocations as when the attack is applied to $\calF_{\PSUCA}$.

@@ -222,9 +222,9 @@ Assuming \id{} in line \ref{lin:snake_encode_last_id} can be located in constant
 
 Let \(\ell_{\rec}\) denote the length of the largest record in either \(T\) or \(Y\). Determining whether a column in \(T\) contains only unique identifiers can be done in $\bigO{\ell_{\rec} n}$ time, assuming that dictionary operations are average-case constant time. Constructing the dictionary $\Dict$ involves up to \(\ell_{\rec} n\) writes. Factoring in \dictInfer's \(\bigO{\ell_{\rec} m}\) complexity with \(m = |Y|\), the overall average-case time complexity for \snakeattack{} is \(\bigO{\ell_{\rec} (n + m)}\). Similar to the previous attacks, \snakeattack{} requires only one protocol invocation.
 
-\heading{Discussion and mitigation.}
-While requiring the same number of protocol invocations and incurring a comparable computational complexity to the other attacks, \snakeattack{} stands out for requiring only minimal modifications to the target set and is applicable to scenarios where the record length is constrained to a small constant.
-Meta's Private Computation Solution \cite{FBPCSRepo} serves as a concrete example, where records are limited to at most four identifiers. If the target set already meets the maximum allowed record length, the adversary can always rearrange the target set into shorter records and use the available space for the snake encoding.
+% \heading{Discussion and mitigation.}
+% While requiring the same number of protocol invocations and incurring a comparable computational complexity to the other attacks, \snakeattack{} stands out for requiring only minimal modifications to the target set and is applicable to scenarios where the record length is constrained to a small constant.
+% Meta's Private Computation Solution \cite{FBPCSRepo} serves as a concrete example, where records are limited to at most four identifiers. If the target set already meets the maximum allowed record length, the adversary can always rearrange the target set into shorter records and use the available space for the snake encoding.
 
 % Since records are only extended by a small constant, limiting record lengths to mitigate against attacks, 
 % as proposed previously, is ineffective.
