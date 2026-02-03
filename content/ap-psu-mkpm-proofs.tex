@@ -1,0 +1,97 @@
+\section{Proofs for Analysis of $\calF_{\MKPM}$}
+
+
+\subsection{Proof of Theorem~\ref{thm:psu-mkpm:correctness}}
+\label{sec:psu-mkpm:correctness}
+
+In order to prove correctness, we must first prove the following two lemmas.:
+
+% \begin{lemma}
+% 	\label{lem:set_isolation_determinism}
+% 	Let $\setX, \setY \subseteq \Ispace{}^{\leq \lambda}$ be two sets of records. 
+% 	If \setX{} is \setY-isolated, 
+% 	the cardinality of $\UID$ output by $\MKPM(\setX, \setY)$ (\cref{fig:MKPM}) is consistent across multiple evaluations.
+% \end{lemma}
+% \begin{proof}
+% 	For any $x \in \setX$, let $\setY_x$ denote the records of \setY{} that share at least one identifier with $x$,
+% 	i.e., $\setY_x := \{y \in \setY \setdsc \exists i, j \in \N : x[i] = y[j]\}$.
+% 	If \setX{} is $\setY$-isolated, we have that $\setY_x \cap \setY_{x'} = \emptyset$ for all $x, x' \in \setX$ with $x \neq x'$. 
+% 	Therefore, there exist no two records in \setX{} that could be matched with the same record in \setY{}.
+	
+% 	We first consider sets $\setY_x$ that are not empty.
+% 	Since $x$ can only be matched with some $y \in \setY_x$ and all $y \in \setY_x$ can only be matched with $x$,
+% 	\match{} (\cref{fig:match_logic}) will match $x$ with exactly one $y_x \in \setY_x$,
+% 	which are assigned the same uid (line~\ref{lin:match_common_uid}).
+% 	All other $y \in \setY_x$, i.e., $y \neq y_x$, will remain unmatched and are assigned their own uid (line~\ref{lin:match_unmatched_P_uid}).
+% 	Furthermore, all $y \in \setY$ which do not belong to any $\setY_{x'}$ for any $x' \in \setX$ will also remain unmatched and are assigned their own uid (also line~\ref{lin:match_unmatched_P_uid}).
+% 	Lastly, all $x\in\setX$ for which $\setY_x = \emptyset$ will remain unmatched and receive their own uid (line~\ref{lin:match_unmatched_C_uid}). 
+	
+% 	Thus, \UID{} contains one uid for each $y\in \setY$ and one uid for each unmatched $x\in \setX$, i.e.,
+% 	$|\UID| = |\setY| + |\{x \in \setX \setdsc \setY_x = \emptyset\}|$.
+% 	This is independent of the order of the records in \setX{} and \setY{} and
+% 	thus also independent of the shuffling done before the matching step in \MKPM{}.
+% 	Since \MKPM{} only uses randomness to shuffle the inputs, we have proven the lemma.
+% \end{proof}
+
+\begin{lemma}
+	\label{lem:set_isolation_inference}
+	Let $X$ and $V\subseteq \Ispace{}^{\leq \lambda}$ be two sets of records and let $X_1$ and $X_2$
+	be a partition of $X$. 
+	Moreover, let $(\UID, \MX) \sample \MKPM(X, Y)$ and $(\UID_i, M_{X,i}) \sample \MKPM(X_i, Y)$ for $i \in \{1,2\}$.
+	If $X$ is $V$-isolated, we have $|\UID| = |\UID_1| + |\UID_2| - |V|$.
+\end{lemma}
+
+% \begin{proof}
+% 	We show this by induction on $|\setX_1|$.
+% 	If $|\setX_1| = 0$ all records of $\setY$ are unmatched and, thus, $|\UID_1| = |Y|$.
+% 	Note that $\setX_2 = \setX$ and thus we have $|\UID| = |\UID_2| = |\UID_2| + |\UID_1| - |Y|$.
+% 	In the first equality, we use \cref{lem:set_isolation_determinism}. 
+
+% 	Assume $|\setX_1| = n_1$ for some $n_1 > 0$ and $|\UID| = |\UID_1| + |\UID_2| - |\setY|$.
+% 	Since $\setX_1$ and $\setX_2$ form a partition of $\setX$, we must move a record from $\setX_2$ to $\setX_1$
+% 	to achieve $|\setX_1| = n_1+1$. Note that $|\UID|$ remains unchanged due to \cref{lem:set_isolation_determinism}.
+% 	Let $x \in \setX_2$ and let $\setX'_1 := \setX_1 \cup \{x\}$ and $\setX'_2 := \setX_2 \setminus \{x\}$.
+% 	Moreover, let $\UID'_1$ and $\UID'_2$ be the sets of UIDs resulting from evaluating $\MKPM(\setX'_1, \setY)$ and $\MKPM(\setX'_2, \setY)$. 
+% 	We distinguish two cases.
+% 	If no identifier of $x$ occurs in $\setY$, $x$ was assigned its own UID.
+% 	Therefore, $|\UID'_1| = |\UID_1| + 1$ and $|\UID'_2| = |\UID_2| - 1$, which implies the claim.
+	
+% 	For the second case, assume $x$ shares some identifiers with $n^*$ records of $\setY$.
+% 	Call this set $\setY_x$.
+% 	Since \setX{} is \setY-isolated, all records $y \in \setY_x$ only share identifiers with $x$,
+% 	but no other $x'\in \setX_2$.
+% 	Thus, $x$ is matched with some $y^* \in \setY_x$,
+% 	i.e., $x$ and $y^*$ are assigned the same $\uid \in \UID_2$.
+% 	After removing $x$ from $\setX_2$, $y^*$ will still be assigned some $\uid' \in \UID'_2$, 
+% 	which it does not share with any $x' \in \setX'_2$, again since $\setX$ is \setY-isolated. 
+% 	Therefore, $|\UID_2| = |\UID'_2|$. 
+% 	Similarly, since $x\not\in \setX_1$, no $y\in \setY_x$ and $x' \in \setX_1$ are assigned the same $\uid \in \UID_1$.
+% 	By the definition of $\setY_x$ and since \setX{} is \setY-isolated, $x$ will be assigned the same $\uid\in \UID'_1$
+% 	as some $y\in\setY_x$ after being added to $\setX_1$, implying $|\UID_1| = |\UID'_1|$.
+% 	The claim then follows trivially.
+% \end{proof}
+
+
+We can now use the above lemmas to finally prove Theorem~\ref{thm:psu-mkpm:correctness}.
+
+
+% \begin{proof}
+% 	Let \posSet{} and \negSet{} be the two sets output by $\PSUCAattack^{\MKPM(\cdot, \setV)}(\setT)$.
+% 	Note all records of \setT{} are contained in some subset $\setT_c\subseteq \setT$ that will eventually reach line~\ref{lin:PSUCA_add_condition},
+% 	since the attack only terminates once the priority queue is empty. 
+% 	Therefore, every record of \setT{} is added to either \posSet{} or \negSet{}.
+% 	For any $\setT_c$ reaching line~\ref{lin:PSUCA_add_condition} 
+% 	we have that either (1) $k_c = |\setT_c|$ or (2) $k_c  = 0$ by the loop condition on line~\ref{lin:PSUCA_inner_while_condition}.
+% 	Let $\UID_c$ result from evaluating $\MKPM(\setT_c, \setV)$.
+% 	By \cref{eqn:union_intersect_cardinalities} and \cref{lem:set_isolation_inference}, we have $k_c = |\setT_c| + |\setV| - |\UID_c|$.
+% 	\begin{description}
+% 		\item[Case (1)] If $k_c = |\setT_c|$, then we have $|\UID_c| = |\setV|$, i.e., all records of $\setT_c$ are matched. 
+% 		Since records are only added to \posSet{} if this case applies, we have $\posSet \subseteq \setT \sqcap \setV$.
+% 		\item[Case (2)] If $k_c = 0$, then $|\UID_c| = |\setT_c| + |\setV|$, i.e., no records of $\setT_c$ 
+% 		were matched. Therefore, no record in $\setT_c$ shares any identifiers with any record in $\setV{}$.
+% 		Since records are only added to \negSet{} if this case applies, we have $\negSet \subseteq \setT \setminus (\setT \sqcap \setV)$. 
+% 	\end{description}
+% 	We have therefore shown that \posSet{} only contains matchable records, \negSet{} only contains non-matchable records 
+% 	and that every record in \setT{} is contained in either \posSet{} or \negSet{}.
+% 	This proves the theorem.
+% \end{proof}

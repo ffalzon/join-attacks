@@ -1,26 +1,46 @@
+\section{Analysis of $\calF_{\MKPM}$}\label{sec:PSUCA_to_matching}
 
-\section{Analysis of the MKPM Functionality}\label{sec:PSUCA_to_matching}
-In this section, we show how to apply the $\PSUCAattack{}$ attack to the functionality $\calF_{\MKPM}$---with some additional assumptions---to achieve MRR (Definition~\ref{def:matchable_records_recovery}).
-In Appendix~\ref{sec:psuca-privateID-attack} we also explain how $\PSUCAattack{}$ can be applied to the single key private matching functionality $\calF_{\SKPM}$ realized by PrivateID~\cite{PMC}.
+In this section, we show how the $\PSUCAattack{}$ attack can be applied to the $\calF_{\MKPM}$ functionality---with some additional assumptions---to achieve MRR (Definition~\ref{def:matchable_records_recovery}).
+In Appendix~\ref{sec:psuca-privateID-attack} we also explain how the attack can be applied to the single key private matching functionality $\calF_{\SKPM}$ realized by PrivateID~\cite{PMC}.
+
+Recall that the adversary is given a target set of records $T \subseteq \Ispace{}^n$, and can evaluate $\calF_{\MKPM}(X, Y)$ for arbitrarily many inputs $X$, while the recovery set $Y$ remains static. Its goal is to determine the set of matchable records, $T  \sqcap Y$.
 
 
-Recall that the adversary is given a target set of records $\setT\subseteq\Ispace{}^n$, and can evaluate $\calF_{\MKPM}(\setX, \setY)$
-for arbitrarily many inputs $\setX$, while the set $\setY$ remains static.
-Its goal is to determine the set $\setT \sqcap \setY$.
+$\mathcal F_{\MKPM}$ outputs to both parties the set $\UID$ of universal identifiers assigned to all records held by the parties. Rather than assigning a common UID to two identical records, it applies a matching logic (see Figure~\ref{fig:match_logic}) and assigns a common UID to each pair of matched records, while assigning a distinct UID to every unmatched record in $T$ and $Y$. Thus, using $|\UID|$ as the cardinality for carrying out the $\PSUCAattack{}$ appears to be a natural approach for identifying matching records in $T$.
 
-$\mathcal F_{\mathrm{MKPM}}$ outputs the set~$\UID$ of universal identifiers
-assigned to all records held by the parties. Rather than assigning a common UID
-to two identical records, it applies a matching logic (see
-Figure~\ref{fig:match_logic}) and assigns a common UID to each pair of matched records,
-while assigning a distinct UID to every unmatched record in~$\setT$ and~$\setY$. Thus,
-using $|\UID|$ as the cardinality for carrying out the
-$\PSUCAattack{}$ appears to be a natural approach for identifying matching records
-in~$\setT$.
+Recall that the $\PSUCAattack{}$ attack relies on the observation that $|X \cap Y| = |X_1 \cap Y| + |X_2 \cap Y|$, where $X$ and $Y$ are arbitrary sets and $X_1, X_2$ form a partition of $X$. Applying Eq.~\ref{eqn:union_intersect_cardinalities}, we have $|X \cup Y| = |X_1 \cup Y| + |X_2 \cup Y| - |Y|$.
+
+Translating this to the multi-key setting, let $X, Y$ be sets of records, and let $X_1, X_2$ be a partition of $X$. Moreover, let $\UID$, $\UID_1$, and $\UID_2$ be the result from evaluating $\calF_{\MKPM}(X, Y)$ and $\calF_{\MKPM}(X_i, Y)$ for $i \in \{1, 2\}$ respectively. Then we require the following relation to hold:
+\begin{equation}
+    \label{eqn:MKPM_PSUCA_condition}
+    |\UID| = |\UID_1| + |\UID_2| - |Y|
+\end{equation}
+
+Unfortunately, this does not hold for general inputs for two reasons. First, the MKPM functionality shuffles the inputs before evaluating the matching logic on them. As a result, the record matching logic does not consistently match the same number of records in different protocol runs for some fixed inputs, i.e., different evaluations of $\calF_\MKPM$ with the same inputs may result in $\UID$ sets with different cardinalities. Second, the matching logic violates Eq.~\ref{eqn:MKPM_PSUCA_condition} even in cases where shuffling the inputs has no effect on the former.
+
+Consider the example depicted in Figure~\ref{fig:MPMK_PSUCA_counterexample}. On the left, we show an example of a target set $T$ and victim set $Y$, where two records in the target set share an identifier with the same record in the victim set. We call this a \emph{many-to-one relation}. Recall that the matching logic uses the order of identifiers in $T$ as priorities to resolve such many-to-one relations. That is, it matches the second target record with the victim record, since it shares its first identifier $\id_3$ with the victim record, as opposed to the first target record, which shares its second identifier with the victim record. The latter remains unmatched. The resulting set $\UID$ therefore contains two elements: one UID for the two matched records and one for the unmatched first target record. On the right, we show a partition of $T$, matched against the same victim set $Y$ (in two separate protocol invocations). Now isolated and lacking competition from the other record, both target records are matched. The resulting sets $\UID_1$ and $\UID_2$ therefore both contain one UID. That is, we have $|\UID| = |\UID_1| + |\UID_2| \neq |\UID_1| + |\UID_2| - |Y|$, which violates the requirement mentioned above.
+
+
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%
+
+
+
 
  
 Recall that the $\PSUCAattack{}$ attack relies on the observation that $|X \cap Y| = |X_1 \cap Y| + |X_2 \cap Y|$, where $X$ and $Y$ are arbitrary sets and $X_1, X_2$ form a partition of $X$.
 Applying Eq.~\ref{eqn:union_intersect_cardinalities}, this is equivalent to $|X \cup Y| = |X_1 \cup Y| + |X_2 \cup Y| - |Y|$.
-Translating this to the multi-key setting, let $\setX \subseteq \setT$ and let $\setX_1, \setX_2$ be a partition of $\setX$.
+
+Translating this to the multi-key setting, let $X, T$ be sets of records, and let $X_1, X_2$ be a partition of $X$.
 Moreover, let $\UID$, $\UID_1$, and $\UID_2$ be the result from evaluating $\calF_{\MKPM}(\setX, \setY)$ and $\MKPM(\setX_i, \setY)$ for $i \in \{1,2\}$ respectively.
 Then we require the following relation to hold:
 \begin{equation}
@@ -33,18 +53,18 @@ First, the MKPM functionality shuffles the inputs before evaluating the matching
 Second, the matching logic violates Eq.~\ref{eqn:MKPM_PSUCA_condition} even in cases where shuffling the inputs has no effect on the former.
 
 Consider the example depicted in Figure~\ref{fig:MPMK_PSUCA_counterexample}.
-% On the left, we show an example of a target set \setT{} and victim set \setV{}, 
-% where two records in the target set share an identifier with the same record in the victim set.
-% We call this a \emph{many-to-one relation}.
-% Recall that the matching logic uses the order of identifiers in \setT{} as priorities to resolve such many-to-one relations.
-% That is, it matches the second target record with the victim record, since it shares its first identifier $\id_3$ with the victim record,
-% as opposed to the first target record, which shares its second identifier with the victim record. The latter remains unmatched.
-% The resulting set \UID{} therefore contains two elements: 
-% one uid for the two matched records and one for the unmatched first target record.
-% On the right, we show a partition of \setT{}, matched against the same victim set \setV{} (in two separate protocol invocations).
-% Now isolated and lacking competition from the other record, both target records are matched.
-% The resulting sets $\UID_1$ and $\UID_2$ therefore both contain one uid.
-% That is, we have $|\UID| = |\UID_1| + |\UID_2| \neq |\UID_1| + |\UID_2| - |\setV|$, which violates the requirement mentioned above.
+On the left, we show an example of a target set T{} and victim set Y{}, 
+where two records in the target set share an identifier with the same record in the victim set.
+We call this a \emph{many-to-one relation}.
+Recall that the matching logic uses the order of identifiers in T{} as priorities to resolve such many-to-one relations.
+That is, it matches the second target record with the victim record, since it shares its first identifier $\id_3$ with the victim record,
+as opposed to the first target record, which shares its second identifier with the victim record. The latter remains unmatched.
+The resulting set $\UID{}$ therefore contains two elements: 
+one uid for the two matched records and one for the unmatched first target record.
+On the right, we show a partition of T{}, matched against the same victim set Y{} (in two separate protocol invocations).
+Now isolated and lacking competition from the other record, both target records are matched.
+The resulting sets $\UID_1$ and $\UID_2$ therefore both contain one uid.
+That is, we have $|\UID| = |\UID_1| + |\UID_2| \neq |\UID_1| + |\UID_2| - |Y|$, which violates the requirement mentioned above.
 
 \begin{figure}
 	\centering
@@ -57,100 +77,33 @@ Consider the example depicted in Figure~\ref{fig:MPMK_PSUCA_counterexample}.
 \end{figure}
 
 
+To avoid such cases, we formalize a restriction on the input sets that 
+-- if satisfied -- allows us to carry out the attack.
+Conveniently, the opposite case, where one record in the target set shares identifiers with multiple records in the victim set,
+does not lead to such problems.
+It therefore suffices to exclude many-to-one relations.
+
+\begin{definition}[Isolated Set]\label{def:isolated_set}
+	Let $X, Y\subseteq \Ispace{}^{\leq \lambda}$ be two sets of records for some $\lambda\in\NN$.
+	We say $X$ is \textbf{$Y$-isolated}, 
+	if for all $\by\in Y$ we have $|\{\bx \in X \setdsc \exists i, j. \; \bx[i] = \by[j]\}| \leq 1$.
+\end{definition}
+
+This additional constraint on the protocol inputs excludes some realistic scenarios.
+For instance, if the sets contain IP addresses
+-- IPv4 addresses behind a Network Address Translation (NAT) device in particular --
+such many-to-one relations are likely to occur, as users in the same local network share an address.
+However, this does not exclude the scenarios outlined in \ref{sec:threat_model},
+where the adversary chooses a specific range of identifiers as its target set, 
+such as all phone numbers of a certain area code or all email addresses belonging to some domain.
+Furthermore, scenarios where users possess multiple identifiers of some type,
+e.g., a private and a work email address, 
+but do not share them with other people, are still admitted as well, 
+provided that each user's identifiers only occur in at most one record in the target set.
+Definition~\ref{def:isolated_set} conveniently resolves both issues outlined above,
+which we prove in the following two lemmas.
 
 
-% To avoid such cases, we formalize a restriction on the input sets that 
-% -- if satisfied -- allows us to carry out the attack.
-% Conveniently, the opposite case, where one record in the target set shares identifiers with multiple records in the victim set,
-% does not lead to such problems.
-% It therefore suffices to exclude many-to-one relations.
-
-% \begin{definition}[Isolated Set]\label{def:isolated_set}
-% 	Let \setX{} and \setY{} be two sets of records $\setX, \setY \subseteq \Ispace{}^{\leq \lambda}$ for some $\lambda\in\N$.
-% 	We say \setX{} is \emph{$\setY$-isolated}, 
-% 	if for all $v\in \setY$ we have $|\{t \in \setX \setdsc \exists i, j. \; t[i] = v[j]\}| \leq 1$.
-% \end{definition}
-
-% This additional constraint on the protocol inputs excludes some realistic scenarios.
-% For instance, if the sets contain IP addresses
-% -- IPv4 addresses behind a Network Address Translation (NAT) device in particular --
-% such many-to-one relations are likely to occur, as users in the same local network share an address.
-% However, this does not exclude the scenarios outlined in \cref{sec:threat_model},
-% where the adversary chooses a specific range of identifiers as its target set, 
-% such as all phone numbers of a certain area code or all email addresses belonging to some domain.
-% Furthermore, scenarios where users possess multiple identifiers of some type,
-% e.g., a private and a work email address, 
-% but do not share them with other people, are still admitted as well, 
-% provided that each user's identifiers only occur in at most one record in the target set.
-% \cref{def:isolated_set} conveniently resolves both issues outlined above,
-% which we prove in the following two lemmas.
-
-% \begin{lemma}
-% 	\label{lem:set_isolation_determinism}
-% 	Let $\setX, \setY \subseteq \Ispace{}^{\leq \lambda}$ be two sets of records. 
-% 	If \setX{} is \setY-isolated, 
-% 	the cardinality of $\UID$ output by $\MKPM(\setX, \setY)$ (\cref{fig:MKPM}) is consistent across multiple evaluations.
-% \end{lemma}
-% \begin{proof}
-% 	For any $x \in \setX$, let $\setY_x$ denote the records of \setY{} that share at least one identifier with $x$,
-% 	i.e., $\setY_x := \{y \in \setY \setdsc \exists i, j \in \N : x[i] = y[j]\}$.
-% 	If \setX{} is $\setY$-isolated, we have that $\setY_x \cap \setY_{x'} = \emptyset$ for all $x, x' \in \setX$ with $x \neq x'$. 
-% 	Therefore, there exist no two records in \setX{} that could be matched with the same record in \setY{}.
-	
-% 	We first consider sets $\setY_x$ that are not empty.
-% 	Since $x$ can only be matched with some $y \in \setY_x$ and all $y \in \setY_x$ can only be matched with $x$,
-% 	\match{} (\cref{fig:match_logic}) will match $x$ with exactly one $y_x \in \setY_x$,
-% 	which are assigned the same uid (line~\ref{lin:match_common_uid}).
-% 	All other $y \in \setY_x$, i.e., $y \neq y_x$, will remain unmatched and are assigned their own uid (line~\ref{lin:match_unmatched_P_uid}).
-% 	Furthermore, all $y \in \setY$ which do not belong to any $\setY_{x'}$ for any $x' \in \setX$ will also remain unmatched and are assigned their own uid (also line~\ref{lin:match_unmatched_P_uid}).
-% 	Lastly, all $x\in\setX$ for which $\setY_x = \emptyset$ will remain unmatched and receive their own uid (line~\ref{lin:match_unmatched_C_uid}). 
-	
-% 	Thus, \UID{} contains one uid for each $y\in \setY$ and one uid for each unmatched $x\in \setX$, i.e.,
-% 	$|\UID| = |\setY| + |\{x \in \setX \setdsc \setY_x = \emptyset\}|$.
-% 	This is independent of the order of the records in \setX{} and \setY{} and
-% 	thus also independent of the shuffling done before the matching step in \MKPM{}.
-% 	Since \MKPM{} only uses randomness to shuffle the inputs, we have proven the lemma.
-% \end{proof}
-
-\begin{lemma}
-	\label{lem:set_isolation_inference}
-	Let $X$ and $V\subseteq \Ispace{}^{\leq \lambda}$ be two sets of records and let $X_1$ and $X_2$
-	be a partition of $X$. 
-	Moreover, let $(\UID, \MX) \sample \MKPM(X, Y)$ and $(\UID_i, M_{X,i}) \sample \MKPM(X_i, Y)$ for $i \in \{1,2\}$.
-	If $X$ is $V$-isolated, we have $|\UID| = |\UID_1| + |\UID_2| - |V|$.
-\end{lemma}
-
-% \begin{proof}
-% 	We show this by induction on $|\setX_1|$.
-% 	If $|\setX_1| = 0$ all records of $\setY$ are unmatched and, thus, $|\UID_1| = |Y|$.
-% 	Note that $\setX_2 = \setX$ and thus we have $|\UID| = |\UID_2| = |\UID_2| + |\UID_1| - |Y|$.
-% 	In the first equality, we use \cref{lem:set_isolation_determinism}. 
-
-% 	Assume $|\setX_1| = n_1$ for some $n_1 > 0$ and $|\UID| = |\UID_1| + |\UID_2| - |\setY|$.
-% 	Since $\setX_1$ and $\setX_2$ form a partition of $\setX$, we must move a record from $\setX_2$ to $\setX_1$
-% 	to achieve $|\setX_1| = n_1+1$. Note that $|\UID|$ remains unchanged due to \cref{lem:set_isolation_determinism}.
-% 	Let $x \in \setX_2$ and let $\setX'_1 := \setX_1 \cup \{x\}$ and $\setX'_2 := \setX_2 \setminus \{x\}$.
-% 	Moreover, let $\UID'_1$ and $\UID'_2$ be the sets of UIDs resulting from evaluating $\MKPM(\setX'_1, \setY)$ and $\MKPM(\setX'_2, \setY)$. 
-% 	We distinguish two cases.
-% 	If no identifier of $x$ occurs in $\setY$, $x$ was assigned its own UID.
-% 	Therefore, $|\UID'_1| = |\UID_1| + 1$ and $|\UID'_2| = |\UID_2| - 1$, which implies the claim.
-	
-% 	For the second case, assume $x$ shares some identifiers with $n^*$ records of $\setY$.
-% 	Call this set $\setY_x$.
-% 	Since \setX{} is \setY-isolated, all records $y \in \setY_x$ only share identifiers with $x$,
-% 	but no other $x'\in \setX_2$.
-% 	Thus, $x$ is matched with some $y^* \in \setY_x$,
-% 	i.e., $x$ and $y^*$ are assigned the same $\uid \in \UID_2$.
-% 	After removing $x$ from $\setX_2$, $y^*$ will still be assigned some $\uid' \in \UID'_2$, 
-% 	which it does not share with any $x' \in \setX'_2$, again since $\setX$ is \setY-isolated. 
-% 	Therefore, $|\UID_2| = |\UID'_2|$. 
-% 	Similarly, since $x\not\in \setX_1$, no $y\in \setY_x$ and $x' \in \setX_1$ are assigned the same $\uid \in \UID_1$.
-% 	By the definition of $\setY_x$ and since \setX{} is \setY-isolated, $x$ will be assigned the same $\uid\in \UID'_1$
-% 	as some $y\in\setY_x$ after being added to $\setX_1$, implying $|\UID_1| = |\UID'_1|$.
-% 	The claim then follows trivially.
-% \end{proof}
-
-With the necessary properties of isolated input sets established, we can assert the correctness of our adaptation:
 
 \begin{theorem}\label{thm:psu-mkpm:correctness}
 	Let $T,V\subseteq \Ispace{}^n$ are sets of records.

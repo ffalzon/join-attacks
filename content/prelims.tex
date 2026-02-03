@@ -1,5 +1,19 @@
 \section{Preliminaries}
 
+\heading{Notation.} For $n \in \NN$, we define $[n] := \{1, \dots, n\}$.
+For any $\ell, n\in \NN$ such that $\ell \geq \lfloor \log_2 (n+1)\rfloor$, $\Bin{\ell}(n) \in \{0,1\}^\ell$ denotes the $\ell$-bit binary representation of $n$. 
+
+
+For sets $X,Y$ and any function $f:X\to Y$, we denote the image of $X$ under $f$ as $f(X) := \{f(x) | x \in X\} \subseteq Y$.
+Moreover, $\Funcs[X, Y]$ denotes the space of functions $f: X \to Y$ and 
+$\InjFuncs[X, Y] \subset \Funcs[X, Y]$ denotes the set of injective functions $f: X \to Y$.
+$\Perms[X]$ denotes the set of all permutations of $X$.
+
+For the multi-key private matching functionalities, $\calF_{\MKPM}$ and $\calF_{\LMKPM}$, we consider inputs that are sets of records $X$ such that each record $\bx \in X$ is a (variable-length) vector of identifiers drawn from the space $\Ispace{}$, i.e., $\bx \subseteq \Ispace{}$. We denote by $\Ispace{X}$ the set of identifiers appearing in the records of $X$, defined as
+\[
+\Ispace{X} \;=\; \{\, \id \in \Ispace{} \mid \exists\, \bx \in X \text{ such that } \id \in \bx \,\}.
+\]
+
 
 
 \begin{figure}
