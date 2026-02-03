@@ -1,12 +1,12 @@
-\section{Analysis of the L-MKPM Functionality}
+\section{Analysis of $\calF_{\LMKPM}$}
 
 In this section, we describe three powerful attacks that exploit the ``leaky'' functionality $\calF_{\LMKPM}$. 
-The authors of MK-PrivateID \cite{MKPMC} acknowledge the existence of their protocol’s leakage but deem it acceptable as an aggregate metric that would only cause concern in multiple executions. We contradict this by presenting three attacks that achieve Maximum Set Reconstruction with only a single protocol invocation.
+The authors of MK-PrivateID \cite{MKPMC} acknowledge the existence of their protocol’s leakage but deem it acceptable as an aggregate metric that would only cause concern across multiple executions. We contradict this by presenting three attacks that achieve Maximum Set Reconstruction with only a single protocol invocation.
 
 We first present a baseline attack that is highly efficient but relies on a strong assumption on the protocol inputs. We then describe two additional attacks that progressively relax these assumptions.
 All three attacks preprocess the target set $T$ so that the resulting records are uniquely identifiable from the protocol output in a single invocation. This allows the adversary to map hidden identifiers revealed by the leakage back to their plaintext values. 
 
-Recall that the output of $\calF_{\LMKPM}$ to party $P_1$ is
+Recall that the output of $\calF_{\LMKPM}$ to party $\tP_1$ is
 \[
 (\UID, \MX, \leak_1) = (\UID, \MX, (\hXone, \hYone)),
 \]

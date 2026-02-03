@@ -7,8 +7,9 @@ Throughout this work, we assume that $P_1$ is adversarial (we denote the corrupt
 The adversarial party $\tP_1$ holds a \textbf{target set} $T$ and aims to infer as much information as possible about $Y$ relative to $T$. The exact objective depends on the functionality as described below.
 
 
-\subsection{Recovery Goal Against $\calF_{\PSU}$ and $\calF_{\PSUCA}$}\label{sec:IR_goal}
+\subsection{Recovery Goals}
 
+\subsubsection{Recovery Goal Against $\calF_{\PSU}$ and $\calF_{\PSUCA}$}\label{sec:IR_goal}
 The goal of private set union (PSU) is to hide the intersection of the input sets~\cite{USENIX:JSZG24}. The natural recovery goal for attacks against PSU and PSU-CA is to thus recover this intersection.
 
 \begin{definition}
@@ -18,7 +19,7 @@ The goal of private set union (PSU) is to hide the intersection of the input set
 Recovering the intersection is a goal that was also consisdered by attacks against PSI-related functionalities e.g.,~\cite{USENIX:GHLWJL22,NDSS:JiaDuYan24}.
 
 
-\subsection{Recovery Goal Against $\calF_{\MKPM}$}\label{sec:MRR_goal}
+\subsubsection{Recovery Goal Against $\calF_{\MKPM}$}\label{sec:MRR_goal}
 
 Given that the $\calF_{\MKPM}$ functionality operates on sets of records, a natural recovery goal would be to recover the set of records appearing in both input sets. However, exact matches between records are unlikely in real-world scenarios. We thus adapt the intersection recovery goal to the multi-key setting.
 
@@ -43,7 +44,7 @@ Unlike standard set intersection, $T \sqcap Y$ is not commutative. In particular
 Note that MRR does not require the adversary to reconstruct identifiers or records in $Y$. Nevertheless, this information is sensitive and should not be recoverable, since simply knowing that an identifier from a user appears in another organization's dataset can compromise the privacy of that user. Furthermore, in the original paper~\cite{MKPMC}, specific precautions against leaking this information are emphasized in the protocol design.
 
 
-\subsection{Recovery Goal Against $\calF_{\LMKPM}$}\label{sec:MR_goal}
+\subsubsection{Recovery Goal Against $\calF_{\LMKPM}$}\label{sec:MR_goal}
 
 We now consider a stronger recovery goal when given access to the \emph{leaky} MKPM functionality $\mathcal F_{\LMKPM}$: identifying all identifiers in the target set that also occur in the victim’s set. This represents the maximum amount of plaintext information an adversary can obtain about $Y$ using only $\tilde{P}_1$’s output of $\mathcal F_{\mathrm{LMKPM}}$. The adversary aims to reconstruct all records in $Y$ that contain at least one identifier from~$T$. Notably, since
 $\mathcal F_{\LMKPM}$ outputs to~$\tilde{P}_1$ a local map~$\MX$ from UIDs to matched records, the maximum plaintext inference possible from the output alone is the recovery of the identifiers in $\tilde{P}_1$’s set.
