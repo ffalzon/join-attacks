@@ -3,106 +3,36 @@
 In this section, we show how the $\PSUCAattack{}$ attack can be applied to the $\calF_{\MKPM}$ functionality---with some additional assumptions---to achieve MRR (Definition~\ref{def:matchable_records_recovery}).
 In Appendix~\ref{sec:psuca-privateID-attack} we also explain how the attack can be applied to the single key private matching functionality $\calF_{\SKPM}$ realized by PrivateID~\cite{PMC}.
 
-Recall that the adversary is given a target set of records $T \subseteq \Ispace{}^n$, and can evaluate $\calF_{\MKPM}(X, Y)$ for arbitrarily many inputs $X$, while the recovery set $Y$ remains static. Its goal is to determine the set of matchable records, $T  \sqcap Y$.
-
-
+The adversary is given a target set of records $T \subseteq \Ispace{}^n$, and can evaluate $\calF_{\MKPM}(X, Y)$ for arbitrarily many inputs $X$, while the recovery set $Y$ remains static. Its goal is to determine the set of matchable records, $T \sqcap Y$.
 $\mathcal F_{\MKPM}$ outputs to both parties the set $\UID$ of universal identifiers assigned to all records held by the parties. Rather than assigning a common UID to two identical records, it applies a matching logic (see Figure~\ref{fig:match_logic}) and assigns a common UID to each pair of matched records, while assigning a distinct UID to every unmatched record in $T$ and $Y$. Thus, using $|\UID|$ as the cardinality for carrying out the $\PSUCAattack{}$ appears to be a natural approach for identifying matching records in $T$.
 
-Recall that the $\PSUCAattack{}$ attack relies on the observation that $|X \cap Y| = |X_1 \cap Y| + |X_2 \cap Y|$, where $X$ and $Y$ are arbitrary sets and $X_1, X_2$ form a partition of $X$. Applying Eq.~\ref{eqn:union_intersect_cardinalities}, we have $|X \cup Y| = |X_1 \cup Y| + |X_2 \cup Y| - |Y|$.
+Recall that the $\PSUCAattack{}$ attack (Section~\ref{sec:psu-psuca}) relies on the fact that $|X \cup Y| = |X_1 \cup Y| + |X_2 \cup Y| - |Y|$ (Eq.~\ref{eqn:union_intersect_cardinalities}), where $X$ and $Y$ are arbitrary sets and $X_1\cup X_2$ form a partition of $X$.
 
-Translating this to the multi-key setting, let $X, Y$ be sets of records, and let $X_1, X_2$ be a partition of $X$. Moreover, let $\UID$, $\UID_1$, and $\UID_2$ be the result from evaluating $\calF_{\MKPM}(X, Y)$ and $\calF_{\MKPM}(X_i, Y)$ for $i \in \{1, 2\}$ respectively. Then we require the following relation to hold:
+We now translate this to the multi-key setting. Let $X, Y$ be sets of records, and let $X_1\cup X_2$ be a partition of $X$. Moreover, let $\UID$, $\UID_1$, and $\UID_2$ be the UIDs output when evaluating $\calF_{\MKPM}(X, Y)$ and $\calF_{\MKPM}(X_i, Y)$ for $i \in \{1, 2\}$ respectively. Then we require the following relation to hold:
 \begin{equation}
     \label{eqn:MKPM_PSUCA_condition}
-    |\UID| = |\UID_1| + |\UID_2| - |Y|
+    |\UID| = |\UID_1| + |\UID_2| - |Y|.
 \end{equation}
 
-Unfortunately, this does not hold for general inputs for two reasons. First, the MKPM functionality shuffles the inputs before evaluating the matching logic on them. As a result, the record matching logic does not consistently match the same number of records in different protocol runs for some fixed inputs, i.e., different evaluations of $\calF_\MKPM$ with the same inputs may result in $\UID$ sets with different cardinalities. Second, the matching logic violates Eq.~\ref{eqn:MKPM_PSUCA_condition} even in cases where shuffling the inputs has no effect on the former.
+Unfortunately, this condition does not hold for general inputs. The reason is that the MKPM functionality shuffles the inputs before applying the matching logic. Consequently, the matching procedure introduces randomness, leading to inconsistent record matches across different protocol runs, even with the same input sets. Thus, different evaluations of $\calF_\MKPM$ on identical inputs can yield $\UID$ sets with varying cardinalities.
 
-Consider the example depicted in Figure~\ref{fig:MPMK_PSUCA_counterexample}. On the left, we show an example of a target set $T$ and victim set $Y$, where two records in the target set share an identifier with the same record in the victim set. We call this a \emph{many-to-one relation}. Recall that the matching logic uses the order of identifiers in $T$ as priorities to resolve such many-to-one relations. That is, it matches the second target record with the victim record, since it shares its first identifier $\id_3$ with the victim record, as opposed to the first target record, which shares its second identifier with the victim record. The latter remains unmatched. The resulting set $\UID$ therefore contains two elements: one UID for the two matched records and one for the unmatched first target record. On the right, we show a partition of $T$, matched against the same victim set $Y$ (in two separate protocol invocations). Now isolated and lacking competition from the other record, both target records are matched. The resulting sets $\UID_1$ and $\UID_2$ therefore both contain one UID. That is, we have $|\UID| = |\UID_1| + |\UID_2| \neq |\UID_1| + |\UID_2| - |Y|$, which violates the requirement mentioned above.
+We give an example of such a matching in Figure~\ref{fig:MPMK_PSUCA_counterexample}. 
 
-
-
-
+% On the left, we show an example of a target set $T$ and victim set $Y$, where two records in the target set share an identifier with the same record in the victim set. We call this a \emph{many-to-one relation}. Recall that the matching logic uses the order of identifiers in $T$ as priorities to resolve such many-to-one relations. That is, it matches the second target record with the victim record, since it shares its first identifier $\id_3$ with the victim record, as opposed to the first target record, which shares its second identifier with the victim record. The latter remains unmatched. The resulting set $\UID$ therefore contains two elements: one UID for the two matched records and one for the unmatched first target record. On the right, we show a partition of $T$, matched against the same victim set $Y$ (in two separate protocol invocations). Now isolated and lacking competition from the other record, both target records are matched. The resulting sets $\UID_1$ and $\UID_2$ therefore both contain one UID. That is, we have $|\UID| = |\UID_1| + |\UID_2| \neq |\UID_1| + |\UID_2| - |Y|$, which violates the requirement mentioned above.
 
 
 
-
-
-
-
-
-%%%%%%%%%%%%%%%%%%%%
-
-
-
-
- 
-Recall that the $\PSUCAattack{}$ attack relies on the observation that $|X \cap Y| = |X_1 \cap Y| + |X_2 \cap Y|$, where $X$ and $Y$ are arbitrary sets and $X_1, X_2$ form a partition of $X$.
-Applying Eq.~\ref{eqn:union_intersect_cardinalities}, this is equivalent to $|X \cup Y| = |X_1 \cup Y| + |X_2 \cup Y| - |Y|$.
-
-Translating this to the multi-key setting, let $X, T$ be sets of records, and let $X_1, X_2$ be a partition of $X$.
-Moreover, let $\UID$, $\UID_1$, and $\UID_2$ be the result from evaluating $\calF_{\MKPM}(\setX, \setY)$ and $\MKPM(\setX_i, \setY)$ for $i \in \{1,2\}$ respectively.
-Then we require the following relation to hold:
-\begin{equation}
-	\label{eqn:MKPM_PSUCA_condition}
-	|\UID| = |\UID_1| + |\UID_2| - |\setY|
-\end{equation}
-
-Unfortunately, this does not hold for general inputs for two reasons.
-First, the MKPM functionality shuffles the inputs before evaluating the matching logic on them. As a result, the record matching logic does not consistently match the same number of records in different protocol runs for some fixed inputs, i.e., different evaluations of $\calF_\MKPM$ with the same inputs may result in $\UID$ sets with different cardinalities.
-Second, the matching logic violates Eq.~\ref{eqn:MKPM_PSUCA_condition} even in cases where shuffling the inputs has no effect on the former.
-
-Consider the example depicted in Figure~\ref{fig:MPMK_PSUCA_counterexample}.
-On the left, we show an example of a target set T{} and victim set Y{}, 
-where two records in the target set share an identifier with the same record in the victim set.
-We call this a \emph{many-to-one relation}.
-Recall that the matching logic uses the order of identifiers in T{} as priorities to resolve such many-to-one relations.
-That is, it matches the second target record with the victim record, since it shares its first identifier $\id_3$ with the victim record,
-as opposed to the first target record, which shares its second identifier with the victim record. The latter remains unmatched.
-The resulting set $\UID{}$ therefore contains two elements: 
-one uid for the two matched records and one for the unmatched first target record.
-On the right, we show a partition of T{}, matched against the same victim set Y{} (in two separate protocol invocations).
-Now isolated and lacking competition from the other record, both target records are matched.
-The resulting sets $\UID_1$ and $\UID_2$ therefore both contain one uid.
-That is, we have $|\UID| = |\UID_1| + |\UID_2| \neq |\UID_1| + |\UID_2| - |Y|$, which violates the requirement mentioned above.
-
-\begin{figure}
-	\centering
-	\input{figures/example-psu-mkpm-attack.tex}
-	\caption{Example of a target set $T$ and victim set $Y$, where $\PSUCAattack{}$ cannot be applied.
-	Lines between records indicate potential matches based on matching identifiers. 
-	Solid lines denote the matched records chosen by the matching logic.
-	Clearly, $|\UID| \neq |\UID_1| + |\UID_2| - |Y|$.}
-	\label{fig:MPMK_PSUCA_counterexample}
-\end{figure}
-
-
-To avoid such cases, we formalize a restriction on the input sets that 
--- if satisfied -- allows us to carry out the attack.
-Conveniently, the opposite case, where one record in the target set shares identifiers with multiple records in the victim set,
-does not lead to such problems.
+To avoid such cases, we define a restriction on the input sets that, if satisfied, ensures that Eq.~\ref{eqn:MKPM_PSUCA_condition} holds, thus allowing us to carry out the attack. Luckily, one-to-many relations do not violate Eq.~\ref{eqn:MKPM_PSUCA_condition}.
 It therefore suffices to exclude many-to-one relations.
 
-\begin{definition}[Isolated Set]\label{def:isolated_set}
-	Let $X, Y\subseteq \Ispace{}^{\leq \lambda}$ be two sets of records for some $\lambda\in\NN$.
+\begin{definition}\label{def:isolated_set}
+	Let $X, Y$ be sets of records.
 	We say $X$ is \textbf{$Y$-isolated}, 
-	if for all $\by\in Y$ we have $|\{\bx \in X \setdsc \exists i, j. \; \bx[i] = \by[j]\}| \leq 1$.
+	if for all $\by\in Y$ we have 
+	$$|\{\bx \in X \setdsc \exists i, j \text{ s.t. } \bx[i] = \by[j]\}| \leq 1.$$
 \end{definition}
 
-This additional constraint on the protocol inputs excludes some realistic scenarios.
-For instance, if the sets contain IP addresses
--- IPv4 addresses behind a Network Address Translation (NAT) device in particular --
-such many-to-one relations are likely to occur, as users in the same local network share an address.
-However, this does not exclude the scenarios outlined in \ref{sec:threat_model},
-where the adversary chooses a specific range of identifiers as its target set, 
-such as all phone numbers of a certain area code or all email addresses belonging to some domain.
-Furthermore, scenarios where users possess multiple identifiers of some type,
-e.g., a private and a work email address, 
-but do not share them with other people, are still admitted as well, 
-provided that each user's identifiers only occur in at most one record in the target set.
-Definition~\ref{def:isolated_set} conveniently resolves both issues outlined above,
-which we prove in the following two lemmas.
-
+This constraint may exclude certain scenarios. For example, if the sets contain IP addresses, many-to-one relationships are likely to occur since multiple users in the same local network share an IP address. However, the adversary's input may be $Y$-isolated in scenarios where the adversary targets a specific range of identifiers, such as all phone numbers with a specific area code or all email addresses from a particular domain. \ff{maybe make reference to experiments here?}
 
 
 \begin{theorem}\label{thm:psu-mkpm:correctness}
@@ -114,7 +44,14 @@ which we prove in the following two lemmas.
 The proof can be find in Appendix~\ref{sec:psu-mkpm:correctness}.
 
 \heading{Time and query complexity.}
-The above adaptations consist of translating the set union cardinality to the multi-key scenario.
-In particular, the elements of $X$ that lie in the intersection $X\cap Y$ are analogous
-to the matchable records in $T$.
-The $\PSUCAattack{}$ applied to $\calF_{\MKPM}$ therefore has the same worst-case time complexity and maximum number of protocol invocations as when the attack is applied to $\calF_{\PSUCA}$.
+The $\PSUCAattack{}$ can be applied directly to the output of $\calF_{\MKPM}$, as long as the adversary's input sets satisfy Definition~\ref{def:isolated_set}. Thus, the attack has the same worst-case time complexity and maximum number of protocol invocations as when applied to $\calF_{\PSUCA}$. Specifically, it requires $\bigO{n\log n}$ time and at most $n + 1$ protocol invocations (although typically fewer queries are needed due to the probability of early termination).
+
+\begin{figure}
+	\centering
+	\input{figures/example-psu-mkpm-attack.tex}
+	\caption{Example of a target set $T$ and a recovery set $Y$, such that $\PSUCAattack{}$ cannot be applied to the output of $\calF_{\MKPM}(T;Y)$.
+	Lines between records indicate potential matches based on matching identifiers. 
+	Solid lines denote the matched records chosen by the matching logic.
+	We see that $|\UID| \neq |\UID_1| + |\UID_2| - |Y|$ and, as such, $T$ is not $Y$-isolated.}
+	\label{fig:MPMK_PSUCA_counterexample}
+\end{figure}
