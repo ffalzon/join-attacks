@@ -10,8 +10,7 @@ The adversary is given a target set $T$ and oracle access to $\calF(\cdot; Y)$, 
 The goal of private set union (PSU) is to hide the intersection of the input sets~\cite{USENIX:JSZG24}. The natural recovery goal for attacks against PSU and PSU-CA is to thus recover this intersection.
 
 \begin{definition}[Intersection Recovery]
-	Let $\calF$ be either the $\PSU$ or the $\PSUCA$ functionality and let $X$ and $Y$ be two sets.
-	Given a target set $T$ and oracle access to $\calF(\cdot, Y)$ an adversary $\adv$ achieves \textbf{intersection recovery} if it outputs $T \cap Y$.
+	Let $T$ be the target set and $Y$ be the recovery set. An adversary $\adv$ achieves \textbf{intersection recovery} if it outputs $T \cap Y$.
 \end{definition}
 
 Recovering the intersection is a goal that was also consisdered by attacks against PSI-related functionalities e.g.,~\cite{USENIX:GHLWJL22,NDSS:JiaDuYan24}.
@@ -21,9 +20,9 @@ Recovering the intersection is a goal that was also consisdered by attacks again
 
 Given that the $\calF_{\MKPM}$ functionality operates on sets of records, a natural recovery goal would be to recover the set of records appearing in both input sets. However, exact matches between records are unlikely in real-world scenarios. We thus adapt the intersection recovery goal to the multi-key setting.
 
-The matching logic in MK-PrivateID (see Figure~\ref{fig:match_logic} for a definition and Figure~\ref{fig:matching-logic-example} for an example) assigns the same UID to matched pairs of records and separate UIDs to unmatched ones. One can think of $\match$ as computing a pseudo-union of records, where a record in the victim's set and one in the target set are considered ``equal'' if they share the same UID. A natural generalization of set intersection is to recover the corresponding pseudo-intersection, i.e., records in the adversary’s target set that are matched with some record in the victim set. However, since $T$ and $Y$ are shuffled before matching, the logic does not consistently pair identical records across different protocol executions with the same inputs, and even the number of matched records may vary.
+The matching logic in MK-PrivateID (see Figure~\ref{fig:match_logic} for a definition and Figure~\ref{fig:matching-logic-example} for an example) assigns the same UID to matched pairs of records and separate UIDs to unmatched ones. One can think of $\match$ as computing a pseudo-union of records, where a record in the recovery set and one in the target set are considered ``equal'' if they share the same UID. A natural generalization of set intersection is to recover the corresponding pseudo-intersection, i.e., records in the adversary’s target set that are matched with some record in the recovery set. However, since $T$ and $Y$ are shuffled before matching, the logic does not consistently pair identical records across different protocol executions with the same inputs, and even the number of matched records may vary.
 
-We relax this pseudo-intersection notion to include all records in the target set sharing at least one identifier with some record in the victim set. These records, which could \emph{potentially} be matched by the logic, are called \textbf{matchable records}. We formalize this as:
+We relax this notion to include all records in the target set sharing at least one identifier with some record in the recovery set. These records, which could \emph{potentially} be matched by the logic, are called \textbf{matchable records}. We formalize this as:
 \[
     T \sqcap Y := \{\bt \in T \setdsc \exists \by \in Y,\ \exists j, \ell \in \NN \text{ s.t. } \bt[j] = \by[\ell]\}
 \]
@@ -74,7 +73,7 @@ containing an identifier from $\Ispace{T}$ are at least partially reconstructed.
     {
     \includegraphics[width=0.3\columnwidth]{figures/target-set.pdf}} 
     \quad
-	\subfloat[\label{fig:victim-set-example}Victim set $Y$.]%
+	\subfloat[\label{fig:victim-set-example}Recovery set $Y$.]%
     {
     \includegraphics[width=0.305\columnwidth]{figures/victim-set.pdf}} 
     \quad
