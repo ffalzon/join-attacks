@@ -60,7 +60,7 @@ Figure~\ref{fig:plot_PSU_large_time:right} plots runtimes against increasing tar
 
 
 \subsection{PSU-CA and MKPM Attack Evaluation}
-In this subsection, we evaluate our two search tree-based attacks: $\mathsf{PSU\text{-}CA\text{-}}\allowbreak\mathsf{SearchTree}$ as applied to $\calF_{\PSUCA}$ and $\calF_{\MKPM}$.
+In this subsection, we evaluate our two search tree-based attacks: $\PSUCAattack$ against $\calF_{\PSUCA}$ and $\mkpsiattack$ against $\calF_{\MKPM}$.
 While the two attacks were tested on different data sets, the set sizes were consistent across experiments.
 We plot the number of queries in Figures~\ref{fig:plot_ST_queries_over_n} and \ref{fig:plot_ST_queries_over_mr},
 and the runtimes in Figures~\ref{fig:ST_time_n_plot} and \ref{fig:ST_time_mr_plot}.
@@ -72,53 +72,64 @@ We can explain this by considering the number of queries made by the attacks. Is
 
 \begin{figure}
 	\centering
+    \subfloat[\PSUCAattack\label{fig:plot_ST_queries_over_nt:left}]{
 	\input{plots/PSUCA/queries_n.tex}
-	\mkpsiQueryNPlot{\mkpsiattack}{measurements/leakage_attacks/mkpsi_queries_over_n/V10000}
-	\caption{Number of queries made by $\PSUCAattack${} and $\mkpsiattack$ plotted against the target set size 
+    }
+    \subfloat[\mkpsiattack\label{fig:plot_ST_queries_over_n:right}]{
+	\mkpsiQueryNPlot{}{measurements/leakage_attacks/mkpsi_queries_over_n/V10000}
+    }
+	\caption{The number of queries required by the (a) $\PSUCAattack${} and (b) $\mkpsiattack$ plotted against the target set size 
 	for intersection ratios $\rho$ and match rates $\eta$: \ref{legend:PSUCA_qn_n_0}~$0\%$, \ref{legend:PSUCA_qn_n_1}~$10\%$, \ref{legend:PSUCA_qn_n_2}~$20\%$, \ref{legend:PSUCA_qn_n_3}~$30\%$, \ref{legend:PSUCA_qn_n_4}~$40\%$ and \ref{legend:PSUCA_qn_n_5}~$50\%$.
 	The experiment was run with $|Y| = 10^4$.}\label{fig:plot_ST_queries_over_n}
 \end{figure}
 
-% \begin{figure}
-% 	\centering
-% 	\input{plots/PSUCA/queries_mr.tex}
-% 	\mkpsiQueryMRPlot{$|T| = 0.5 \cdot 10^4$}{}{\mkpsiattack}{measurements/leakage_attacks/mkpsi_queries_over_mr/V10000T5000.csv}
-% 	\mkpsiQueryMRPlot{$|T| = 10^4$}{}{}{measurements/leakage_attacks/mkpsi_queries_over_mr/V10000T10000.csv}
-% 	\mkpsiQueryMRPlot{$|T| = 1.5 \cdot 10^4$}{}{}{measurements/leakage_attacks/mkpsi_queries_over_mr/V10000T15000.csv}
-% 	\caption{Number of queries made by \PSUCAattack{} and \mkpsiattack plotted against the match rate $\rho$ for a fixed $|Y| = 10^4$.}
-% 	\label{fig:plot_ST_queries_over_mr}
-% \end{figure}
 
-% \textbf{Queries.}
-% Figures~\ref{fig:plot_ST_queries_over_n} and \ref{fig:plot_ST_queries_over_mr} show the number of queries performed by the two attacks 
-% plotted against the target set size and $\rho$ or $\eta$ respectively.
-% \cref{fig:plot_ST_queries_over_mr} shows that both attacks make the most queries for values of $\rho$ and $\eta$ that are close to $0.5$.
-% This behavior follows our expectations, since a balanced ratio decreases the likelihood of early path terminations, thus,
-% increasing the number of queries the attack has to make until the reconstruction is complete. 
 
-% Ignoring the trivial cases where $\rho, \eta \in \{0, 1\}$,
-% the number of queries performed by the attacks lie between $36\%$ and $73\%$ of the theoretical upper bounds 
-% $n + 1$ for \PSUCAattack{} and $n$ for \mkpsiattack{}.
-% As mentioned previously, values of $\rho$ and $\eta$ close to $0.5$ incur higher percentages, 
-% where the aforementioned $36\%$ correspond to $\rho, \eta \in \{0.1, 0.9\}$ and $73\%$ to $\rho = \eta = 0.5$.
-% These percentages are consistent across different target set sizes.
-% \cref{fig:plot_ST_queries_over_n} suggests that the (absolute) number of queries grows linearly with the target set size, 
-% which is consistent with the theoretical upper bounds exhibiting the same behavior.
+\begin{figure}
+  \centering
+  % Left column: PSUCAattack
+  \subfloat[\PSUCAattack\label{fig:plot_ST_queries_over_mr:left}]{
+    \begin{minipage}{0.23\textwidth}
+      \centering
+      \PSUQueryMRPlot{$|T| = 0.5 \cdot 10^4$}{}{}{measurements/PSU/PSUCA_queries_over_mr/V10000T5000.csv}{}
+      \vspace{0.3em}
+      \PSUQueryMRPlot{$|T| = 10^4$}{}{}{measurements/PSU/PSUCA_queries_over_mr/V10000T10000.csv}{}
+      \vspace{0.3em}
+      \PSUQueryMRPlot{$|T| = 1.5 \cdot 10^4$}{}{}{measurements/PSU/PSUCA_queries_over_mr/V10000T15000.csv}{}
+    \end{minipage}
+  }%
+  % Right column: mkpsiattack
+  \subfloat[\mkpsiattack\label{fig:plot_ST_queries_over_mr:right}]{
+    \begin{minipage}{0.23\textwidth}
+      \centering
+      \mkpsiQueryMRPlot{$|T| = 0.5 \cdot 10^4$}{}{}{measurements/leakage_attacks/mkpsi_queries_over_mr/V10000T5000.csv}
+      \vspace{0.3em}
+      \mkpsiQueryMRPlot{$|T| = 10^4$}{}{}{measurements/leakage_attacks/mkpsi_queries_over_mr/V10000T10000.csv}
+      \vspace{0.3em}
+      \mkpsiQueryMRPlot{$|T| = 1.5 \cdot 10^4$}{}{}{measurements/leakage_attacks/mkpsi_queries_over_mr/V10000T15000.csv}
+    \end{minipage}
+  }
+  \caption{Number of protocol queries required by the (a) $\PSUCAattack{}$ and (b) $\mkpsiattack$ attacks, plotted against the match rate $\rho$ for a fixed $|Y| = 10^4$.}
+  \label{fig:plot_ST_queries_over_mr}
+\end{figure}
 
-% Furthermore, we can observe that both attacks make an almost identical number of queries.
-% This is surprising, since \mkpsiattack{} has a stricter early termination criterion than \PSUCAattack{}.
-% Yet still, the difference in the number of queries between the two attacks for any given experiments is never larger than $0.5\%$
-% of the theoretical upper bound, with \mkpsiattack{} consistently requiring a (slightly)
-% larger number of queries.
-% An exception to this observation are the experiments where $\rho$ and $\eta$ are either zero or one.
-% In these cases, \PSUCAattack{} always requires three queries, while \mkpsiattack{} makes only one.
-% This is due to the two additional queries \PSUCAattack{} needs to determine $|Y|$.
 
-% The heuristic we use to decide with which child to continue a path traversal and which subset to process next upon the termination of a path traversal
-% has only minimal impact on the number of queries performed by the attack.
-% We expected this, since the attacks only terminate once all subsets in the priority queue have been processed.
-% However, the number of subsets in said queue does not depend on the heuristic but rather on the partitioning of the subsets, 
-% which is done randomly. We therefore only show the measurements for the positive heuristic $p_{\PSICA}^{+}$ and $p_{MK}^{+}$ in this section.
+\heading{Queries.}
+Figure~\ref{fig:plot_ST_queries_over_n} plots the number of queries required by each attack as a function of the target set size.  
+Figure~\ref{fig:plot_ST_queries_over_mr} plots the number of queries required by each attack as a function of $\rho$ and $\eta$, respectively. 
+%We observe that both attacks make the most queries for values of $\rho$ and $\eta$ close to $0.5$. This matches our expectations: a balanced ratio reduces the likelihood of early path terminations in the search tree, thereby increasing the number of queries required to achieve full reconstruction.
+
+Ignoring the trivial cases $\rho, \eta \in \{0,1\}$, the number of queries lies between $36\%$ and $73\%$ of the theoretical upper bounds, $n+1$ for \PSUCAattack{} and $n$ for \mkpsiattack{}. Values of $\rho$ and $\eta$ near $0.5$ incur the highest percentages: $36\%$ occurs for $\rho, \eta \in \{0.1, 0.9\}$ and $73\%$ for $\rho = \eta = 0.5$, and these percentages are consistent across target set sizes. Figure~\ref{fig:plot_ST_queries_over_n} also shows that the absolute number of queries grows linearly with the target set size, matching the linear theoretical bounds.
+
+Both attacks make almost the same number of queries, despite \mkpsiattack{} having a stricter early-termination criterion. \ff{Is this stronger criterion explained anywherer??} For any experiment, their difference never exceeds $0.5\%$ of the theoretical upper bound, with \mkpsiattack{} slightly higher. The only exception is when $\rho$ or $\eta$ is $0$ or $1$: then \PSUCAattack{} always uses three queries, while \mkpsiattack{} uses only one, due to the two extra queries \PSUCAattack{} needs to determine $|Y|$.
+
+The heuristic used to choose which child to follow during path traversal, and which subset to process next after termination, has only a minimal impact on the number of queries. This is expected, as the attacks terminate only once all subsets in the priority queue have been processed. The number of subsets in the queue depends solely on the (random) partitioning, not on the heuristic. We therefore report only the measurements for the positive heuristics $p_{\PSICA}^{+}$ and $p_{MK}^{+}$ in this section.
+
+The heuristic we use to decide with which child to continue a path traversal and which subset to process next upon the termination of a path traversal
+has only minimal impact on the number of queries performed by the attack.
+We expected this, since the attacks only terminate once all subsets in the priority queue have been processed.
+However, the number of subsets in said queue does not depend on the heuristic but rather on the partitioning of the subsets, 
+which is done randomly. We therefore only show the measurements for the positive heuristic $p_{\PSICA}^{+}$ and $p_{MK}^{+}$ in this section.
 
 
 % \begin{figure}
