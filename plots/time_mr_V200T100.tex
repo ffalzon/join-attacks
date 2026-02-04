@@ -1,0 +1,25 @@
+\begin{tikzpicture}
+	\begin{axis}[
+		width=100pt,
+		height=80pt,
+		scale only axis,
+		title={$|\setT| = 100$},
+		xlabel={Match Rate},
+		ylabel={time [ms]},
+		ticklabel style={font=\scriptsize},
+		title style={font=\small, yshift=-5pt},
+		label style={font=\small},
+		ylabel style={yshift=-10pt},
+		xtick={0, 0.5, 1},
+		% ymode=log,
+		% xmode=log,
+		% log basis x={2},
+		grid style=dashed ]
+		\addplot[color=red, mark=x]table[x=max_V_match_fraction, y expr=(\thisrow{Baseline}/1000000),col sep=semicolon]{chapters/measurements/time_mr/V200T100.csv};
+		\label{legend:baseline}
+		\addplot[color=blue, mark=x]table[x=max_V_match_fraction, y expr=(\thisrow{RecordEnumeration}/1000000),col sep=semicolon]{chapters/measurements/time_mr/V200T100.csv};
+		\label{legend:recordenumeration}
+		\addplot[color=black, mark=x]table[x=max_V_match_fraction, y expr=(\thisrow{Snake}/1000000),col sep=semicolon]{chapters/measurements/time_mr/V200T100.csv};
+		\label{legend:snake}
+	\end{axis}
+\end{tikzpicture}

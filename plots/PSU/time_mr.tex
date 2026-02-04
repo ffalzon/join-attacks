@@ -1,0 +1,29 @@
+\begin{tikzpicture}
+	\begin{axis}[
+		width=150pt,
+		height=80pt,
+		scale only axis,
+		title={},%{#1$|\setT| = 200$},
+		xlabel={$\rho = |X \cap Y| / |X|$}, %{Match Rate},
+		ticklabel style={font=\scriptsize},
+		xmin={-0.05},
+		xmax={1.05},
+		label style={font=\small},
+		ylabel style={yshift=-10pt},
+		ylabel={time [ms]},
+		title style={font=\small, yshift=-5pt},
+		% ymode=log,
+		% xmode=log,
+		% log basis x={2},
+		%grid style=dashed
+		grid=major ]
+		\pgfplotsset{every mark/.append style={solid},}
+		
+		\addplot[color=red, mark=x]table[x=max_V_match_fraction, y expr=(\thisrow{PSU}/1000000),col sep=semicolon]{measurements/PSU/PSU_time_over_MR/V10000T5000.csv};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:PSU_timeTlow}
+		\addplot[color=blue, mark=x]table[x=max_V_match_fraction, y expr=(\thisrow{PSU}/1000000),col sep=semicolon]{measurements/PSU/PSU_time_over_MR/V10000T10000.csv};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:PSU_timeTmid}
+		\addplot[color=black, mark=x]table[x=max_V_match_fraction, y expr=(\thisrow{PSU}/1000000),col sep=semicolon]{measurements/PSU/PSU_time_over_MR/V10000T15000.csv};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:PSU_timeThigh}
+	\end{axis}
+\end{tikzpicture}

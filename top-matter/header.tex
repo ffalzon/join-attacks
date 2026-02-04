@@ -15,13 +15,17 @@
 \usepackage{enumitem}
 \usepackage{adjustbox}
 \usepackage{dashbox}
+\usepackage{siunitx}
 \usepackage{float}
+\usepackage[all]{hypcap}
 \usepackage{tikz}
 \usetikzlibrary{trees,positioning,arrows.meta,quotes, patterns}
 \usetikzlibrary{matrix, positioning}
 
-\usepackage[all]{hypcap}
 
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18} % Use the latest version
 
 \usepackage{etoolbox}
 \usepackage[adversary,
@@ -47,3 +51,271 @@
 
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{prop}[theorem]{Proposition}
+
+% plots
+\newcommand*{\reconstructionTimePlot}[8]{
+	\begin{tikzpicture}
+	\begin{axis}[
+		width=95pt,
+		height=80pt,
+		scale only axis,
+		title={#1},%{#1$|\setT| = 200$},
+		xlabel={#2}, %{Match Rate},
+		ticklabel style={font=\scriptsize},
+		label style={font=\small},
+		ylabel style={yshift=-5pt},
+		ylabel={#3},
+		title style={font=\small, yshift=-5pt},
+		xtick={#6},
+		xmin={#7},
+		xmax={#8},
+		grid=major ]
+		\pgfplotsset{every mark/.append style={solid},}
+		
+		\addplot[color=red, mark=x]table[x=#4, y expr=(\thisrow{Baseline}/1000000),col sep=semicolon]{#5};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:baseline}
+		\addplot[color=blue, mark=x]table[x=#4, y expr=(\thisrow{RecordEnumeration}/1000000),col sep=semicolon]{#5};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:recordenumeration}
+		\addplot[color=black, mark=x]table[x=#4, y expr=(\thisrow{Snake}/1000000),col sep=semicolon]{#5};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:snake}
+	\end{axis}
+\end{tikzpicture}}
+
+
+\newcommand*{\mkpsiQueryNPlot}[2]{
+\begin{tikzpicture}
+	\begin{axis}[
+		width=95pt,
+		height=80pt,
+		scale only axis,
+		title={#1},%$|\setT| = 200$},
+		xlabel={$|\setT|$}, %{Match Rate},
+		ticklabel style={font=\scriptsize},
+		label style={font=\small},
+		ylabel style={yshift=-10pt},
+		ylabel={},
+		title style={font=\small, yshift=-5pt},
+		% xtick={0, 0.5, 1},
+		% ymode=log,
+		% xmode=log,
+		% log basis x={2},
+		% grid style=dashed 
+		scaled ticks=base 10:-3,
+		% every x tick scale label/.append style={at={(1.1,0.15)}, anchor=south east},
+		legend pos=north west,
+		legend style={font=\tiny},
+		grid=major
+		]
+		\pgfplotsset{every mark/.append style={solid},}
+		
+		\addplot[color=black, mark=x]table[x=len_T, y expr=(\thisrow{queries_positive}),col sep=semicolon]{#2MR0.0.csv};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:mkpsi_qn0}
+
+		\addplot[color=red, mark=x]table[x=len_T, y expr=(\thisrow{queries_positive}),col sep=semicolon]{#2MR0.1.csv};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:mkpsi_qn1}
+
+		\addplot[color=blue, mark=x]table[x=len_T, y expr=(\thisrow{queries_positive}),col sep=semicolon]{#2MR0.2.csv};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:mkpsi_qn2}
+
+		\addplot[color=orange, mark=x]table[x=len_T, y expr=(\thisrow{queries_positive}),col sep=semicolon]{#2MR0.3.csv};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:mkpsi_qn3}
+		
+		\addplot[color=violet, mark=x]table[x=len_T, y expr=(\thisrow{queries_positive}),col sep=semicolon]{#2MR0.4.csv};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:mkpsi_qn4}
+
+		\addplot[color=teal, mark=x]table[x=len_T, y expr=(\thisrow{queries_positive}),col sep=semicolon]{#2MR0.5.csv};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:mkpsi_qn5}
+		
+		%\legend{0\%,10\%,20\%,30\%,40\%,50\%}
+	\end{axis}
+\end{tikzpicture}}
+
+\newcommand*{\mkpsiQueryMRPlot}[4]{
+\begin{tikzpicture}
+	\begin{axis}[
+		width=95pt,
+		height=60pt,
+		scale only axis,
+		title={#1},%$|\setT| = 200$},
+		xlabel={#2}, %{Match Rate},
+		ticklabel style={font=\scriptsize},
+		label style={font=\small},
+		ylabel style={yshift=-10pt},
+		ylabel={#3},
+		title style={font=\small, yshift=-5pt},
+		xmin={-0.05},
+		xmax={1.05},
+		% xtick={0, 0.5, 1},
+		% ymode=log,
+		% xmode=log,
+		% log basis x={2},
+		% grid style=dashed 
+		scaled y ticks=base 10:-3,
+		grid=major
+		]
+		\pgfplotsset{every mark/.append style={solid},}
+		
+		\addplot[color=OliveGreen, mark=x]table[x=max_V_match_fraction, y expr=(\thisrow{num_queries_positive}),col sep=semicolon]{#4};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:mkpsi_q_mr}
+		
+	\end{axis}
+\end{tikzpicture}}
+
+\newcommand*{\mkpsiTimeNPlot}[4]{
+	\begin{tikzpicture}
+	\begin{axis}[
+		width=95pt,
+		height=80pt,
+		scale only axis,
+		title={#1},%{#1$|\setT| = 200$},
+		xlabel={#2}, %{Match Rate},
+		ticklabel style={font=\scriptsize},
+		label style={font=\small},
+		ylabel style={yshift=-10pt},
+		ylabel={#3},
+		title style={font=\small, yshift=-5pt},
+		scaled x ticks=base 10:-3,
+		% ymode=log,
+		% xmode=log,
+		% log basis x={2},
+		%grid style=dashed
+		grid=major ]
+		\pgfplotsset{every mark/.append style={solid},}
+		\addplot[color=black, mark=x]table[x=len_T, y expr=(\thisrow{time_positive}/1000000),col sep=semicolon]{#4MR0.0.csv};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:mkpsi_time0}
+		\addplot[color=red, mark=x]table[x=len_T, y expr=(\thisrow{time_positive}/1000000),col sep=semicolon]{#4MR0.1.csv};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:mkpsi_time1}
+		\addplot[color=blue, mark=x]table[x=len_T, y expr=(\thisrow{time_positive}/1000000),col sep=semicolon]{#4MR0.2.csv};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:mkpsi_time2}
+		\addplot[color=orange, mark=x]table[x=len_T, y expr=(\thisrow{time_positive}/1000000),col sep=semicolon]{#4MR0.3.csv};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:mkpsi_time3}
+		\addplot[color=violet, mark=x]table[x=len_T, y expr=(\thisrow{time_positive}/1000000),col sep=semicolon]{#4MR0.4.csv};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:mkpsi_time4}
+		\addplot[color=teal, mark=x]table[x=len_T, y expr=(\thisrow{time_positive}/1000000),col sep=semicolon]{#4MR0.5.csv};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:mkpsi_time5}
+	\end{axis}
+\end{tikzpicture}}
+
+\newcommand*{\mkpsiTimeMRPlot}[4]{
+	\begin{tikzpicture}
+	\begin{axis}[
+		width=95pt,
+		height=80pt,
+		scale only axis,
+		title={#1},%{#1$|\setT| = 200$},
+		xlabel={#2}, %{Match Rate},
+		ticklabel style={font=\scriptsize},
+		xmin={-0.05},
+		xmax={1.05},
+		label style={font=\small},
+		ylabel style={yshift=-10pt},
+		ylabel={#3},
+		title style={font=\small, yshift=-5pt},
+		% ymode=log,
+		% xmode=log,
+		% log basis x={2},
+		%grid style=dashed
+		grid=major ]
+		\pgfplotsset{every mark/.append style={solid},}
+		
+		\addplot[color=Mahogany, mark=x]table[x=max_V_match_fraction, y expr=(\thisrow{time_positive}/1000000),col sep=semicolon]{#4T5000.csv};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:mkpsi_timeTlow}
+		\addplot[color=OliveGreen, mark=x]table[x=max_V_match_fraction, y expr=(\thisrow{time_positive}/1000000),col sep=semicolon]{#4T10000.csv};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:mkpsi_timeTmid}
+		\addplot[color=MidnightBlue, mark=x]table[x=max_V_match_fraction, y expr=(\thisrow{time_positive}/1000000),col sep=semicolon]{#4T15000.csv};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:mkpsi_timeThigh}
+	\end{axis}
+\end{tikzpicture}}
+
+
+\newcommand*{\mkpsiRecoveredQBPlotPrios}[4]{
+\begin{tikzpicture}
+	\begin{axis}[
+		width=95pt,
+		height=160pt,
+		scale only axis,
+		title={#1},%$|\setT| = 200$},
+		xlabel={Query Budget}, %{Match Rate},
+		ticklabel style={font=\scriptsize},
+		label style={font=\small},
+		ylabel style={yshift=-10pt},
+		ylabel={#4},
+		title style={font=\small, yshift=-5pt},
+		grid=major,
+		% xtick={0, 0.5, 1},
+		% ymode=log,
+		% xmode=log,
+		% log basis x={2},
+		%grid style=dashed 
+		]
+		\pgfplotsset{every mark/.append style={solid},}
+		
+		\addplot[color=red, mark=x, mark options={solid}, dashed]table[x=query_budget, y expr=(\thisrow{pos0.2_#3}),col sep=semicolon]{#2};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:pos2}
+		\addplot[color=red, mark=x, mark options={solid}, densely dotted]table[x=query_budget, y expr=(\thisrow{neg0.2_#3}),col sep=semicolon]{#2};
+		\label{legend:neg2}
+		\addplot[color=red, mark=x, mark options={solid}, solid]table[x=query_budget, y expr=(\thisrow{tot0.2_#3}),col sep=semicolon]{#2};
+		\label{legend:tot2}
+
+		% \addplot[color=blue, mark=diamond*]table[x=query_budget, y expr=(\thisrow{pos0.4}),col sep=semicolon]{#2};%{chapters/measurements/time_mr/V200T200.csv};
+		% \label{legend:pos4}
+		% \addplot[color=blue, mark=triangle*, dashed]table[x=query_budget, y expr=(\thisrow{neg0.4}),col sep=semicolon]{#2};
+		% \label{legend:neg4}
+		
+		\addplot[color=black, mark=x, mark options={solid}, dashed]table[x=query_budget, y expr=(\thisrow{pos0.6_#3}),col sep=semicolon]{#2};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:pos6}
+		\addplot[color=black, mark=x, mark options={solid}, densely dotted]table[x=query_budget, y expr=(\thisrow{neg0.6_#3}),col sep=semicolon]{#2};
+		\label{legend:neg6}
+		\addplot[color=black, mark=x, mark options={solid}, solid]table[x=query_budget, y expr=(\thisrow{tot0.6_#3}),col sep=semicolon]{#2};
+		\label{legend:tot6}
+		
+		% \addplot[color=orange, mark=diamond*]table[x=query_budget, y expr=(\thisrow{pos0.8}),col sep=semicolon]{#2};%{chapters/measurements/time_mr/V200T200.csv};
+		% \label{legend:pos8}
+		% \addplot[color=orange, mark=triangle*, dashed]table[x=query_budget, y expr=(\thisrow{neg0.8}),col sep=semicolon]{#2};
+		% \label{legend:neg8}
+		
+		\addplot[color=blue, mark=x, mark options={solid}, dashed]table[x=query_budget, y expr=(\thisrow{pos1.0_#3}),col sep=semicolon]{#2};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:pos10}
+		\addplot[color=blue, mark=x, mark options={solid}, densely dotted]table[x=query_budget, y expr=(\thisrow{neg1.0_#3}),col sep=semicolon]{#2};
+		\label{legend:neg10}
+		\addplot[color=blue, mark=x, mark options={solid}, solid]table[x=query_budget, y expr=(\thisrow{tot1.0_#3}),col sep=semicolon]{#2};
+		\label{legend:tot10}
+	\end{axis}
+\end{tikzpicture}}
+
+\newcommand*{\recoveredQBPlotPriosDirect}[6]{
+\begin{tikzpicture}
+	\begin{axis}[
+		width=95pt,
+		height=75pt,
+		scale only axis,
+		title={#1},%$|\setT| = 200$},
+		xlabel={#2}, %{Match Rate},
+		ticklabel style={font=\scriptsize},
+		label style={font=\scriptsize},
+		ylabel style={yshift=-10pt},
+		ylabel={#3},
+		title style={font=\scriptsize, yshift=-5pt},
+		grid=major,
+		ytick={0, 0.5, 1},
+		ymin={-0.1},
+		ymax={1.1},
+		xtick={1000, 5000, 10000},
+		% ymode=log,
+		% xmode=log,
+		% log basis x={2},
+		%grid style=dashed 
+		scaled x ticks=false,%{real:100},
+		xticklabel={\pgfmathparse{\tick/100}\pgfmathprintnumber{\pgfmathresult}\%}
+		]
+		\pgfplotsset{every mark/.append style={solid},}
+		
+		\addplot[color=red, mark=x, mark options={solid}, solid]table[x=query_budget, y expr=(\thisrow{#4#5_positive}),col sep=semicolon]{#6};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:pos}
+		\addplot[color=blue, mark=x, mark options={solid}, solid]table[x=query_budget, y expr=(\thisrow{#4#5_negative}),col sep=semicolon]{#6};
+		\label{legend:neg}
+		\addplot[color=black, mark=x, mark options={solid}, solid]table[x=query_budget, y expr=(\thisrow{#4#5_total}),col sep=semicolon]{#6};
+		\label{legend:tot}
+	\end{axis}
+\end{tikzpicture}}
+

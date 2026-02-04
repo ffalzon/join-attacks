@@ -1,0 +1,54 @@
+\begin{tikzpicture}
+	\begin{axis}[
+		width=95pt,
+		height=80pt,
+		scale only axis,
+		title={$\PSUCAattack$}, %$|\setT| = 200$},
+		xlabel={$|X|$}, %{Match Rate},
+		ticklabel style={font=\scriptsize},
+		label style={font=\small},
+		ylabel style={yshift=-5pt},
+		ylabel={Queries},
+		title style={font=\small, yshift=-5pt},
+		scaled ticks=base 10:-3,
+		% every x tick scale label/.append style={at={(1.1,0.15)}, anchor=south east},
+		legend pos=north west,
+		legend style={font=\tiny},
+		% xtick={0, 0.5, 1},
+		% ymode=log,
+		% xmode=log,
+		% log basis x={2},
+		% grid style=dashed 
+		grid=major
+		]
+		\pgfplotsset{every mark/.append style={solid},}
+		
+		\addplot[color=black, mark=x]table[x=len_T, y expr=(\thisrow{queries_positive}),col sep=semicolon]{measurements/PSU/PSUCA_queries_over_n/V10000MR0.0.csv};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:PSUCA_qn_n_0}
+
+		\addplot[color=red, mark=x]table[x=len_T, y expr=(\thisrow{queries_positive}),col sep=semicolon]{measurements/PSU/PSUCA_queries_over_n/V10000MR0.1.csv};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:PSUCA_qn_n_1}
+
+		\addplot[color=blue, mark=x]table[x=len_T, y expr=(\thisrow{queries_positive}),col sep=semicolon]{measurements/PSU/PSUCA_queries_over_n/V10000MR0.2.csv};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:PSUCA_qn_n_2}
+
+		\addplot[color=orange, mark=x]table[x=len_T, y expr=(\thisrow{queries_positive}),col sep=semicolon]{measurements/PSU/PSUCA_queries_over_n/V10000MR0.3.csv};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:PSUCA_qn_n_3}
+		
+		\addplot[color=violet, mark=x]table[x=len_T, y expr=(\thisrow{queries_positive}),col sep=semicolon]{measurements/PSU/PSUCA_queries_over_n/V10000MR0.4.csv};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:PSUCA_qn_n_4}
+
+		\addplot[color=teal, mark=x]table[x=len_T, y expr=(\thisrow{queries_positive}),col sep=semicolon]{measurements/PSU/PSUCA_queries_over_n/V10000MR0.5.csv};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:PSUCA_qn_n_5}
+		%\legend{0\%,10\%,20\%,30\%,40\%,50\%}
+				
+		% \addplot[color=violet, mark=x]table[x=len_T, y expr=(\thisrow{queries_total}),col sep=semicolon]{measurements/PSU/PSUCA_queries_over_n/V10000MR0.6.csv};%{chapters/measurements/time_mr/V200T200.csv};
+		% \label{legend:PSUCA_qn_n_6}
+
+		% \addplot[color=green, mark=x]table[x=len_T, y expr=(\thisrow{queries_total}),col sep=semicolon]{measurements/PSU/PSUCA_queries_over_n/V10000MR0.8.csv};%{chapters/measurements/time_mr/V200T200.csv};
+		% \label{legend:PSUCA_qn_n_8}
+		
+		% \addplot[color=black, mark=x]table[x=len_T, y expr=(\thisrow{queries_total}),col sep=semicolon]{measurements/PSU/PSUCA_queries_over_n/V10000MR1.0.csv};%{chapters/measurements/time_mr/V200T200.csv};
+		% \label{legend:PSUCA_qn_n_10}
+	\end{axis}
+\end{tikzpicture}

@@ -1,0 +1,28 @@
+\begin{tikzpicture}
+	\begin{axis}[
+		width=95pt,
+		height=80pt,
+		scale only axis,
+		title={},%{#1$|\setT| = 200$},
+		xlabel={$|X|$}, %{Match Rate},
+		ticklabel style={font=\scriptsize},
+		label style={font=\small},
+		ylabel style={yshift=-10pt},
+		ylabel={},
+		title style={font=\small, yshift=-5pt},
+		% ymode=log,
+		% xmode=log,
+		% log basis x={2},
+		%grid style=dashed
+		scaled x ticks=base 10:-3,
+		grid=major ]
+		\pgfplotsset{every mark/.append style={solid},}
+		
+		\addplot[color=red, mark=x]table[x=len_T, y expr=(\thisrow{time0.2_positive}/1000000),col sep=semicolon]{#4};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:mkpsi_time2}
+		\addplot[color=blue, mark=x]table[x=len_T, y expr=(\thisrow{time0.6_positive}/1000000),col sep=semicolon]{#4};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:mkpsi_time6}
+		\addplot[color=black, mark=x]table[x=len_T, y expr=(\thisrow{time1.0_positive}/1000000),col sep=semicolon]{#4};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:mkpsi_time10}
+	\end{axis}
+\end{tikzpicture}

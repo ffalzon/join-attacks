@@ -1,0 +1,33 @@
+{
+\newcommand{\PSUQueryMRPlot}[5]{
+\begin{tikzpicture}
+	\begin{axis}[
+		width=95pt,
+		height=60pt,
+		scale only axis,
+		title={#1},%$|\setT| = 200$},
+		xlabel={#2}, %{Match Rate},
+		ticklabel style={font=\scriptsize},
+		label style={font=\small},
+		ylabel style={yshift=-10pt},
+		ylabel={#3},
+		title style={font=\small, yshift=-5pt},
+		xmin={-0.05},
+		xmax={1.05},
+		% xtick={0, 0.5, 1},
+		% ymode=log,
+		% xmode=log,
+		% log basis x={2},
+		% grid style=dashed 
+		grid=major,
+		scaled y ticks=base 10:-3]
+		\pgfplotsset{every mark/.append style={solid},}
+		
+		\addplot[color=OliveGreen, mark=x]table[x=max_V_match_fraction, y expr=(\thisrow{num_queries_positive}),col sep=semicolon]{#4};%{chapters/measurements/time_mr/V200T200.csv};
+		\label{legend:mkpsi_q_mr}
+		
+	\end{axis}
+\end{tikzpicture}}
+\PSUQueryMRPlot{$|X|=0.5\cdot 10^4$}{}{\PSUCAattack}{measurements/PSU/PSUCA_queries_over_mr/V10000T5000.csv}{}
+\PSUQueryMRPlot{$|X|=10^4$}{}{}{measurements/PSU/PSUCA_queries_over_mr/V10000T10000.csv}{}
+\PSUQueryMRPlot{$|X|=1.5\cdot 10^4$}{}{}{measurements/PSU/PSUCA_queries_over_mr/V10000T15000.csv}{}}

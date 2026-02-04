@@ -1,1 +1,260 @@
-\section{Experimental Evaluation}
+\section{Experimental Evaluation}\label{sec:evaluation}
+
+We implemented our attacks and evaluated their efficiency through extensive experiments, measuring runtimes and performance under limited query budgets.
+
+\heading{Experiment Setup.} We implemented our attacks in Python 3.12.3 and ran the experiments on a 64 Core AMD EPYC 7742 2.25GHz Processor with 512GB Memory. Each individual experiment was executed on a single physical core. 
+Moreover, our test suite---which ran 40-50 experiments in parallel---did not exceed a memory consumption of 10GB.
+One can therefore expect similar results on commodity hardware.
+
+We implemented the functionalities and only simulated the protocol executions. Time measurements exclude network latencies and functionality evaluation, thus, the reported times reflect the exact time required for carrying out the attack. Each experiment was repeated $50$ times, and we report the average runtime and query measurements across the runs.
+
+
+\subsection{Data Generation} 
+
+Our attacks are largely data-independent. Thus, for ethical reasons, we evaluated the attacks using synthetic data, which also allowed precise control over the test data parameters. We note that Falzon and Tang~\cite{USENIX:FalTan25} also used synthetic datasets in their evaluation.
+
+
+\heading{PSU and PSU-CA.} $\calF_{\PSU}$ and $\calF_{\PSUCA}$ operate on sets of elements. Given the high efficiency of the $\calF_{\PSU}$ attack, we tested it with $m = 10^6$. For the $\calF_{\PSUCA}$ attack, we used $m = 10^4$.
+The target set size $n$ ranged from $50\%$ to $150\%$ of $m$ in $10\%$ increments.
+
+We varied the intersection size as a fraction of $T$, $\rho := |T \cap Y| / n$, from $0\%$ to $100\%$ in $10\%$ increments. When $n > m$, measurements were taken up to the largest feasible fraction divisible by $10\%$.
+
+To generate $T$, we sampled $n$ elements without replacement from the interval $[0, 2n)$. For $Y$, we sampled $\rho n$ elements from $T$ and the remaining $m - \rho n$ elements from $[2n, 2(n + m - \rho n))$, all without replacement.
+
+
+\heading{MKPM and L-MKPM.} 
+The $\calF_{\MKPM}$ and $\calF_{\LMKPM}$ functionalities take as input sets of records. Each record consists of an email address, a phone number, an IP address, and an advertising ID (AAID).\footnote{This set of identifiers follows Meta's Developer Reference: \url{https://developers.facebook.com/docs/private-computation/reference/}} The first three identifiers were generated using the \texttt{Faker} Python package, while the AAID was a randomly sampled string of 32 hexadecimal digits.
+
+For a given pair of target and recovery sets $T$ and $Y$, we define the match rate $\eta$ as the fraction of all identifiers in $T$ that also appear in $Y$, including multiple occurrences of the same identifier. Specifically, for $N := \sum_{\bt \in T} |\bt|$, we have:
+\[
+\eta := \frac{\sum_{\bt \in T} \sum_{\id \in \bt} \mathbb{1}\{\id \in \Ispace{Y}\}}{N}.
+\]
+While $\eta$ describes the overall match rate of $T$, the match rates for individual columns of $T$ may vary.
+
+In our experiments with $\calF_{\MKPM}$ and $\calF_{\LMKPM}$, the recovery set contained $m = 10^4$ records. We varied $\eta$ from $0\%$ to $100\%$ in $10\%$ increments. When $n > m$, we measured up to the largest feasible fraction divisible by $10\%$. The target set size $n$ ranged from $50\%$ to $150\%$ of $m$, increasing in $10\%$ increments.
+
+
+\subsection{PSU Attack Evaluation}
+Overall, the $\PSUattack$ attack (Section~\ref{}) is very efficient, as shown in Figure~\ref{fig:plot_PSU_large_time}. When evaluated on a large recovery set with $m = 10^6$ elements, runtimes range from \SI{0.74}{\second} to \SI{3.13}{\second}, since the attack only requires simple set union and difference operations. For comparison, on a smaller recovery set with $m = 10^4$ elements (used for evaluating all other attacks), runtimes range from \SI{4}{\milli\second} to \SI{9}{\milli\second}.
+
+
+
+\begin{figure}
+	\centering
+    \subfloat[\label{fig:plot_PSU_large_time:left}]{
+    \input{plots/PSU_1M/time_mr.tex}
+    }
+    \hspace{1mm}\subfloat[\label{fig:plot_PSU_large_time:right}]{
+    \input{plots/PSU_1M/time_n.tex}
+    }
+	\caption{Runtime measurements of $\PSUattack{}$ (Section~\ref{sec:PSU_attack}) for a recovery set of size $|Y| = 10^6$. 
+	(a) shows runtime plotted against the intersection ratio $\rho$ for target set sizes \ref{legend:PSU_timeTlow} $0.5 \cdot 10^6$, \ref{legend:PSU_timeTmid} $10^6$, and \ref{legend:PSU_timeThigh} $1.5 \cdot 10^6$.
+	(b) shows runtime plotted against the target set size $|T|$ for intersection ratios \ref{legend:psu_time2} $40\%$, \ref{legend:psu_time6} $60\%$, and \ref{legend:psu_time10} $80\%$.}
+	\label{fig:plot_PSU_large_time}
+\end{figure}
+
+Figure~\ref{fig:plot_PSU_large_time:left} shows that the intersection ratio $\rho$ has a slight effect on runtime, with larger ratios leading to faster performance. This is likely due to Python's implementation of set differences, which operates in linear time relative to the size of the first set. 
+As $\rho$ increases, the number of elements shared between $T$ and $Y$ increases, resulting in a smaller $Z = X \cup Y$; this makes $Z \setminus X$ more efficient to compute (see line~\ref{lin:PSUDiff_Z-X} in Figure~\ref{fig:PSU_attack}). Similarly, smaller $Z_1 = T_1 \cup Y$ and $Z_2 = T_2 \cup Y$ lead to a faster computation of $Z_1 \cup Z_2$.
+
+Figure~\ref{fig:plot_PSU_large_time:right} plots runtimes against increasing target set sizes $|T|$. As expected, larger target sets lead to higher runtimes, which scale linearly. Runtimes are longer for smaller intersection ratios $\rho$, consistent with earlier observations. Spikes in runtimes occur between $|T| = 8 \cdot 10^5$ and $9 \cdot 10^5$ for $\rho = 0.4$ and between $|T| = 10^6$ and $1.1 \cdot 10^6$ for $\rho = 0.6$ and $0.8$, likely due to the working set exceeding the processor’s L3 cache.
+
+
+\subsection{PSU-CA and MKPM Attack Evaluation}
+In this subsection, we evaluate our two search tree-based attacks: $\mathsf{PSU\text{-}CA\text{-}}\allowbreak\mathsf{SearchTree}$ as applied to $\calF_{\PSUCA}$ and $\calF_{\MKPM}$.
+While the two attacks were tested on different data sets, the set sizes were consistent across experiments.
+We plot the number of queries in Figures~\ref{fig:plot_ST_queries_over_n} and \ref{fig:plot_ST_queries_over_mr},
+and the runtimes in Figures~\ref{fig:ST_time_n_plot} and \ref{fig:ST_time_mr_plot}.
+
+The time and query measurements of the two attacks are in general very symmetric with respect to the intersection ratio and match rate.
+Specifically, for any $\varepsilon$, the measurements for experiments with $\rho, \eta \in \{\varepsilon, 1-\varepsilon\}$ are nearly identical.
+We therefore only show measurements for $\rho, \eta \leq 0.5$ in this section.
+We can explain this by considering the number of queries made by the attacks. Isolating a small set of matched elements from a large set of unmatched ones (small intersection ratio) is equivalent to isolating a large set of matched elements from a small set of unmatched ones (large intersection ratio). The expected number of queries performed by the attacks is therefore the same in both cases. 
+
+\begin{figure}
+	\centering
+	\input{plots/PSUCA/queries_n.tex}
+	\mkpsiQueryNPlot{\mkpsiattack}{measurements/leakage_attacks/mkpsi_queries_over_n/V10000}
+	\caption{Number of queries made by $\PSUCAattack${} and $\mkpsiattack$ plotted against the target set size 
+	for intersection ratios $\rho$ and match rates $\eta$: \ref{legend:PSUCA_qn_n_0}~$0\%$, \ref{legend:PSUCA_qn_n_1}~$10\%$, \ref{legend:PSUCA_qn_n_2}~$20\%$, \ref{legend:PSUCA_qn_n_3}~$30\%$, \ref{legend:PSUCA_qn_n_4}~$40\%$ and \ref{legend:PSUCA_qn_n_5}~$50\%$.
+	The experiment was run with $|Y| = 10^4$.}\label{fig:plot_ST_queries_over_n}
+\end{figure}
+
+% \begin{figure}
+% 	\centering
+% 	\input{plots/PSUCA/queries_mr.tex}
+% 	\mkpsiQueryMRPlot{$|T| = 0.5 \cdot 10^4$}{}{\mkpsiattack}{measurements/leakage_attacks/mkpsi_queries_over_mr/V10000T5000.csv}
+% 	\mkpsiQueryMRPlot{$|T| = 10^4$}{}{}{measurements/leakage_attacks/mkpsi_queries_over_mr/V10000T10000.csv}
+% 	\mkpsiQueryMRPlot{$|T| = 1.5 \cdot 10^4$}{}{}{measurements/leakage_attacks/mkpsi_queries_over_mr/V10000T15000.csv}
+% 	\caption{Number of queries made by \PSUCAattack{} and \mkpsiattack plotted against the match rate $\rho$ for a fixed $|Y| = 10^4$.}
+% 	\label{fig:plot_ST_queries_over_mr}
+% \end{figure}
+
+% \textbf{Queries.}
+% Figures~\ref{fig:plot_ST_queries_over_n} and \ref{fig:plot_ST_queries_over_mr} show the number of queries performed by the two attacks 
+% plotted against the target set size and $\rho$ or $\eta$ respectively.
+% \cref{fig:plot_ST_queries_over_mr} shows that both attacks make the most queries for values of $\rho$ and $\eta$ that are close to $0.5$.
+% This behavior follows our expectations, since a balanced ratio decreases the likelihood of early path terminations, thus,
+% increasing the number of queries the attack has to make until the reconstruction is complete. 
+
+% Ignoring the trivial cases where $\rho, \eta \in \{0, 1\}$,
+% the number of queries performed by the attacks lie between $36\%$ and $73\%$ of the theoretical upper bounds 
+% $n + 1$ for \PSUCAattack{} and $n$ for \mkpsiattack{}.
+% As mentioned previously, values of $\rho$ and $\eta$ close to $0.5$ incur higher percentages, 
+% where the aforementioned $36\%$ correspond to $\rho, \eta \in \{0.1, 0.9\}$ and $73\%$ to $\rho = \eta = 0.5$.
+% These percentages are consistent across different target set sizes.
+% \cref{fig:plot_ST_queries_over_n} suggests that the (absolute) number of queries grows linearly with the target set size, 
+% which is consistent with the theoretical upper bounds exhibiting the same behavior.
+
+% Furthermore, we can observe that both attacks make an almost identical number of queries.
+% This is surprising, since \mkpsiattack{} has a stricter early termination criterion than \PSUCAattack{}.
+% Yet still, the difference in the number of queries between the two attacks for any given experiments is never larger than $0.5\%$
+% of the theoretical upper bound, with \mkpsiattack{} consistently requiring a (slightly)
+% larger number of queries.
+% An exception to this observation are the experiments where $\rho$ and $\eta$ are either zero or one.
+% In these cases, \PSUCAattack{} always requires three queries, while \mkpsiattack{} makes only one.
+% This is due to the two additional queries \PSUCAattack{} needs to determine $|Y|$.
+
+% The heuristic we use to decide with which child to continue a path traversal and which subset to process next upon the termination of a path traversal
+% has only minimal impact on the number of queries performed by the attack.
+% We expected this, since the attacks only terminate once all subsets in the priority queue have been processed.
+% However, the number of subsets in said queue does not depend on the heuristic but rather on the partitioning of the subsets, 
+% which is done randomly. We therefore only show the measurements for the positive heuristic $p_{\PSICA}^{+}$ and $p_{MK}^{+}$ in this section.
+
+
+% \begin{figure}
+% 	\centering
+% 	\Wider[3em]{
+% 		\mkpsiTimeMRPlot{\PSUCAattack}{$\rho$}{time [ms]}{measurements/PSU/PSUCA_time_over_mr/V10000}
+% 		\hspace{0.5cm}
+% 		\mkpsiTimeMRPlot{\mkpsiattack}{$\eta$}{}{measurements/leakage_attacks/mkpsi_time_over_MR/V10000}}
+% 	\caption{Runtime measurements of \PSUCAattack{} (\cref{sec:PSUCA_attack}) and \mkpsiattack{} (\cref{ch:MKPSI})
+% 	plotted against the intersection ratio $\rho$ and match rate $\eta$ respectively for target set sizes 
+% 	\ref{legend:mkpsi_timeTlow}~$0.5\cdot 10^4$, \ref{legend:mkpsi_timeTmid}~$10^4$ and \ref{legend:mkpsi_timeThigh}~$1.5\cdot 10^4$.}
+% 	\label{fig:ST_time_mr_plot}
+% \end{figure}
+
+% \begin{figure}
+% 	\centering
+% 	\Wider[3em]{
+% 		\mkpsiTimeNPlot{\PSUCAattack}{$|X|$}{time [ms]}{measurements/PSU/PSUCA_time_over_n/V10000}
+% 		\hspace{0.5cm}
+% 		\mkpsiTimeNPlot{\mkpsiattack}{$|\setT|$}{}{measurements/leakage_attacks/mkpsi_time_over_n/V10000}}
+% 	\caption{Runtime measurements of \PSUCAattack{} and \mkpsiattack{} plotted against the target set size $|X|$
+% 	for intersection ratios $\rho$ and match rates $\eta$: \ref{legend:mkpsi_time0}~$0\%$,\ref{legend:mkpsi_time1}~$10\%$,\ref{legend:mkpsi_time2}~$20\%$,\ref{legend:mkpsi_time3}~$30\%$,\ref{legend:mkpsi_time4}~$40\%$,\ref{legend:mkpsi_time5}~$50\%$,.}
+% 	\label{fig:ST_time_n_plot}
+% \end{figure}
+
+% \textbf{Runtime.} Figures~\ref{fig:ST_time_mr_plot} and \ref{fig:ST_time_n_plot} show the runtime measurements of the two attacks
+% plotted against the intersection ratio $\rho$ or match rate $\eta$ and against the target set size.
+% The runtimes of \PSUCAattack{} are in the range of $3-130$ milliseconds, depending on the experiment parameters.
+% \mkpsiattack{} is much slower with runtimes between $145$ milliseconds for $\eta = 0$ and $n = 0.5 \cdot 10^4$ 
+% and $177$ seconds for $\eta = 0.5$ and $n = 1.5\cdot 10^4$. Despite this difference, we still deem this a reasonable attack time.
+% Before we discuss the results in detail, we want to highlight that while the number of queries
+% performed by the two attacks are nearly identical 
+% -- as elaborated above --
+% \mkpsiattack{} is more than three orders of magnitude slower than \PSUCAattack.
+% Besides a potentially larger memory overhead due to larger data sets,
+% we mainly attribute this to the computation of \colCA{}.
+% This is costly, since it needs to be computed after every query and requires iterating through all identifiers of \leakV{} 
+% and the current subset of the target set.
+
+% \cref{fig:ST_time_mr_plot} shows that the attack runtime heavily depends on the intersection ratio and match rate 
+% of the test data. 
+% Generally, we observe high time measurements for values of $\rho$ and $\eta$ that are close to $0.5$.
+% Given our previous insights about the impact the $\rho$ and $\eta$ on the number of queries, 
+% this merely confirms our expectations that the runtime of the attacks are dominated by the number of performed queries.
+
+% The graphs in \cref{fig:ST_time_n_plot} suggests that the runtime of the two arracks grows linearly 
+% with increasing target set sizes. 
+% This deviates from the theoretical time complexities of \bigO{n\log n} for \PSUCAattack{}
+% and \bigO{\lambda n(\log n + m)} for \mkpsiattack.
+% We suspect that the effect of the priority queue insertions, 
+% which cause the logarithmic factor in the the theoretical analysis,
+% becomes noticeable only with larger data sets.
+
+
+
+% \subsection{Performance under Limited Query Budgets}
+% We also measured the performance of our search tree-based attacks 
+% under limited query budgets.
+% We allocated query budgets in the range of $10-100\%$ percent of the theoretical maximum in $10\%$ increments.
+% Once an attack reached a given query budget, the current path traversal was aborted and the priority queue emptied to 
+% include enqueued subsets that could be processed without further queries. 
+
+% The main interest was measuring how much of their original recovery goal the attacks managed to achieve.
+% Recall that with enough queries, both \PSUCAattack{} and \mkpsiattack{} output two sets $\posSet = A \cap B$ and $\negSet = A \setminus B$,
+% where $A = X$, $B = Y$ for \PSUCAattack{} and $A = \Ispace{\setT}$, $B = \Ispace{\setV}$ for \mkpsiattack{} accordingly.
+% Limiting the allowed number of queries, we now have $\posSet \subseteq A \cap B$ and $\negSet \subseteq A \setminus B$.
+% We discuss three metrics, namely, 
+% (1) the recovered fraction of the intersection $|\posSet| / |A \cap B|$,
+% (2) the recovered fraction of the set difference $|\negSet| / |A \setminus B|$, and
+% (3) the fraction of elements whose membership status was decided $(|\posSet| + |\negSet|) / |A|$.
+% \cref{fig:PSUCA_recon_qb_prios} shows these tree metrics plotted against the allocated query budget for the \PSUCAattack{} attack.
+% Our measurements for \mkpsiattack{} yielded similar results, which are shown in \cref{fig:mkpsi_recon_qb_prios} in \cref{apx:mkpsiattack_measurements}.
+
+% \begin{figure}
+% 	\centering
+% 	\Wider[2em]{
+% 		\recoveredQBPlotPriosDirect{$\rho = 0.1$}{}{$|\posSet| / |X \cap Y|$}{pos}{0.1}{measurements/PSU/PSUCA_recovery_over_QB/V10000T10000.csv}
+% 		\recoveredQBPlotPriosDirect{$\rho = 0.3$}{}{}{pos}{0.3}{measurements/PSU/PSUCA_recovery_over_QB/V10000T10000.csv}
+% 		\recoveredQBPlotPriosDirect{$\rho = 0.5$}{}{}{pos}{0.5}{measurements/PSU/PSUCA_recovery_over_QB/V10000T10000.csv}
+		
+% 		\recoveredQBPlotPriosDirect{}{}{$|\negSet| / |X \setminus Y|$}{neg}{0.1}{measurements/PSU/PSUCA_recovery_over_QB/V10000T10000.csv}
+% 		\recoveredQBPlotPriosDirect{}{}{}{neg}{0.3}{measurements/PSU/PSUCA_recovery_over_QB/V10000T10000.csv}
+% 		\recoveredQBPlotPriosDirect{}{}{}{neg}{0.5}{measurements/PSU/PSUCA_recovery_over_QB/V10000T10000.csv}
+
+% 		\recoveredQBPlotPriosDirect{}{}{$(|\posSet| + |\negSet|) / |X|$}{tot}{0.1}{measurements/PSU/PSUCA_recovery_over_QB/V10000T10000.csv}
+% 		\recoveredQBPlotPriosDirect{}{}{}{tot}{0.3}{measurements/PSU/PSUCA_recovery_over_QB/V10000T10000.csv}
+% 		\recoveredQBPlotPriosDirect{}{}{}{tot}{0.5}{measurements/PSU/PSUCA_recovery_over_QB/V10000T10000.csv}
+% 	}
+% 	\caption{Recovery rate of \PSUCAattack{} (see \cref{sec:PSUCA_attack}) under limited query budgets. 
+% 	We show the recovered fractions of $X \cap Y$, $X\setminus Y$
+% 	and the fraction of the elements of $X$ whose membership status was determined, 
+% 	using the heuristics \ref{legend:pos}~$p_{\PSICA}^{+}$, \ref{legend:neg}~$p_{\PSICA}^{-}$ and \ref{legend:tot}~$p_{\PSICA}^{*}$,
+% 	plotted against the allocated query budget as a percentage of the theoretical upper bound of $|X| + 1 = 10^4 + 1$.}\label{fig:PSUCA_recon_qb_prios}
+% \end{figure}
+
+% \cref{fig:PSUCA_recon_qb_prios} shows that the \PSUCAattack{} attack can partially recover the intersection even with comparatively few queries.
+% Apart from the query budget the recovered fraction also depends on the intersection ratio $\rho$,
+% which was to be expected given the previously elaborated relation between the intersection ratio and the number of queries made by the attack.
+% Our experiments show that, depending on $\rho$, a query budget of $20 - 40\%$ of the theoretical upper bound $|X|+1$
+% suffices to infer the membership status of at least half the elements in $X$ on average.
+% While this may still be a large number in realistic scenarios (depending on the size of $X$),
+% this shows that the \PSUCAattack{} performs well under restricted query budgets and the worst-case scenario where $|X| + 1$ queries are necessary is unlikely.
+% Similar conclusions can be reached about the \mkpsiattack{} attack.
+
+% In contrast to the last section, we observe that the different heuristics have an impact on performance of the attacks.
+% Counterintuitively, the heuristic $p_{\PSICA}^+$, which should maximize the recovered fraction of $X \cap Y$,
+% seems more effective at maximizing the recovered fraction of $X\setminus Y$.
+% Vice-versa, the heuristic $p_{\PSICA}^-$ is more effective at maximizing the recovered intersection
+% than the difference.
+% Meanwhile, $p_{\PSICA}^*$ performs the worst in all metrics including the total membership inference,
+% which it was originally aimed at maximizing.
+
+% % \subsection{PSU-CA Applied to MKPM}
+% % \Todo{To be done, but maybe not very interesting? I'd expect the plots to pretty much match the PSU-CA plots.}
+
+\subsection{L-MKPM Attack Evaluation}
+The maximum set reconstruction attacks presented in section~\ref{sec:lmkpm-attacks}---$\baselineattack{}$, $\recenumattack{}$, and $\snakeattack{}$---all require just a single protocol execution. 
+We only discuss the runtime measurements, 
+which are plotted against the match rate $\eta$ and target set size $n$ in Figure~\ref{fig:leakage_attacks_time_plot}.
+
+The attacks are all very efficient. $\baselineattack{}$ is the fastest, with runtimes ranging from \SI{38}{\milli\second} ($n = 0.5 \cdot 10^4$) to \SI{112}{\milli\second} ($n = 1.5 \cdot 10^4$). \snakeattack{} is $1.5$--$2\times$ slower, with runtimes between \SI{66}{\milli\second} and \SI{214}{\milli\second}, due to its simpler pre-processing but more expensive post-processing. \recenumattack{} is the slowest of the three, with runtimes between \SI{266}{\milli\second} and \SI{884}{\milli\second}, since its encoding and decoding operations require prepending and inspecting $\log_2 n$ identifiers per record.
+
+Figure~\ref{fig:leakage_attacks_time_plot:left} suggests that the runtimes of all three attacks are largely independent of the match rate. This is consistent with the theory, since the match rate only affects the size of the reconstruction dictionary. Figure~\ref{fig:leakage_attacks_time_plot:right} shows that the runtimes of $\baselineattack{}$ and $\snakeattack{}$ increase linearly with the target set size, consistent with their theoretical time complexity. In contrast, the additional work performed by \recenumattack{} results in not only generally longer runtimes but also a steeper growth as $n$ increases.
+
+
+\begin{figure}[t]
+	\centering
+    \subfloat[\label{fig:leakage_attacks_time_plot:left}]{
+        \reconstructionTimePlot{}{$\eta$}{time [ms]}{max_V_match_fraction}{measurements/leakage_attacks/time_over_MR/V10000T10000.csv}{0.0, 0.5, 1}{-0.05}{1.05}
+    }
+    \subfloat[\label{fig:leakage_attacks_time_plot:right}]{
+        \reconstructionTimePlot{}{$n=|T|$}{}{len_T}{measurements/leakage_attacks/time_over_n/V10000MR0.5.csv}{}{}{}
+    }
+	\caption{Runtime measurements of \ref{legend:baseline} $\baselineattack$, \ref{legend:recordenumeration} $\recenumattack$ and \ref{legend:snake} $\snakeattack$
+	plotted against (a) the match rate $\eta$ and (b) the target set size.
+	}\label{fig:leakage_attacks_time_plot}
+\end{figure}
+
+
