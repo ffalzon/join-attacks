@@ -1,10 +1,10 @@
 \section{Analysis of $\calF_{\MKPM}$}\label{sec:PSUCA_to_matching}
 
-In this section, we show how the $\PSUCAattack{}$ attack can be applied to the $\calF_{\MKPM}$ functionality---with some additional assumptions---to achieve MRR (Definition~\ref{def:matchable_records_recovery}).
-In Appendix~\ref{sec:psuca-privateID-attack} we also explain how the attack can be applied to the single key private matching functionality $\calF_{\SKPM}$ realized by PrivateID~\cite{PMC}.
+In this section, we show how the $\PSUCAattack{}$ attack can be applied to the $\calF_{\MKPM}$ functionality with some additional assumptions to achieve \emph{matchable record recovery} (Definition~\ref{def:matchable_records_recovery}).
+In Appendix~\ref{sec:psuca-privateID-attack} we further explain how the attack can be applied to the single key private matching functionality $\calF_{\SKPM}$ realized by PrivateID~\cite{PMC}.
 
-The adversary is given a target set of records $T \subseteq \Ispace{}^n$, and can evaluate $\calF_{\MKPM}(X, Y)$ for arbitrarily many inputs $X$, while the recovery set $Y$ remains static. Its goal is to determine the set of matchable records, $T \sqcap Y$.
-$\mathcal F_{\MKPM}$ outputs to both parties the set $\UID$ of universal identifiers assigned to all records held by the parties. Rather than assigning a common UID to two identical records, it applies a matching logic (see Figure~\ref{fig:match_logic}) and assigns a common UID to each pair of matched records, while assigning a distinct UID to every unmatched record in $T$ and $Y$. Thus, using $|\UID|$ as the cardinality for carrying out the $\PSUCAattack{}$ appears to be a natural approach for identifying matching records in $T$.
+The adversary is given a target set of records $T \subseteq \Ispace{}^n$, and can evaluate $\calF_{\MKPM}(X, Y)$ for arbitrarily many inputs $X$. Its goal is to determine the set of matchable records, $T \sqcap Y$.
+The functionality $\mathcal F_{\MKPM}$ outputs the set universal identifiers, $\UID$, to both parties. Rather than assigning a common UID to two identical records, it applies a matching logic (see Figure~\ref{fig:match_logic}) which assigns a common UID to each pair of matched records, and a distinct UID to every unmatched record in $T$ and $Y$. Thus, using $|\UID|$ as the cardinality for carrying out the $\PSUCAattack{}$ appears to be a natural approach for identifying matching records in $T$.
 
 Recall that the $\PSUCAattack{}$ attack (Section~\ref{sec:psu-psuca}) relies on the fact that $|X \cup Y| = |X_1 \cup Y| + |X_2 \cup Y| - |Y|$ (Eq.~\ref{eqn:union_intersect_cardinalities}), where $X$ and $Y$ are arbitrary sets and $X_1\cup X_2$ form a partition of $X$.
 
@@ -19,8 +19,6 @@ Unfortunately, this condition does not hold for general inputs. The reason is th
 We give an example of such a matching in Figure~\ref{fig:MPMK_PSUCA_counterexample}. 
 
 % On the left, we show an example of a target set $T$ and victim set $Y$, where two records in the target set share an identifier with the same record in the victim set. We call this a \emph{many-to-one relation}. Recall that the matching logic uses the order of identifiers in $T$ as priorities to resolve such many-to-one relations. That is, it matches the second target record with the victim record, since it shares its first identifier $\id_3$ with the victim record, as opposed to the first target record, which shares its second identifier with the victim record. The latter remains unmatched. The resulting set $\UID$ therefore contains two elements: one UID for the two matched records and one for the unmatched first target record. On the right, we show a partition of $T$, matched against the same victim set $Y$ (in two separate protocol invocations). Now isolated and lacking competition from the other record, both target records are matched. The resulting sets $\UID_1$ and $\UID_2$ therefore both contain one UID. That is, we have $|\UID| = |\UID_1| + |\UID_2| \neq |\UID_1| + |\UID_2| - |Y|$, which violates the requirement mentioned above.
-
-
 
 To avoid such cases, we define a restriction on the input sets that, if satisfied, ensures that Eq.~\ref{eqn:MKPM_PSUCA_condition} holds, thus allowing us to carry out the attack. Luckily, one-to-many relations do not violate Eq.~\ref{eqn:MKPM_PSUCA_condition}.
 It therefore suffices to exclude many-to-one relations.
