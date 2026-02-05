@@ -57,7 +57,7 @@
 	\begin{tikzpicture}
 	\begin{axis}[
 		width=95pt,
-		height=80pt,
+		height=60pt,
 		scale only axis,
 		title={#1},%{#1$|\setT| = 200$},
 		xlabel={#2}, %{Match Rate},
@@ -86,7 +86,7 @@
 \begin{tikzpicture}
 	\begin{axis}[
 		width=95pt,
-		height=80pt,
+		height=60pt,
 		scale only axis,
 		title={#1},%$|\setT| = 200$},
 		xlabel={$|\setT|$}, %{Match Rate},
@@ -95,13 +95,7 @@
 		ylabel style={yshift=-10pt},
 		ylabel={},
 		title style={font=\small, yshift=-5pt},
-		% xtick={0, 0.5, 1},
-		% ymode=log,
-		% xmode=log,
-		% log basis x={2},
-		% grid style=dashed 
 		scaled ticks=base 10:-3,
-		% every x tick scale label/.append style={at={(1.1,0.15)}, anchor=south east},
 		legend pos=north west,
 		legend style={font=\tiny},
 		grid=major
@@ -140,7 +134,7 @@
 		xlabel={#2}, %{Match Rate},
 		ticklabel style={font=\scriptsize},
 		label style={font=\small},
-		ylabel style={yshift=-10pt},
+		ylabel style={yshift=-5pt},
 		ylabel={#3},
 		title style={font=\small, yshift=-5pt},
 		xmin={-0.05},
@@ -165,13 +159,13 @@
 	\begin{tikzpicture}
 	\begin{axis}[
 		width=95pt,
-		height=80pt,
+		height=60pt,
 		scale only axis,
 		title={#1},%{#1$|\setT| = 200$},
 		xlabel={#2}, %{Match Rate},
 		ticklabel style={font=\scriptsize},
 		label style={font=\small},
-		ylabel style={yshift=-10pt},
+		ylabel style={yshift=-5pt},
 		ylabel={#3},
 		title style={font=\small, yshift=-5pt},
 		scaled x ticks=base 10:-3,
@@ -200,7 +194,7 @@
 	\begin{tikzpicture}
 	\begin{axis}[
 		width=95pt,
-		height=80pt,
+		height=60pt,
 		scale only axis,
 		title={#1},%{#1$|\setT| = 200$},
 		xlabel={#2}, %{Match Rate},
@@ -208,13 +202,9 @@
 		xmin={-0.05},
 		xmax={1.05},
 		label style={font=\small},
-		ylabel style={yshift=-10pt},
+		ylabel style={yshift=-5pt},
 		ylabel={#3},
 		title style={font=\small, yshift=-5pt},
-		% ymode=log,
-		% xmode=log,
-		% log basis x={2},
-		%grid style=dashed
 		grid=major ]
 		\pgfplotsset{every mark/.append style={solid},}
 		
@@ -232,13 +222,13 @@
 \begin{tikzpicture}
 	\begin{axis}[
 		width=95pt,
-		height=160pt,
+		height=60pt,
 		scale only axis,
 		title={#1},%$|\setT| = 200$},
 		xlabel={Query Budget}, %{Match Rate},
 		ticklabel style={font=\scriptsize},
 		label style={font=\small},
-		ylabel style={yshift=-10pt},
+		ylabel style={yshift=-5pt},
 		ylabel={#4},
 		title style={font=\small, yshift=-5pt},
 		grid=major,
@@ -287,15 +277,15 @@
 \begin{tikzpicture}
 	\begin{axis}[
 		width=95pt,
-		height=75pt,
+		height=60pt,
 		scale only axis,
 		title={#1},%$|\setT| = 200$},
 		xlabel={#2}, %{Match Rate},
-		ticklabel style={font=\scriptsize},
-		label style={font=\scriptsize},
-		ylabel style={yshift=-10pt},
+		ticklabel style={font=\small},
+		label style={font=\small},
+		ylabel style={yshift=-5pt},
 		ylabel={#3},
-		title style={font=\scriptsize, yshift=-5pt},
+		title style={yshift=-5pt},
 		grid=major,
 		ytick={0, 0.5, 1},
 		ymin={-0.1},
@@ -319,41 +309,6 @@
 	\end{axis}
 \end{tikzpicture}}
 
-{
-    
-% \newcommand{\PSUQueryMRPlot}[5]{
-% \begin{tikzpicture}
-% 	\begin{axis}[
-% 		width=95pt,
-% 		height=60pt,
-% 		scale only axis,
-% 		title={#1},%$|\setT| = 200$},
-% 		xlabel={#2}, %{Match Rate},
-% 		ticklabel style={font=\scriptsize},
-% 		label style={font=\small},
-% 		ylabel style={yshift=-10pt},
-% 		ylabel={#3},
-% 		title style={font=\small, yshift=-5pt},
-% 		xmin={-0.05},
-% 		xmax={1.05},
-% 		% xtick={0, 0.5, 1},
-% 		% ymode=log,
-% 		% xmode=log,
-% 		% log basis x={2},
-% 		% grid style=dashed 
-% 		grid=major,
-% 		scaled y ticks=base 10:-3]
-% 		\pgfplotsset{every mark/.append style={solid},}
-		
-% 		\addplot[color=OliveGreen, mark=x]table[x=max_V_match_fraction, y expr=(\thisrow{num_queries_positive}),col sep=semicolon]{#4};%{chapters/measurements/time_mr/V200T200.csv};
-% 		\label{legend:mkpsi_q_mr}
-		
-% 	\end{axis}
-% \end{tikzpicture}}
-% % \PSUQueryMRPlot{$|X|=0.5\cdot 10^4$}{}{}{measurements/PSU/PSUCA_queries_over_mr/V10000T5000.csv}{}
-% % \PSUQueryMRPlot{$|X|=10^4$}{}{}{measurements/PSU/PSUCA_queries_over_mr/V10000T10000.csv}{}
-% % \PSUQueryMRPlot{$|X|=1.5\cdot 10^4$}{}{}{measurements/PSU/PSUCA_queries_over_mr/V10000T15000.csv}{}
-% }
 
 \newcommand{\PSUQueryMRPlot}[4]{%
 \begin{tikzpicture}

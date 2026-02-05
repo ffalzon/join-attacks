@@ -1,0 +1,88 @@
+\section{Additional Evaluation Results}\label{ap:evaluation} 
+
+\subsection{SearchTree Attack Queries Experiments}
+
+In Figure~\ref{fig:plot_ST_queries_over_mr} we plot the number of protocol invocations required by the (a) $\PSUCAattack{}$ and (b) $\mkpsiattack$ attacks, plotted against the match rate $\rho$ for a fixed $|Y| = 10^4$.
+
+\begin{figure}
+  \centering
+  % Left column: PSUCAattack
+  \subfloat[\PSUCAattack\label{fig:plot_ST_queries_over_mr:left}]{
+    \begin{minipage}{0.23\textwidth}
+      \centering
+      \PSUQueryMRPlot{$|T| = 0.5 \cdot 10^4$}{}{}{measurements/PSU/PSUCA_queries_over_mr/V10000T5000.csv}{}
+      \vspace{0.3em}
+      \PSUQueryMRPlot{$|T| = 10^4$}{}{}{measurements/PSU/PSUCA_queries_over_mr/V10000T10000.csv}{}
+      \vspace{0.3em}
+      \PSUQueryMRPlot{$|T| = 1.5 \cdot 10^4$}{}{}{measurements/PSU/PSUCA_queries_over_mr/V10000T15000.csv}{}
+    \end{minipage}
+  }%
+  % Right column: mkpsiattack
+  \subfloat[\mkpsiattack\label{fig:plot_ST_queries_over_mr:right}]{
+    \begin{minipage}{0.23\textwidth}
+      \centering
+      \mkpsiQueryMRPlot{$|T| = 0.5 \cdot 10^4$}{}{}{measurements/leakage_attacks/mkpsi_queries_over_mr/V10000T5000.csv}
+      \vspace{0.3em}
+      \mkpsiQueryMRPlot{$|T| = 10^4$}{}{}{measurements/leakage_attacks/mkpsi_queries_over_mr/V10000T10000.csv}
+      \vspace{0.3em}
+      \mkpsiQueryMRPlot{$|T| = 1.5 \cdot 10^4$}{}{}{measurements/leakage_attacks/mkpsi_queries_over_mr/V10000T15000.csv}
+    \end{minipage}
+  }
+  \caption{Number of protocol queries required by the (a) $\PSUCAattack{}$ and (b) $\mkpsiattack$ attacks, plotted against the match rate $\rho$ for a fixed $|Y| = 10^4$.}
+  \label{fig:plot_ST_queries_over_mr}
+\end{figure}
+
+
+
+\subsection{Performance under Limited Query Budgets}
+
+We also evaluated the performance of our search tree-based attacks under constrained query budgets. We allocated query budgets in the range of $10-100\%$ percent of the theoretical maximum in $10\%$ increments. Once an attack reached a given query budget, path traversal was terminated and the priority queue was cleared to process remaining subsets without further queries.
+
+\begin{figure}[t]
+    \centering
+    % Left column (all plots for one $\rho$ value)
+    \subfloat[$\rho = 0.1$\label{fig:recon_rate_rho_0.1}]{
+        \begin{minipage}{0.23\textwidth} % Adjust width as necessary
+            \centering
+            \recoveredQBPlotPriosDirect{}{}{$|\posSet| / |X \cap Y|$}{pos}{0.1}{measurements/PSU/PSUCA_recovery_over_QB/V10000T10000.csv}
+            \vspace{0.3em}
+            \recoveredQBPlotPriosDirect{}{}{$|\negSet| / |X \setminus Y|$}{neg}{0.1}{measurements/PSU/PSUCA_recovery_over_QB/V10000T10000.csv}
+            \vspace{0.3em}
+            \recoveredQBPlotPriosDirect{}{}{$(|\posSet| + |\negSet|) / |X|$}{tot}{0.1}{measurements/PSU/PSUCA_recovery_over_QB/V10000T10000.csv}
+        \end{minipage}
+    }
+    % Right column (all plots for another $\rho$ value)
+    \subfloat[$\rho = 0.5$\label{fig:recon_rate_rho_0.5}]{
+        \begin{minipage}{0.23\textwidth} % Adjust width as necessary
+            \centering
+            \recoveredQBPlotPriosDirect{}{}{$|\posSet| / |X \cap Y|$}{pos}{0.5}{measurements/PSU/PSUCA_recovery_over_QB/V10000T10000.csv}
+            \vspace{0.3em}
+            \recoveredQBPlotPriosDirect{}{}{$|\negSet| / |X \setminus Y|$}{neg}{0.5}{measurements/PSU/PSUCA_recovery_over_QB/V10000T10000.csv}
+            \vspace{0.3em}
+            \recoveredQBPlotPriosDirect{}{}{$(|\posSet| + |\negSet|) / |X|$}{tot}{0.5}{measurements/PSU/PSUCA_recovery_over_QB/V10000T10000.csv}
+        \end{minipage}
+    }
+    \caption{Recovery rate of \PSUCAattack{} under limited query budgets. 
+    (a) and (b) show recovered fractions of $T \cap Y$, $T \setminus Y$, and fraction of $T$ elements whose membership status was determined,
+    using heuristics \ref{legend:pos}~$p_{\PSICA}^{+}$, \ref{legend:neg}~$p_{\PSICA}^{-}$, and \ref{legend:tot}~$p_{\PSICA}^{*}$,
+    against allocated query budget as a percentage of theoretical upper bound $|T| + 1 = 10^4 + 1$.}
+    \label{fig:PSUCA_recon_qb_prios}
+\end{figure}
+
+The main interest was measuring how much of thw original recovery goal the attacks managed to achieve.
+Recall that with enough queries, both \PSUCAattack{} and \mkpsiattack{} output two sets $\posSet = A \cap B$ and $\negSet = A \setminus B$,
+where $A = X$, $B = Y$ for \PSUCAattack{} and $A = \Ispace{T}$, $B = \Ispace{Y}$ for \mkpsiattack{} accordingly.
+Limiting the allowed number of queries, we now have $\posSet \subseteq A \cap B$ and $\negSet \subseteq A \setminus B$.
+We discuss three metrics, namely, 
+(1) the recovered fraction of the intersection $|\posSet| / |A \cap B|$,
+(2) the recovered fraction of the set difference $|\negSet| / |A \setminus B|$, and
+(3) the fraction of elements whose membership status was decided $(|\posSet| + |\negSet|) / |A|$.
+Figure~\ref{fig:PSUCA_recon_qb_prios} shows these tree metrics plotted against the allocated query budget for the \PSUCAattack{} attack.
+Measurements for \mkpsiattack{} yielded similar results.
+
+
+
+Figure~\ref{fig:PSUCA_recon_qb_prios} shows that \PSUCAattack{} can partially recover the intersection with a limited number of queries. The recovered fraction depends not only on the query budget but also on the intersection ratio $\rho$, as expected, given its relationship to the number of queries. Our experiments indicate that, depending on $\rho$, a query budget of \SIrange{20}{40}{\percent} of the theoretical upper bound $|X| + 1$ suffices to determine the membership status of at least half of the elements in $X$ on average. These results show that \PSUCAattack{} performs effectively under constrained budgets, making the worst-case need for $|X| + 1$ queries unlikely. Similar observations apply to \mkpsiattack{}.
+
+In contrast to Section~\ref{sec:st-queries}, the impact of various heuristics on attack performance is evident. Interestingly, the heuristic $p_{\PSICA}^+$, intended to maximize the recovery of $X \cap Y$, appears more efficient at increasing the recovery of $X \setminus Y$. Conversely, $p_{\PSICA}^-$ is more effective at optimizing the recovered intersection than the set difference. Additionally, $p_{\PSICA}^*$ underperforms across all metrics, including total membership inference, which it was meant to optimize.
+
