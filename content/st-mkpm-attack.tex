@@ -4,12 +4,6 @@ We now explore how the additional leakage of $\calF_{\LMKPM}$ output to $\tP_1$ 
 
 In this section, we restrict the adversary to using only subsets of its target set $T$ as input and assume that all records in $T$ are of equal length $\lambda \in \NN$. The adversary aims to compute two sets: $\posSet := \Ispace{T} \cap \Ispace{Y}$ and $\negSet := \Ispace{T} \setminus \Ispace{Y}$. This contrasts with the attacks discussed in Section~\ref{sec:lmkpm-attacks}, where the adversary can append or rearrange identifiers within records.
 
-For this attack, we only require the information leaked by MK-PrivateID to $C$.
-However, $\LMKPM$ additionally outputs the desired portion of the functionality $\UID$ and $\MC$,
-which we do not need in this chapter. For a cleaner presentation, we introduce 
-a shorthand that denotes only the leakage. Let \setX{} and \setY{} be two sets of records. Then,
-$\leak(\setX, \setY) := (\leakX, \leakY)$, where $(\UID, \MC, (\leakX, \leakY)) \sample \LMKPM(\setX, \setY)$.
-
 % Our adapted attack starts by building a binary search tree of the target set $\setT$ 
 % in the same manner as described in \cref{ch:PSICA_attack}, which is also traversed in a DFS-style fashion. 
 % The main obstacle when adapting the PSI-CA attack lies in inferring information about some node's sibling. 
