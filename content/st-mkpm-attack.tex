@@ -4,17 +4,14 @@ We now explore how the additional leakage of $\calF_{\LMKPM}$ output to $\tP_1$ 
 
 In this section, we restrict the adversary to using only subsets of its target set $T$ as input and assume that all records in $T$ are of equal length $\lambda \in \NN$. The adversary aims to compute two sets: $\posSet := \Ispace{T} \cap \Ispace{Y}$ and $\negSet := \Ispace{T} \setminus \Ispace{Y}$. This contrasts with the attacks discussed in Section~\ref{sec:lmkpm-attacks}, where the adversary can append or rearrange identifiers within records.
 
-% Our adapted attack starts by building a binary search tree of the target set $\setT$ 
-% in the same manner as described in \cref{ch:PSICA_attack}, which is also traversed in a DFS-style fashion. 
-% The main obstacle when adapting the PSI-CA attack lies in inferring information about some node's sibling. 
-% Let $\setX \subseteq \setT$ be a set of records and $\setX_1, \setX_2$ a partition thereof, i.e., 
-% $\setX_1 \cup \setX_2 = \setX$ and $\setX_1 \cap \setX_2 = \emptyset$.
-% Note that inferring a full valid leakage $\leak(\setX_2, \setV) = (\leak_{\setX_2}, \leak^{''}_\setV)$ 
-% given $\leak(\setX, \setV) = (\leakX, \leakV)$ and $\leak(\setX_1, \setV) = (\leak_{\setX_1}, \leak^{'}_\setV)$,
-% as is done in the original PSI-CA attack (for a much simpler leakage), turns out to be non-trivial. 
-% Concretely, it involves locating the records of $\leak_{\setX_1}$ within $\leakX$,
-% which are computed with different randomness. 
-% Comparing the hidden identifiers of $\leakX$ and $\leak_{\setX_1}$ is therefore not possible.
+Recall that the functionality $\calF_{\LMKPM}(X;Y)$ outputs $\UID, \MX,$ $(\hXone,\hYone)$ to $\tP_1$ and $\UID, \MY, \hXtwo$ to $P_2$. For convenience, we denote the additional leakage output to $\tP_1$ when evaluating $\calF_{\LMKPM}(X;Y)$ as $(\leak^1_X, \leak^1_Y)=(\hXone,\hYone)$. This will allow us to directly refer to the leakage produced by specific inputs.
+
+Our adapted attack starts by constructing a binary search tree $\calT$ of the target set $T$, following the method in~\cite{USENIX:GHLWJL22}. Specifically, the tree's root node corresponds to the entire target set $T$. Each node $v$ in the tree is associated with a subset of records, denoted as $v.\treeSet \subseteq T$. The two child nodes of $v$, denoted as $v_L \gets v.\treeLeftChild$ and $v_R \gets v.\treeRightChild$, correspond to a partition of the parent node's set, such that $v_L.\treeSet \cup v_R.\treeSet = v.\treeSet$ and $v_L.\treeSet \cap v_R.\treeSet = \emptyset$ .
+
+The main challenge of adapting the $\calF_{\PSICA}$ attack to $\calF_{\MKPM}$ lies in inferring information about some node's sibling. 
+Let $X \subseteq T$ be a set of records and $X_1, X_2$ be a partition of $X$.
+Inferring the leakage $(\leakX{2}, \leakY)$ given $(\leakX{1}, \leakY)$ and $(\leakX{}, \leakY)$, as is analgously done in the original PSI-CA attack (for sets of elements), is non-trivial. Concretely, it involves identifying the records of $\leakX{1}$ within $\leakX{}$ which are computed with different randomness. 
+Comparing the hidden identifiers of $\leakX{}$ and $\leakX{1}$ is thus not possible.
 % Moreover, trying to locate the pattern of matching identifiers between $\leak_{\setX_1}$ and $\leak^{'}_\setV$ 
 % within that of the matches between $\leakX$ and \leakV{} 
 % does not have a unique solution in general.
@@ -23,201 +20,70 @@ In this section, we restrict the adversary to using only subsets of its target s
 % since this problem needs to be solved at every node encountered during a DFS path traversal.
 % This is therefore an undesirable strategy.
 
-% We can find a much more manageable approach when considering an aggregate metric of the protocol leakage, 
-% namely, the number of matched identifiers per column of $\leakX$ and $\leak_{\setX_1}$ respectively:
-% $$\colCA(\leakX, \leakV) := \left(\sum_{t\in\leakX}\mathbb{1}\{t[1] \in \Ispace{\leakV}\}, \dots, \sum_{t\in\leakX}\mathbb{1}\{t[\lambda] \in \Ispace{\leakV}\}\right)$$
+We can find a much more tractable approach when considering an aggregate metric of the protocol leakage, namely, the number of matched identifiers per column of $\leakX{}$ and $\leakX{1}$ respectively:
+\[
+    \colCA(\leakX{}, \leakY) := \left(\sum_{\bt\in\leakX{}}\mathbbm{1}\{\bt[1] \in \Ispace{\leakY}\}, \dots, \sum_{\bt\in\leakX{}}\mathbbm{1}\{\bt[\lambda] \in \Ispace{\leakY}\}\right)
+\]
 
-% \begin{proposition}
-% 	\label{prop:mkpsi_equiv}
-% 	For any two sets of records $\setX$ and $\setV$, we have
-% 	\begin{equation*}
-% 		\colCA(\leak(\setX, \setV)) = \colCA(\setX, \setV)
-% 	\end{equation*}
-% \end{proposition}
-% \begin{proof}
-% 	Since the identifier hiding function $f_\leak$ in \leakyF{} is injective, 
-% 	we have that for any $x \in \Ispace{\setX}$ and $y \in \Ispace{\setY}$
-% 	$x = y$ if and only if $f(x) = f(y)$.
-% 	In other words, two identifiers in \setX{} and \setV{}
-% 	are equal if and only if their hidden counterparts in \leakX{} and \leakV{} match.
-% 	As the order of identifiers in records of \setX{} remains unchanged in \leakyF{}, 
-% 	matched identifiers remain in the same column. 
-% 	The numbers of matched identifiers in the columns of \setX{} and \leakX{} are therefore equal.
-% \end{proof}
+\begin{proposition}
+	\label{prop:mkpsi_equiv}
+	For any two sets of records $X$ and $Y$, we have
+	\begin{equation*}
+		\colCA(\leakX{}, \leakY) = \colCA(X, Y).
+	\end{equation*}
+\end{proposition}
 
-% \begin{proposition}
-% 	\label{prop:mkpsi_inference}
-% 	For any sets of records $\setV, \setX, \setX_1, \setX_2$ such that $\setX_1~\cup~\setX_2~=~\setX$ and $\setX_1~\cap~\setX_2~=~\emptyset$,
-% 	we have 
-% 	\begin{equation*}
-% 		\colCA(\leak(\setX, \setV)) = \colCA(\leak(\setX_1, \setV)) + \colCA(\leak(\setX_2, \setV))\footnote{We use normal vector operations for this notation, i.e., addition and subtraction are applied element-wise.}
-% 	\end{equation*}
-% \end{proposition}
-% \begin{proof}
-% 	Let $c := \colCA(\leak(\setX, \setV))$ and
-% 	let $i \in [\lambda]$ and $x := c[i]$. 
-% 	By \cref{prop:mkpsi_equiv}, we have $c = \colCA(\setX, \setV)$,
-% 	i.e., the $i$-th identifiers of exactly $x$ records in $\setX$ occur in $\setV$.
-% 	Analogously, for $c_1 := \colCA(\leak(\setX_1, \setV))$, 
-% 	$c_1[i] = x_1$ implies that the $i$-th identifier of exactly $x_1$ records of $\setX_1$
-% 	%call them $\setS_2$)
-% 	occur in \setV.
-% 	Since $\setX_1$ and $\setX_2$ form a partition of $\setX$, the remaining $x_2 = x - x_1$ records must be contained in $\setX_2$.
-% 	Again by \cref{prop:mkpsi_equiv}, we have $c_2[i]~=~x_2$ for $c_2=\colCA(\leak(\setX_2, \setV))$ and therefore,
-% 	$c[i] = x = x_1 + x_2 = c_1[i] + c_2[i]$.
-% \end{proof}
+\begin{proposition}
+	\label{prop:mkpsi_inference}
+	Let $X$ and $Y$ be sets of records, and let $X_1 \cup X_2$ be a partition of $X$. Then we have
+	\begin{equation*}
+		\colCA(\leakX{}, \leakY)
+		= \colCA(\leakX{1}, \leakY) + \colCA(\leakX{2}, \leakY)\footnote{We use standard vector operations; addition and subtraction are applied element-wise.}.
+	\end{equation*}
+\end{proposition}
 
-% From \cref{prop:mkpsi_inference} we can infer $\colCA(\leak(\setX_2, \setV)) = \colCA(\leak(\setX, \setV)) - \colCA(\leak(\setX_1, \setV))$.
-% Note that $\leak(\setX_2, \setV)$ is an unknown, fictional leakage stemming from a hypothetical protocol run with $\setX_2$ that
-% is never carried out. However, this is fine, since $\colCA(\leak(\setX_2, \setV))$ 
-% suffices to carry out the attack and can be inferred without knowing $\leak(\setX_2, \setV)$, as just elaborated.
+The proofs can be found in Appendix~\ref{proof:mkpsi_equiv} and~\ref{proof:mkpsi_inference}, respectively.
 
-% Moreover, for some leaf node that stores only a single record $r$, $\setT_s = \{r\}$,
-% each element of $\colCA(\leak(\setT_s, \setV))$ is either zero or one, 
-% which exactly reflects whether the corresponding identifier of $r$ occurs in $\setV$. 
-% This can be generalized to larger sets. 
-% Namely, once $\colCA(\leak(\setX, \setV)) \in \{0, |\setX|\}^\lambda$ for some set $\setX$, 
-% by \cref{prop:mkpsi_equiv} we know that either all or none of the identifiers of any given column of \setX{} are contained in \setV{},
-% indicated by the corresponding entry in $\colCA(\leak(\setX, \setV))$ being $|\setX|$ or $0$ respectively.
-% See \cref{fig:mkpsi_early_termination_exmp} for an example.
+From Prop.~\ref{prop:mkpsi_inference} we obtain $\colCA(\leakX{2}, \leakY)
+  = \colCA(\leakX{}, \leakY) - \colCA(\leakX{1}, \leakY).$
+Here, $\leakX{2}$ denotes the (hypothetical) leakage that would result from a protocol run on $X_2$, which is never actually executed. This is acceptable, since we only require $\colCA(\leakX{2}, \leakY)$ for the attack, and this vector can be inferred without knowing $\leakX{2}$ explicitly.
 
-% The final effort towards our adapted attack consists of determining a heuristic 
-% that guides the decisions on which child to recurse during a DFS path traversal
-% and serves as priority in the priority queue for the other node. 
-% Crucially, for any set $\setX$ this heuristic needs to be computable with only knowing \setX{} and $\colCA(\leak(\setX, \setV))$, 
-% as this is the only information we have about $\leak(\setX_2, \setV)$. 
-% For $c = \colCA(\leak(\setX, \setV))$, we generalize $p_{\PSICA}$ from \cref{ch:PSICA_attack} as 
-% $$p_{MK}^+(c, \setX) := \frac{\sum_{x \in c} x}{\lambda|\setX|}$$ 
-% As in the original attack, this prioritizes subsets containing more matched identifiers,
-% thus, increasing the fraction of the intersection that the attack is able to recover in case the attacker
-% is only allowed a limited number of protocol invocations.
+For a leaf node storing a single record $\bx$, i.e., $X = \{\bx\}$, each entry of the vector $\colCA(\leakX{}, \leakY)$ is either $0$ or $1$, which exactly indicates whether the corresponding identifier of $\bx$ appears in $Y$. This logic extends to larger sets: once $\colCA(\leakX{}, \leakY) \in \{0, |X|\}^{\lambda}$ for some $X$, Prop.~\ref{prop:mkpsi_equiv} implies that, for each column, either all or none of the identifiers in that column of $X$ occur in $Y$, depending on whether the corresponding entry of $\colCA(\leakX{}, \leakY)$ equals $|X|$ or $0$, respectively.
+%See \cref{fig:mkpsi_early_termination_exmp} for an example.
 
-% As with \PSUCAattack{} in \cref{sec:PSUCA_attack}, we additionally propose two further heuristics: 
-% $p_{MK}^-$, which prioritizes the reconstruction of the set difference $\Ispace{\setT} \setminus \Ispace{\setV}$ 
-% over that of the intersection,
-% and $p_{MK}^*$, whose aim is to maximize the total (positive and negative) membership information we can infer.
-% $$p_{MK}^-(c, \setX) := \frac{\sum_{x \in c} |\setX| - x}{\lambda|\setX|}$$
-% $$p_{MK}^*(c, \setX) := \frac{\sum_{x \in c} \max(x, |\setX| - x)}{\lambda|\setX|}$$
+The remaining component of our adapted attack is a heuristic that (i) decides which child to follow during DFS traversal and (ii) provides the priority for enqueuing the other child. For any set $X$, this heuristic must be computable from $X$ and $\colCA(\leakX{}, \leakY)$ alone, since this is all we know about the (hypothetical) leakage for that node. For $\bc = \colCA(\leakX{}, \leakY)$, we define
+\begin{equation}
+      p_{MK}^+(\bc, X) := \frac{\sum_{x \in \bc} x}{\lambda |X|}.
+\end{equation}
+As in the original PSI-CA attack, our heuristic prioritizes the child node whose subsets contain more matched identifiers, which increases the fraction of the intersection that can be recovered when the adversary is limited to a bounded number of protocol invocations.
+We additionally propose two further heuristics in~\ref{ap:IRR:heuristics} and evaluate our three heuristics in Appendix~\ref{ap:evaluation}. 
 
-% We present an empirical evaluation of these heuristics in \cref{ch:experiments}. 
-% There may exist other heuristics that could further improve the attack performance under limited query budgets.
-% Computing the minimum number of records to be removed from a set to enable an early path termination 
-% would make for a nice exercise in dynamic programming and is closer to the original $p_{\PSICA}$. 
-% Similarly, the number of queries required for a complete reconstruction could be optimized
-% by different partitioning strategies, as was proposed for PSI-CA in \cite{AnonPSI}.
+The pseudocode of \mkpsiattack{} is given in Figure~\ref{fig:MKPSIattack} (Appendix~\ref{ap:IRR}).
+The attack is similar to the original PSI-CA attack, with the difference that we maintain two sets $\posSet$ and $\negSet$ to keep track of the inferred positive and negative membership information.
 
-% \begin{figure}[h]
-% 	\centering
-% 	\begin{pchstack}[boxed, center]
-% 	\begin{pcvstack}
-% 	\procedure[linenumbering]{$\mkpsiattack^{\LMKPM(\cdot, \setV)}(\setT)$}{
-% 		\text{Initialize empty sets \posSet, \negSet.} \\
-% 		\text{Initialize empty max-priority queue $Q$.} \\
-% 		T \gets \mathsf{buildTree}(\setT) \\
-% 		(\UID, \MC, (\leakT, \leakV)) \sample \LMKPM(\setT, \setV) \\
-% 		Q.\push(1, (\colCA(\leakT, \leakV), T.\treeRoot)) \\
-% 		\pcwhile Q \text{ is not empty} \pcdo \\
-% 		\t	(c_X, X) \gets Q.\pop() \pcskipln\\
-% 		\t	\pclinecomment{DFS path traversal} \\
-% 		\t	\pcwhile \exists i \text{ s.t. } 0 < c_X[i] < |X.\treeSet| \pcdo \label{lin:mkpsi_DFS_loop} \\
-% 		\t	\t	L \gets X.\treeLeftChild; \; R \gets X.\treeRightChild \label{lin:mkpsi_split_children} \\
-% 		\t	\t	(\UID, \MC, (\leak_{\setT_L}, \leakV)) \sample \LMKPM(L.\treeSet, \setV) \\
-% 		\t	\t	c_L \gets \colCA(\leak_{\setT_L}, \leakV) \\
-% 		\t	\t	c_R \gets c_X - c_L \\
-% 		\t	\t	p_L \gets p_{MK}(c_L, L.\treeSet); \; p_R \gets p_{MK}(c_R, R.\treeSet) \\
-% 		\t	\t	\pcif p_R > p_L \pcthen \pcskipln\\
-% 		\t	\t	\t	\pclinecomment{Proceed with right child} \\
-% 		\t	\t	\t	Q.\push(p_L, (c_L, L)) \\
-% 		\t	\t	\t	X \gets R; \; c_X \gets c_R \\
-% 		\t	\t	\pcelse \pcskipln\\
-% 		\t	\t	\t	\pclinecomment{Proceed with left child} \\
-% 		\t	\t	\t	Q.\push(p_R, (c_R, R)) \\
-% 		\t	\t	\t	X \gets L; \; c_X \gets c_L \\
-% 		\t	\pcfor i = 1, \dots, \lambda \pcdo \label{lin:mkpsi_mem_inference_start}\\
-% 		\t	\t	\pcif c_X[i] > 0 \pcthen \\
-% 		\t	\t	\t	\posSet \gets \posSet \cup \{x[i] \setdsc x\in X.\treeSet \} \\
-% 		\t	\t	\pcelse \\
-% 		\t	\t	\t	\negSet \gets \negSet \cup \{x[i] \setdsc x\in X.\treeSet \} \\
-% 		\pcreturn (\posSet, \negSet) \label{lin:mkpsi_end}
-% 	}
-% 	\end{pcvstack}
-% 	\pchspace
-% 	\begin{pcvstack}
-% 	\procedure[linenumbering]{$\mathsf{buildTree}(\setT)$}{
-% 			\text{Initialize a tree $T$ with a single}\pcskipln\\
-% 			%\parbox{4.7cm}{\linespread{1.3}\selectfont node $\treeRoot$, which stores \setT. Build a balanced binary search tree by recursively dividing the set stored at a node into two disjoint subsets of roughly equal size.}\\
-% 			\pcparbox{node $\treeRoot$, which stores \setT. 
-% 			Build a balanced binary search tree by recursively dividing the set stored at a node 
-% 			into two disjoint subsets of roughly equal size.} \\
-% 			\pcreturn T
-% 		}
-% 	\end{pcvstack}
-% 	\end{pchstack}
-% 	\caption{\mkpsiattack{} attack with oracle access to the extended MKPM functionality $\LMKPM(\cdot, \setV)$.
-% 	Note that $\setV$ is part of the oracle and unknown to the adversary.}\label{fig:MKPSIattack}
-% \end{figure}
+\begin{theorem}\label{thm:IRR-attack-correctness}
+	Let $T$ be a target set of records and $Y$ be the recovery set of records. 
+    Then $\mkpsiattack^{\calF_{\LMKPM}(\cdot;Y)}(T)$~(Figure~~\ref{fig:MKPSIattack}) achieves identifier intersection recovery (Def.~\ref{def:IRR_goal}).
+\end{theorem}
 
-% The full attack \mkpsiattack{} is depicted in \cref{fig:MKPSIattack}.
-% The general outline of the attack is similar to the original PSI-CA attack,
-% with the difference that we maintain two sets $\posSet$ and $\negSet$ to keep track of the inferred 
-% positive and negative membership information separately.
-% We start by initializing two empty sets $\posSet$ and $\negSet$
-% and building a balanced binary search tree $T$, where each node $X$ has a left and right child, denoted $X.\treeLeftChild$ and $X.\treeRightChild$, 
-% and stores a subset of the target set, denoted by $X.\treeSet \subseteq \setT$.
-% As in the original attack, we maintain a priority queue that dictates the order in which outstanding DFS paths are processed.
-% A DFS path traversal is aborted once all columns of the current subset contain either only matched or only unmatched identifiers,
-% after which the sets \posSet{} and \negSet{} are updated.
+The proof can be found in Appendix~\ref{proof:IRR-attack-correctness}.
 
-% \begin{theorem}
-% 	Let \setT{} and \setV{} be two sets of records. Furthermore, let $(\posSet, \negSet) \gets\mathsf{MK\text{-}Search}\allowbreak\mathsf{Tree}^{\LMKPM(\cdot, \setV)}(\setT)$.
-% 	Then, we have $\posSet = \Ispace{\setT} \cap \Ispace{\setV}$ and $\negSet = \Ispace{\setT} \setminus \Ispace{\setV}$.
-% \end{theorem}
-% \begin{proof}
-% 	$\posSet$ is only updated by adding the identifiers from some column $i\in [\lambda]$ of a set $\setX$ 
-% 	if $\colCA(\leak(\setX, \setV))[i] = |\setX|$. 
-% 	By \cref{prop:mkpsi_equiv}, we have $\colCA(\setX, \setV)[i] = |\setX|$.
-% 	By the definition of \colCA, all identifiers added to \posSet{} are therefore contained in \setV.
-% 	Thus, $\posSet \subseteq \Ispace{\setT} \cap \Ispace{\setV}$, i.e., \posSet{} contains no false positives.
-% 	An analogous argument for $\negSet$ yields $\negSet \subseteq \Ispace{\setT} \setminus \Ispace{\setV}$.
-	
-% 	Moreover, since after every partitioning step (line~\ref{lin:mkpsi_split_children}) both subsets are either processed or inserted into the queue
-% 	and the attack only terminates once the queue is empty, 
-% 	all records of \setT{} are contained in a set that reaches line~\ref{lin:mkpsi_mem_inference_start}.
-% 	That is, all identifiers of all records of \setT{} are either added to \posSet{} or \negSet{}.
-% 	By the above correctness argument, we get $\posSet = \Ispace{\setT} \cap \Ispace{\setV}$ and 
-% 	$\negSet = \Ispace{\setT} \setminus \Ispace{\setV}$.
-% \end{proof}
+\heading{Time and query complexity.} 
+Let $n = |T|$, $m = |Y|$, and let $\lambda$ denote the maximum record length in $T$ and $Y$.
+We assume $n$ is a power of two and that priority-queue operations \push{} and \pop{} each take amortized time \bigO{\log n}.
+Half of the nodes at each depth are inserted into the queue, yielding $n$ \push{} operations in total.
+Since the attack terminates when the queue is empty, there are also $n$ \pop{} operations, for a total of \bigO{n \log n} time.
 
-% \textbf{Time and Query Complexity.} 
-% Let $n = |\setT|$, $m = |\setV|$ and $\lambda$ denote the maximum record length in $\setT$ and $\setV$.
-% We assume $n$ is a power of two.
-% For determining the asymptotic runtime complexity,
-% we assume that the priority queue operations \push{} and \pop{} both require an amortized runtime of \bigO{\log n}.
-% Note that half of the nodes of equal depth in the binary tree are inserted into the queue.
-% There are $n$ such nodes, causing $n$ \push{} operations. 
-% Since the attack terminates once the queue is empty, there is an equal number of \pop{} operations,
-% amounting to a runtime of \bigO{n \log n}.
-% Given inputs $\setX$ of size $a$ and $\setY$ of size $b$, $\colCA(\setX, \setY)$ can be implemented in average-case time \bigO{\lambda(a+b)}.
-% It is invoked once for the root node and for half of the nodes of any given depth, which
-% results in an average-case runtime of $\bigO{\lambda(n+m) + \sum_{i = 1}^{\log n} i\lambda(n/2^i + m)} \subset \bigO{\lambda n(\log n + m)}$.
-% The cost of computing the heuristic $p_{MK}$, although done for every node, 
-% is dominated by the rest of the computation.
-% Our attack therefore has an overall average-case runtime complexity of $\bigO{n\log n + \lambda n(\log n + m)} \subseteq \bigO{\lambda n(\log n + m)}$.
+Given inputs $X$ of size $a$ and $Y$ of size $b$, $\colCA(X, Y)$ can be computed in expected time \bigO{\lambda(a+b)}.
+It is invoked once at the root and for half of the nodes at each depth, giving an expected total cost of $\bigO{\lambda n(\log n + m)}$.
+The cost of computing the heuristic $p_{MK}$ is dominated by these terms, so the overall expected runtime of \mkpsiattack{} is $\bigO{\lambda n(\log n + m)}$
 
-% Like the original PSI-CA attack, \mkpsiattack{} requires at most $n$ protocol invocations.
-% Moreover, we too can expect this bound to be loose due to the early termination of DFS path traversals,
-% see \cref{ch:experiments} for an empirical evaluation. 
-% Note that \mkpsiattack{} is considerably less efficient than the attacks we present in the next chapter,
-% both in terms of asymptotic runtime complexity, as well as the number of protocol invocations.
-% Rather, the strength of this attack lies in the weakness of its underlying assumptions,
-% as the \mkpsiattack{} attack only needs to query subsets of the target set.
-% The distribution of the target set, apart from its size, therefore remains unchanged.
-% In contrast, the following attacks will rely on pre-processing the target set.
+Like the original PSI-CA attack, \mkpsiattack{} requires at most $n$ protocol invocations, though this bound is loose due to early termination of DFS traversals (see Section~\ref{sec:evaluation} for an empirical evaluation).
+Asymptotically and in terms of queries, \mkpsiattack{} is less efficient than the attacks in the next section.
+Its advantage is that it only requires querying subsets of the target set, under comparatively weak assumptions.
 
-% While limiting the number of protocol executions hinders the full recovery of the intersection,
-% a partial recovery of the intersection is still possible.
-% See \cref{ch:experiments} for empirical results.
-% For more general countermeasures, see our discussion in \cref{ch:discussion}.
+Even when the number of protocol invocations is restricted, partial intersection recovery remains feasible; see Appendix~\ref{ap:evaluation} for empirical results.
+
 
 % \begin{figure}
 % 	\centering

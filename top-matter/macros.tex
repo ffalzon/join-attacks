@@ -57,6 +57,10 @@
 \newcommand{\snakerecoverUnique}{\textsc{UnknotSnake}}
 
 
+% Priority queue
+\newcommand{\push}{\ensuremath{\mathsf{push}}}
+\newcommand{\pop}{\ensuremath{\mathsf{pop}}}
+
 \newcommand{\Bin}{\textsc{Bin}}
 
 
@@ -76,12 +80,10 @@
 \newcommand{\recPC}{\recP{\calC}}
 \newcommand{\recV}[1]{\rec{\calV}{#1}}
 \newcommand{\leak}{\ensuremath{\mathfrak{L}}}
-\newcommand{\leakC}{{\ensuremath{\mathfrak{L}_{\calC}}}}
-\newcommand{\leakP}{{\ensuremath{\mathfrak{L}_{\calP}}}}
-\newcommand{\leakT}{{\ensuremath{\mathfrak{L}_{\calT}}}}
-\newcommand{\leakV}{{\ensuremath{\mathfrak{L}_{\calV}}}}
-\newcommand{\leakX}{{\ensuremath{\mathfrak{L}_{\calX}}}}
-\newcommand{\leakY}{{\ensuremath{\mathfrak{L}_{\calY}}}}
+\newcommand{\leakX}[1]{{\ensuremath{\mathfrak{L}^1_{X_{#1}}}}}
+\newcommand{\leakY}{{\ensuremath{\mathfrak{L}^1_{Y}}}}
+\newcommand{\leakT}{{\ensuremath{\mathfrak{L}^1_{T}}}}
+
 \newcommand{\Ispace}[1]{\ensuremath{\mathbb{I}_{#1}}}
 
 \newcommand{\setX}{\ensuremath{\mathcal{X}}}

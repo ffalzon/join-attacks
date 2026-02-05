@@ -1,0 +1,117 @@
+\section{Additional Content for IRR Attack}\label{ap:IRR}
+
+\subsection{Proof of Prop.~\ref{prop:mkpsi_equiv}}\label{proof:mkpsi_equiv}
+
+\begin{proof}
+	Since the identifier hiding function $f$ is injective, 
+	we have that for any identifier $\id \in \Ispace{X}$ and $\id' \in \Ispace{Y}$
+	$\id = \id'$ if and only if $f(\id) = f(\id')$.
+	In other words, two identifiers in $X$ and $Y$ are equal if and only if their corresponding hidden values in $\leakX{}$ and $\leakY$ match.
+	Since the order of identifiers in records of $X$ remains unchanged, 
+	matched identifiers remain in the same column. 
+	The numbers of matched identifiers in the columns of $X$ and $\leakX{}$ are therefore equal.
+\end{proof}
+
+
+\subsection{Proof of Theorem~\ref{thm:IRR-attack-correctness}}\label{proof:IRR-attack-correctness}
+\begin{proof}
+	Let $\bc = \colCA(\leakX{}, \leakY)$ and let $i \in [0,\lambda-1]$; we write $\bc[i]$ to denote the $i$-th sum in $\colCA(\leakX{}, \leakY)$. 
+	By Prop.~\ref{prop:mkpsi_equiv}, we have $\bc = \colCA(X, Y)$, i.e., for all $i\in[0,\lambda-1]$, the $i$-th identifier of exactly $\bc[i]$ records in $X$ occur in $Y$.
+
+	Similarly, for $\bc_1 := \colCA(\leakX{1}, \leakY)$, we have $\bc_1[i] = x_1$, meaning that the $i$-th identifiers of exactly $x_1$ records in $X_1$ occur in $Y$.
+	Since $X_1$ and $X_2$ form a partition of $X$, the remaining $x_2 = x - x_1$ records must lie in $X_2$.
+	Again by Prop.~\ref{prop:mkpsi_equiv}, for $\bc_2 := \colCA(\leakX{2}, \leakY)$ we have $\bc_2[i] = x_2$.
+	Hence, for all $i\in[0,\lambda-1]$ we have
+	\[
+	    \bc[i] = x = x_1 + x_2 = \bc_1[i] + \bc_2[i],
+	\]
+	and the proposition follows.
+\end{proof}
+
+\subsection{Proof of Prop.~\ref{prop:mkpsi_inference}}\label{proof:mkpsi_inference}
+
+\begin{proof}
+	The set $\posSet$ is updated only by adding identifiers from some column $i \in [\lambda]$ of a node set $X \subseteq T$ if
+	\[
+	    \colCA(\leakX{}, \leakY)[i] = |X|.
+	\]
+	By Prop.~\ref{prop:mkpsi_equiv}, this is equivalent to $\colCA(X, Y)[i] = |X|$.
+	By the definition of $\colCA$, all identifiers added to $\posSet$ in this case occur in $Y$.
+	Hence $\posSet \subseteq \Ispace{T} \cap \Ispace{Y}$, i.e., $\posSet$ contains no false positives.
+
+	An analogous argument for updates to $\negSet$ shows that
+	$\negSet \subseteq \Ispace{T} \setminus \Ispace{Y}$.
+
+	Next, observe that after each partitioning step (line~\ref{lin:mkpsi_split_children}), both child subsets are either processed immediately or inserted into the priority queue.
+	Since the attack terminates only when the queue is empty, every record of $T$ appears in some node that reaches the membership-inference phase (line~\ref{lin:mkpsi_mem_inference_start}).
+	Thus, every identifier in $\Ispace{T}$ is eventually added to either $\posSet$ or $\negSet$.
+	Combined with the above invariants, this implies
+	\[
+	    \posSet = \Ispace{T} \cap \Ispace{Y}
+	    \quad\text{and}\quad
+	    \negSet = \Ispace{T} \setminus \Ispace{Y}. 
+	\]
+    Thus, the contains $\Ispace{T} \cap \Ispace{Y}$ and identifier intersection recovery (Def.~\ref{def:IRR_goal}) is achieved.
+\end{proof}
+
+\subsection{Additional Heurisitics for \mkpsiattack{}}\label{ap:IRR:heuristics}
+
+We propose two additional heuristics for determining which path in the search tree to prioritize exploring: $p_{MK}^-$, which prioritizes the reconstruction of the set difference $\Ispace{T} \setminus \Ispace{Y}$ and $p_{MK}^*$, whose aim is to maximize the total (positive and negative) membership information we can infer.
+\begin{equation}
+    p_{MK}^-(\bc, X) := \frac{\sum_{x \in \bc} |X| - x}{\lambda|X|} 
+\end{equation}
+\begin{equation}
+    p_{MK}^*(\bc, X) := \frac{\sum_{x \in \bc} \max(x, |X| - x)}{\lambda|X|} 
+\end{equation}
+
+\subsection{Pseudocode for \mkpsiattack{}}
+
+The pseudocode of \mkpsiattack{} is given in Figure~\ref{fig:MKPSIattack}.
+
+\begin{figure}[t]
+	\centering
+	\begin{pcvstack}[boxed, center]
+	\procedure[linenumbering]{$\mkpsiattack^{\calF_{LMKPM}(\cdot, Y)}(T)$}{
+            \rule{0pt}{2em}%
+		\text{Initialize empty sets $\posSet$, $\negSet$} \\
+		\text{Initialize empty max-priority queue $Q$} \\
+		\calT \gets \textsc{BuildTree}(T) \\
+		(\UID, \MC, (\leakT{}, \leakY)) \sample \calF_{\LMKPM}(T, Y) \\
+		Q.\push(1, (\colCA(\leakT{}, \leakY), \calT.\treeRoot)) \\
+		\pcwhile Q \text{ is not empty} \pcdo \\
+		\t	(\bc, v) \gets Q.\pop() \pcskipln\\
+		\t	\cmmnt{DFS-style path traversal} \\
+		\t	\pcwhile \exists i \text{ s.t. } 0 < \bc_v[i] < |v.\treeSet| \pcdo \label{lin:mkpsi_DFS_loop} \\
+		\t	\t	v_L \gets v.\treeLeftChild; \; v_R \gets v.\treeRightChild \label{lin:mkpsi_split_children} \\
+		\t	\t	(\UID, M, (\leakX{L}, \leakY)) \sample \calF_{\LMKPM}(v_L.\treeSet, Y) \\
+		\t	\t	\bc_L \gets \colCA(\leakX{L}, \leakY) \\
+		\t	\t	\bc_R \gets \bc - \bc_L \\
+		\t	\t	p_L \gets p_{MK}(\bc_L, v_L.\treeSet); \; p_R \gets p_{MK}(\bc_R, v_R.\treeSet) \\
+		\t	\t	\pcif p_R > p_L \pcthen \pcskipln\\
+		\t	\t	\t	\cmmnt{Proceed with right child} \\
+		\t	\t	\t	Q.\push(p_L, (\bc_L, v_L)) \\
+		\t	\t	\t	v \gets v_R; \; \bc \gets \bc_R \\
+		\t	\t	\pcelse \pcskipln\\
+		\t	\t	\t	\cmmnt{Proceed with left child} \\
+		\t	\t	\t	Q.\push(p_R, (\bc_R, v_R)) \\
+		\t	\t	\t	v \gets v_L; \; \bc \gets \bc_L \\
+		\t	\pcfor i = 1, \dots, \lambda \pcdo \label{lin:mkpsi_mem_inference_start}\\
+		\t	\t	\pcif \bc[i] > 0 \pcthen \\
+		\t	\t	\t	\posSet \gets \posSet \cup \{\, \bx[i] \mid \bx \in v.\treeSet \,\} \\
+		\t	\t	\pcelse \\
+		\t	\t	\t	\negSet \gets \negSet \cup \{\, \bx[i] \mid \bx \in v.\treeSet \,\} \\
+		\pcreturn (\posSet, \negSet) \label{lin:mkpsi_end}
+	}
+    \vspace{2mm}
+	\procedure[linenumbering]{$\textsc{BuildTree}(T)$}{
+            \rule{0pt}{2em}%
+            \parbox[t]{6cm}{ Initialize a tree $\calT$ with a single node $\treeRoot$, which stores $T$. Recursively partition the set at each node into two disjoint subsets
+            of roughly equal size to obtain a balanced binary search tree.%
+            }%
+            \\
+			\pcreturn \calT
+		}
+	\end{pcvstack}
+	\caption{\mkpsiattack{} with oracle access to the extended MKPM functionality $\calF_{\LMKPM}(\cdot, Y)$.}
+	\label{fig:MKPSIattack}
+\end{figure}
