@@ -18,8 +18,6 @@ Unfortunately, this condition does not hold for general inputs. The reason is th
 
 We give an example of such a matching in Figure~\ref{fig:MPMK_PSUCA_counterexample}. 
 
-% On the left, we show an example of a target set $T$ and victim set $Y$, where two records in the target set share an identifier with the same record in the victim set. We call this a \emph{many-to-one relation}. Recall that the matching logic uses the order of identifiers in $T$ as priorities to resolve such many-to-one relations. That is, it matches the second target record with the victim record, since it shares its first identifier $\id_3$ with the victim record, as opposed to the first target record, which shares its second identifier with the victim record. The latter remains unmatched. The resulting set $\UID$ therefore contains two elements: one UID for the two matched records and one for the unmatched first target record. On the right, we show a partition of $T$, matched against the same victim set $Y$ (in two separate protocol invocations). Now isolated and lacking competition from the other record, both target records are matched. The resulting sets $\UID_1$ and $\UID_2$ therefore both contain one UID. That is, we have $|\UID| = |\UID_1| + |\UID_2| \neq |\UID_1| + |\UID_2| - |Y|$, which violates the requirement mentioned above.
-
 To avoid such cases, we define a restriction on the input sets that, if satisfied, ensures that Eq.~\ref{eqn:MKPM_PSUCA_condition} holds, thus allowing us to carry out the attack. Luckily, one-to-many relations do not violate Eq.~\ref{eqn:MKPM_PSUCA_condition}.
 It therefore suffices to exclude many-to-one relations.
 

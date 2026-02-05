@@ -26,7 +26,7 @@ Given that the $\calF_{\MKPM}$ functionality operates on sets of records, a natu
 The matching logic in MK-PrivateID (see Figure~\ref{fig:match_logic} for a definition and Figure~\ref{fig:matching-logic-example} for an example) assigns the same UID to matched pairs of records and distinct UIDs to unmatched ones. One can think of $\match$ as computing a pseudo-union of records, where a record in the target set and one in the recovery set are considered ``equal'' if they are assigned the same UID. A natural generalization of set intersection is to recover the records in the adversary’s target set that are matched with some record in the recovery set. However, because $T$ and $Y$ are shuffled prior to matching, identical inputs across different executions are not consistently paired, and even the number of matches may vary.
 
 
-We thus relax our recovery goal to include all records in the target set that share at least one identifier with a record in the recovery set. Such records, which could \emph{potentially} be matched by the protocol logic, are referred to as \textbf{matchable records}. We formalize this notion as follows:
+We thus relax our recovery goal to include all records in the target set that share at least one identifier with a record in the recovery set. Such records, which could \emph{potentially} be matched by the protocol logic, are referred to as \textbf{matchable rcords}. We formalize this notion as follows:
 \[
     T \sqcap Y := \{\bt \in T \setdsc \exists \by \in Y,\ \exists j, \ell \in \NN \text{ s.t. } \bt[j] = \by[\ell]\}
 \]
@@ -46,15 +46,16 @@ Note that MRR does not require the adversary to reconstruct identifiers or recor
 
 \subsubsection{Recovery Goals Against $\calF_{\LMKPM}$}\label{sec:IRR_MR_goal}
 
-We now consider two stronger recovery goals when given access to the \emph{leaky} MKPM functionality $\mathcal F_{\LMKPM}$.
-As noted above, exact record matching is often too strict; instead, we aim to recover identifiers common to the target and victim sets. 
-% For any record set \setX{}, let $\Ispace{\setX{}}$ denote its identifiers; the goal is to recover $\Ispace{\setT{}} \cap \Ispace{\setV{}}$, leveraging leakage available under \LMKPM{}.
+We consider two recovery goals when invoking the \emph{leaky} MKPM functionality $\mathcal{F}_{\LMKPM}$. Exact record matching is often too strict of a recovery goal; our focus is thus on identifying common identifiers between the target and recovery sets. The first recovery goal against $\mathcal{F}_{\LMKPM}$ aims to recover the set of shared identifier. For any record set $X$, each record $\bx \in X$ is a vector of identifiers from the space $\Ispace{}$, i.e., $\bx \subseteq \Ispace{}$. We denote by $\Ispace{X}$ the set of identifiers present in the records of $X$, defined as
+\[
+\Ispace{X} \;=\; \{\, \id \in \Ispace{} \mid \exists\, \bx \in X \text{ such that } \id \in \bx \,\}.
+\]
 
-% \begin{definition}[Identifier Intersection Recovery]\label{def:IR_goal}
-% Let $T$ and $Y$ be sets of records. An adversary $\adv$ given $T$ and oracle access to $\LMKPM(\cdot,\setV{})$ achieves IIR if it outputs $\Ispace{\setT{}} \cap \Ispace{\setV{}}$.
-% \end{definition}
+\begin{definition}\label{def:IRR_goal}
+Let $T$ be the target set of records and $Y$ be the recovery set of records. An adversary $\adv$ achieves \textbf{identifier intersection recovery (IIR)} if it outputs $\Ispace{T} \cap \Ispace{Y}$.
+\end{definition}
 
-The final goal is also the strongest: identifying all identifiers in the target set that also occur in the victim’s set. This represents the maximum amount of plaintext information an adversary can obtain about $Y$ using only $\tilde{P}_1$’s output of $\mathcal F_{\mathrm{LMKPM}}$. The adversary aims to reconstruct all records in $Y$ that contain at least one identifier from~$T$. Notably, since
+The final goal is also the strongest: identifying all identifiers in the target set that also occur in the victim’s set \emph{and} how these identifiers are distributed across the records. This represents the maximum amount of plaintext information an adversary can obtain about $Y$ using only $\tilde{P}_1$’s output of $\mathcal F_{\mathrm{LMKPM}}$. The adversary aims to reconstruct all records in $Y$ that contain at least one identifier from~$T$. Notably, since
 $\mathcal F_{\LMKPM}$ outputs to~$\tilde{P}_1$ a local map~$\MX$ from UIDs to matched records, the maximum plaintext inference possible from the output alone is the recovery of the identifiers in $\tilde{P}_1$’s set.
 
 \begin{definition}\label{def:max_recons}
