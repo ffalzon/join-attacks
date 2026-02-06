@@ -21,7 +21,7 @@ $v_L.\treeSet \cup v_R.\treeSet = v.\treeSet$ and $v_L.\treeSet \cap v_R.\treeSe
 We use a fixed, deterministic rule to compute the partition (e.g., by index into equal halves) and recurse until leaves are single records. 
 
 
-Starting at the root, the adversary traverses the tree top-down, selecting a node at each step and querying $\calF_{\LMKPM}$ on that node’s associated subset of records. Let $X$ be a set associated with a node in the tree and $X_1$ and $X_2$ be those of its children.
+Starting at the root, the adversary traverses the tree in a DFS manner, selecting a node at each step and querying $\calF_{\LMKPM}$ on that node’s associated subset of records. Let $X\gets v.\treeSet$ for any non-leaf node $v$ and let $X_1\gets v_L.\treeSet$ and $X_2\gets v_R.\treeSet$ be the sets of its children.
 In Guo et al.’s PSI-CA attack, querying a parent set $X$ and one child $X_1$ is enough to infer the output of the sibling: from $|X \cap Y|$ and $|X_1 \cap Y|$ one can immediately compute $|X_2 \cap Y|$ without making a third query.
 Under $\calF_{\LMKPM}$, inferring the sibling’s output is not possible. 
 Each query returns a UID map generated with fresh randomness and so, given $(\leakX{}, \leakY)$ and $(\leakX{1}, \leakY)$, one cannot derive $(\leakX{2}, \leakY)$. 
@@ -48,8 +48,7 @@ We make the following important observations about \colCA:
 		\colCA(\leakX{}, \leakY) = \colCA(X, Y).
 	\end{equation*}
 \end{proposition}
-
-\begin{proposition}
+In words, the leakage output preserves the per-column counts of matching identifiers between the plaintext inputs $X$ and $Y$.\begin{proposition}
 	\label{prop:mkpsi_inference}
 	Let $X$ and $Y$ be sets of records, and let $X_1 \cup X_2$ be a partition of $X$. Then we have
 	\begin{equation*}
@@ -64,7 +63,7 @@ From Prop.~\ref{prop:mkpsi_inference} we obtain $\colCA(\leakX{2}, \leakY)
   = \colCA(\leakX{}, \leakY) - \colCA(\leakX{1}, \leakY).$
 Here, $\leakX{2}$ denotes the (hypothetical) leakage that would result from a protocol run on $X_2$, which is never actually executed. This is acceptable, since we only require $\colCA(\leakX{2}, \leakY)$ for the attack, and this vector can be inferred without knowing $\leakX{2}$ explicitly.
 
-For a leaf node storing a single record $\bx$, i.e., $X = \{\bx\}$, each entry of the vector $\colCA(\leakX{}, \leakY)$ is either $0$ or $1$, which exactly indicates whether the corresponding identifier of $\bx$ appears in $Y$. This logic extends to larger sets: once $\colCA(\leakX{}, \leakY) \in \{0, |X|\}^{\lambda}$ for some $X$, Prop.~\ref{prop:mkpsi_equiv} implies that, for each column, either all or none of the identifiers in that column of $X$ occur in $Y$, depending on whether the corresponding entry of $\colCA(\leakX{}, \leakY)$ equals $|X|$ or $0$, respectively.
+For a leaf node storing one record, i.e., $X = \{\bx\}$, $\colCA(\leakX{},\leakY)$ is a binary vector: its $i$-th entry is $1$ if and only if the $i$-th identifier of $\bx$ appears in $Y$, and $0$ otherwise. This logic extends to larger sets: once $\colCA(\leakX{}, \leakY) \in \{0, |X|\}^{\lambda}$ for some $X$, Prop.~\ref{prop:mkpsi_equiv} implies that, for each column, either all or none of the identifiers in that column of $X$ occur in $Y$, depending on whether the corresponding entry of $\colCA(\leakX{}, \leakY)$ equals $|X|$ or $0$, respectively.
 %See \cref{fig:mkpsi_early_termination_exmp} for an example.
 
 The remaining component of our adapted attack is a heuristic that (i) decides which child to follow during DFS traversal and (ii) provides the priority for enqueuing the other child. For any set $X$, this heuristic must be computable from $X$ and $\colCA(\leakX{}, \leakY)$ alone, since this is all we know about the (hypothetical) leakage for that node. For $\bc = \colCA(\leakX{}, \leakY)$, we define
@@ -95,9 +94,8 @@ It is invoked once at the root and for half of the nodes at each depth, giving a
 The cost of computing the heuristic $p_{MK}$ is dominated by these terms, so the overall expected runtime of \mkpsiattack{} is $\bigO{\lambda n(\log n + m)}$
 
 Like the original PSI-CA attack, \mkpsiattack{} requires at most $n$ protocol invocations, though this bound is loose due to early termination of DFS traversals (see Section~\ref{sec:evaluation} for an empirical evaluation).
-Asymptotically and in terms of queries, \mkpsiattack{} is less efficient than the attacks in the next section.
-Its advantage is that it only requires querying subsets of the target set, under comparatively weak assumptions.
-
+%Asymptotically and in terms of queries, \mkpsiattack{} is less efficient than the attacks in the next section.
+%Its advantage is that it only requires querying subsets of the target set, under comparatively weak assumptions.
 Even when the number of protocol invocations is restricted, partial intersection recovery remains feasible; see Appendix~\ref{ap:evaluation} for empirical results.
 
 

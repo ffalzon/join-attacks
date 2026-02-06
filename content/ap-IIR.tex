@@ -13,21 +13,6 @@
 \end{proof}
 
 
-\subsection{Proof of Theorem~\ref{thm:IRR-attack-correctness}}\label{proof:IRR-attack-correctness}
-\begin{proof}
-	Let $\bc = \colCA(\leakX{}, \leakY)$ and let $i \in [0,\lambda-1]$; we write $\bc[i]$ to denote the $i$-th sum in $\colCA(\leakX{}, \leakY)$. 
-	By Prop.~\ref{prop:mkpsi_equiv}, we have $\bc = \colCA(X, Y)$, i.e., for all $i\in[0,\lambda-1]$, the $i$-th identifier of exactly $\bc[i]$ records in $X$ occur in $Y$.
-
-	Similarly, for $\bc_1 := \colCA(\leakX{1}, \leakY)$, we have $\bc_1[i] = x_1$, meaning that the $i$-th identifiers of exactly $x_1$ records in $X_1$ occur in $Y$.
-	Since $X_1$ and $X_2$ form a partition of $X$, the remaining $x_2 = x - x_1$ records must lie in $X_2$.
-	Again by Prop.~\ref{prop:mkpsi_equiv}, for $\bc_2 := \colCA(\leakX{2}, \leakY)$ we have $\bc_2[i] = x_2$.
-	Hence, for all $i\in[0,\lambda-1]$ we have
-	\[
-	    \bc[i] = x = x_1 + x_2 = \bc_1[i] + \bc_2[i],
-	\]
-	and the proposition follows.
-\end{proof}
-
 \subsection{Proof of Prop.~\ref{prop:mkpsi_inference}}\label{proof:mkpsi_inference}
 
 \begin{proof}
@@ -52,6 +37,22 @@
 	    \negSet = \Ispace{T} \setminus \Ispace{Y}. 
 	\]
     Thus, the contains $\Ispace{T} \cap \Ispace{Y}$ and identifier intersection recovery (Def.~\ref{def:IRR_goal}) is achieved.
+\end{proof}
+
+
+\subsection{Proof of Theorem~\ref{thm:IRR-attack-correctness}}\label{proof:IRR-attack-correctness}
+\begin{proof}
+	Let $\bc = \colCA(\leakX{}, \leakY)$ and let $i \in [0,\lambda-1]$; we write $\bc[i]$ to denote the $i$-th sum in $\colCA(\leakX{}, \leakY)$. 
+	By Prop.~\ref{prop:mkpsi_equiv}, we have $\bc = \colCA(X, Y)$, i.e., for all $i\in[0,\lambda-1]$, the $i$-th identifier of exactly $\bc[i]$ records in $X$ occur in $Y$.
+
+	Similarly, for $\bc_1 := \colCA(\leakX{1}, \leakY)$, we have $\bc_1[i] = x_1$, meaning that the $i$-th identifiers of exactly $x_1$ records in $X_1$ occur in $Y$.
+	Since $X_1$ and $X_2$ form a partition of $X$, the remaining $x_2 = x - x_1$ records must lie in $X_2$.
+	Again by Prop.~\ref{prop:mkpsi_equiv}, for $\bc_2 := \colCA(\leakX{2}, \leakY)$ we have $\bc_2[i] = x_2$.
+	Hence, for all $i\in[0,\lambda-1]$ we have
+	\[
+	    \bc[i] = x = x_1 + x_2 = \bc_1[i] + \bc_2[i],
+	\]
+	and the proposition follows.
 \end{proof}
 
 \subsection{Additional Heurisitics for \mkpsiattack{}}\label{ap:IRR:heuristics}
