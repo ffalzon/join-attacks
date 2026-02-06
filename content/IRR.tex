@@ -1,17 +1,32 @@
 \section{Identifier Intersection Recovery with $\calF_{\LMKPM}$}\label{sec:st-mkpm-attack}
 
-We now explore how the additional leakage of $\calF_{\LMKPM}$ output to $\tP_1$ enables more powerful attacks with stronger recovery goals. Specifically, we adapt Guo et al.'s search tree approach~\cite{USENIX:GHLWJL22}, initially designed for $\calF_{\PSICA}$, to recover the identifiers shared between the party inputs and achieve \emph{identifier intersection recovery} (Definition~\ref{def:IRR_goal}). In the full version, we additionally show how to recover the multiplicities of each identifier.
+We now leverage the additional leakage that $\calF_{\LMKPM}$ outputs to $\tP_1$ to mount stronger attacks. We adapt Guo et al.'s search tree approach~\cite{USENIX:GHLWJL22}, designed for $\calF_{\PSICA}$, to recover the identifiers shared between the party inputs and achieve \emph{identifier intersection recovery} (Definition~\ref{def:IRR_goal}). 
+In the full version, we additionally show how to recover the multiplicities of each identifier.
 
-In this section, we restrict the adversary to using only subsets of its target set $T$ as input and assume that all records in $T$ are of equal length $\lambda \in \NN$. The adversary aims to compute two sets: $\posSet := \Ispace{T} \cap \Ispace{Y}$ and $\negSet := \Ispace{T} \setminus \Ispace{Y}$. This contrasts with the attacks discussed in Section~\ref{sec:lmkpm-attacks}, where the adversary can append or rearrange identifiers within records.
+In this section, we restrict the adversary to using only subsets of its target set $T$ as input: it may submit any $T' \subseteq T$ but cannot append, split, or rearrange identifiers within records (this contrasts with Section~\ref{sec:lmkpm-attacks}, where the adversary can modify record contents by appending or reordering identifiers). 
+We also assume all records in $T$ have equal length $\lambda \in \NN$. The goal is to compute the identifier partition induced by $Y$, $\posSet := \Ispace{T} \cap \Ispace{Y}$. %and $\negSet := \Ispace{T} \setminus \Ispace{Y}$. 
 
-Recall that the functionality $\calF_{\LMKPM}(X;Y)$ outputs $\UID, \MX,$ $(\hXone,\hYone)$ to $\tP_1$ and $\UID, \MY, \hXtwo$ to $P_2$. For convenience, we denote the additional leakage output to $\tP_1$ when evaluating $\calF_{\LMKPM}(X;Y)$ as $(\leak^1_X, \leak^1_Y)=(\hXone,\hYone)$. This will allow us to directly refer to the leakage produced by specific inputs.
 
-Our adapted attack starts by constructing a binary search tree $\calT$ of the target set $T$, following the method in~\cite{USENIX:GHLWJL22}. Specifically, the tree's root node corresponds to the entire target set $T$. Each node $v$ in the tree is associated with a subset of records, denoted as $v.\treeSet \subseteq T$. The two child nodes of $v$, denoted as $v_L \gets v.\treeLeftChild$ and $v_R \gets v.\treeRightChild$, correspond to a partition of the parent node's set, such that $v_L.\treeSet \cup v_R.\treeSet = v.\treeSet$ and $v_L.\treeSet \cap v_R.\treeSet = \emptyset$ .
+Recall that the output of $\calF_{\LMKPM}$ to party $\tP_1$ is
+\[
+(\UID, \MX, \leak^1) = (\UID, \MX, (\hXone, \hYone)),
+\]
+where $\UID$ denotes the set of all assigned UIDs, $\MX$ is the local mapping from UIDs to records in $X$, and $(\hXone, \hYone)$ are the hidden, shuffled records of $X$ and $Y$, respectively. 
+%Our attack will make heavy use of \leak^1$.
 
-The main challenge of adapting the $\calF_{\PSICA}$ attack to $\calF_{\MKPM}$ lies in inferring information about some node's sibling. 
-Let $X \subseteq T$ be a set of records and $X_1, X_2$ be a partition of $X$.
-Inferring the leakage $(\leakX{2}, \leakY)$ given $(\leakX{1}, \leakY)$ and $(\leakX{}, \leakY)$, as is analgously done in the original PSI-CA attack (for sets of elements), is non-trivial. Concretely, it involves identifying the records of $\leakX{1}$ within $\leakX{}$ which are computed with different randomness. 
-Comparing the hidden identifiers of $\leakX{}$ and $\leakX{1}$ is thus not possible.
+% Recall that the functionality $\calF_{\LMKPM}(X;Y)$ outputs $\UID, \MX,$ $(\hXone,\hYone)$ to $\tP_1$ and $\UID, \MY, \hXtwo$ to $P_2$. For convenience, we denote the additional leakage output to $\tP_1$ when evaluating $\calF_{\LMKPM}(X;Y)$ as $(\leak^1_X, \leak^1_Y)=(\hXone,\hYone)$. This will allow us to directly refer to the leakage produced by specific inputs.
+
+Our adapted attack starts by building a binary search tree $\calT$ over $T$ following~\cite{USENIX:GHLWJL22}. The root corresponds to the entire set $T$. Each node $v$ is labeled with a subset $v.\treeSet \subseteq T$. Its children $v_L \gets v.\treeLeftChild$ and $v_R \gets v.\treeRightChild$ form a disjoint partition of the parent:
+$v_L.\treeSet \cup v_R.\treeSet = v.\treeSet$ and $v_L.\treeSet \cap v_R.\treeSet = \emptyset$.
+We use a fixed, deterministic rule to compute the partition (e.g., by index into equal halves) and recurse until leaves are single records. 
+
+
+Starting at the root, the adversary traverses the tree top-down, selecting a node at each step and querying $\calF_{\LMKPM}$ on that node’s associated subset of records. Let $X$ be a set associated with a node in the tree and $X_1$ and $X_2$ be those of its children.
+In Guo et al.’s PSI-CA attack, querying a parent set $X$ and one child $X_1$ is enough to infer the output of the sibling: from $|X \cap Y|$ and $|X_1 \cap Y|$ one can immediately compute $|X_2 \cap Y|$ without making a third query.
+Under $\calF_{\LMKPM}$, inferring the sibling’s output is not possible. 
+Each query returns a UID map generated with fresh randomness and so, given $(\leakX{}, \leakY)$ and $(\leakX{1}, \leakY)$, one cannot derive $(\leakX{2}, \leakY)$. 
+
+
 % Moreover, trying to locate the pattern of matching identifiers between $\leak_{\setX_1}$ and $\leak^{'}_\setV$ 
 % within that of the matches between $\leakX$ and \leakV{} 
 % does not have a unique solution in general.
@@ -20,11 +35,12 @@ Comparing the hidden identifiers of $\leakX{}$ and $\leakX{1}$ is thus not possi
 % since this problem needs to be solved at every node encountered during a DFS path traversal.
 % This is therefore an undesirable strategy.
 
-We can find a much more tractable approach when considering an aggregate metric of the protocol leakage, namely, the number of matched identifiers per column of $\leakX{}$ and $\leakX{1}$ respectively:
+We thus cannot rely on sibling inference, which makes the adaptation non-trivial.
+Instead we use the number of matched identifiers per column of $\leakX{}$ and $\leakX{1}$ to guide the DFS tree-traversal:
 \[
-    \colCA(\leakX{}, \leakY) := \left(\sum_{\bt\in\leakX{}}\mathbbm{1}\{\bt[1] \in \Ispace{\leakY}\}, \dots, \sum_{\bt\in\leakX{}}\mathbbm{1}\{\bt[\lambda] \in \Ispace{\leakY}\}\right)
+    \colCA(\leakX{}, \leakY) := \left(\sum_{\bt\in\leakX{}}\mathbbm{1}\{\bt[1] \in \Ispace{\leakY}\}, \dots, \sum_{\bt\in\leakX{}}\mathbbm{1}\{\bt[\lambda] \in \Ispace{\leakY}\}\right).
 \]
-
+We make the following important observations about \colCA:
 \begin{proposition}
 	\label{prop:mkpsi_equiv}
 	For any two sets of records $X$ and $Y$, we have

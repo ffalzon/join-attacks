@@ -37,14 +37,14 @@ $\Perms[X]$ denotes the set of all permutations of $X$.
 				\item  $\pi \sample \Perms[[n]]$.
 				\item  $X'' := \{\bx''_i \setdsc i \in [n]\}$, where $\bx''_i := \bx_{\pi(i)}$.
 				\item  $\hXtwo := \{(f_2(\bx''_i[1]), \dots, f_2(\bx''_i[n_i])) \setdsc i \in [n]\}$.
-				\item $\leak_1 \gets (\hXone,\hYone)$,\ \  $\leak_2 \gets \hXtwo$
+				\item $\leak^1 \gets (\hXone,\hYone)$,\ \  $\leak^2 \gets \hXtwo$
 			\end{enumerate}
 		\end{adjustbox}
 			\begin{enumerate}
 			\addtocounter{enumi}{13}
 			\item Output:\hfill \begin{itemize}
-					\item Send $\UID, \MX$ \dbox{$,\leak_1$} to $P_1$.
-					\item Send $\UID, \MY$ \dbox{$,\leak_2$} to $P_2$.
+					\item Send $\UID, \MX$ \dbox{$,\leak^1$} to $P_1$.
+					\item Send $\UID, \MY$ \dbox{$,\leak^2$} to $P_2$.
 			\end{itemize}
 		\end{enumerate}
     \end{minipage}

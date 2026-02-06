@@ -5,9 +5,14 @@
 \newcommand{\calA}{\mathcal{A}}
 \newcommand{\tP}{\tilde{P}}
 
-\newcommand{\hYone}{\widehat{Y}_{1}}
-\newcommand{\hXone}{\widehat{X}_{1}}
-\newcommand{\hXtwo}{\widehat{X}_{2}}
+% Leakage
+\newcommand{\leak}{\ensuremath{\mathcal{L}}}
+\newcommand{\leakX}[1]{{\ensuremath{\leak^1_{X_{#1}}}}}
+\newcommand{\leakY}{{\ensuremath{\leak^1_{Y}}}}
+\newcommand{\leakT}{{\ensuremath{\leak^1_{T}}}}
+\newcommand{\hYone}{\leak^{1}_Y}
+\newcommand{\hXone}{\leak^{1}_X}
+\newcommand{\hXtwo}{\leak^{2}_X}
 
 \newcommand{\MX}{{\mathsf{M}_X}}
 \newcommand{\MY}{{\mathsf{M}_Y}}
@@ -79,10 +84,7 @@
 \newcommand{\recP}[1]{\rec{\calP}{#1}}
 \newcommand{\recPC}{\recP{\calC}}
 \newcommand{\recV}[1]{\rec{\calV}{#1}}
-\newcommand{\leak}{\ensuremath{\mathfrak{L}}}
-\newcommand{\leakX}[1]{{\ensuremath{\mathfrak{L}^1_{X_{#1}}}}}
-\newcommand{\leakY}{{\ensuremath{\mathfrak{L}^1_{Y}}}}
-\newcommand{\leakT}{{\ensuremath{\mathfrak{L}^1_{T}}}}
+
 
 \newcommand{\Ispace}[1]{\ensuremath{\mathbb{I}_{#1}}}
 
