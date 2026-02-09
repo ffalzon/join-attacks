@@ -1,36 +1,108 @@
 \section{Additional Content for PSU and PSU-CA Attacks}
 
+\begin{figure}
+  \begin{pcvstack}[boxed, center]
+    \procedure[linenumbering]{$\PSUCAattack^{\PSUCA(\cdot, Y)}(X)$}{
+      \text{Initialize empty set $\posSet$, $\negSet$.} \\
+      \text{Initialize max-priority queue $Q$.} \\
+      T \gets \mathsf{buildTree}(X) \\
+      T_L = T.\treeRoot.\treeLeftChild; \; T_R = T.\treeRoot.\treeRightChild \\
+      X_L = T_L.\treeSet; \; X_R = T_R.\treeSet \\
+      \gamechange{$z \gets \PSUCA(X, Y)$} \label{lin:PSUCA_attack_eval1} \\
+      \gamechange{$z_L \gets \PSUCA(X_L, Y)$} \label{lin:PSUCA_attack_eval2} \\
+      \gamechange{$z_R \gets \PSUCA(X_R, Y)$} \label{lin:PSUCA_attack_eval3} \\
+      \gamechange{$m \gets z_R - (z - z_L)$} \pccomment{\ref{prop:PSUCA_comp_m}} \\
+      \gamechange{$k \gets |X| + m - z$} \pccomment{\ref{eqn:union_intersect_cardinalities}}\\
+      \gamechange{$k_L \gets |X_L| + m - z_L$} \pccomment{\ref{eqn:union_intersect_cardinalities}}\\
+      \gamechange{$k_R \gets |X_R| + m - z_R$} \pccomment{\ref{eqn:union_intersect_cardinalities}}\\
+      \gamechange{$Q.\push(p_{\PSICA}(z_L, |X_L|), (T_L, k_L))$} \\
+      \gamechange{$Q.\push(p_{\PSICA}(z_R, |X_R|), (T_R, k_R))$} \\
+      \pcwhile Q \text{ is not empty} \pcdo \\
+      \t	(T_c, k_c) \gets Q.\pop() \pcskipln\\
+      \t	X_c \gets T_c.\treeSet \\
+      \t 	\pclinecomment{DFS path traversal} \\
+      \t	\pcwhile 0 < k_c < |X_c| \pcdo \label{lin:PSUCA_inner_while_condition} \\
+      \t	\t	T_L \gets T_c.\treeLeftChild; \; T_R \gets T_c.\treeRightChild \\
+      \t	\t	X_L \gets T_L.\treeSet; \; X_R \gets T_R.\treeSet \\
+      \t 	\t	\gamechange{$z_L \gets \PSUCA(X_L, Y)$} \\
+      \t	\t	\gamechange{$k_L \gets |X_L| + m - z_L$}
+      \pccomment{\ref{eqn:union_intersect_cardinalities}} \\
+      \t	\t	k_R \gets k_c - k_L \\
+      \t	\t	p_L \gets p_{\PSICA}(k_L, |X_L|) \\
+      \t 	\t	p_R \gets p_{\PSICA}(k_R, |X_R|) \\
+      \t	\t	\pcif p_L > p_R \pcthen \pcskipln \\
+      \t	\t	\t	\pclinecomment{Continue with left child} \\
+      \t	\t	\t	T_c \gets T_L; \; k_c \gets k_L \\
+      \t	\t	\t	Q.\push(p_R, (T_R, k_R)) \\
+      \t	\t	\pcelse \pcskipln\\
+      \t	\t	\t	\pclinecomment{Continue with right child} \\
+      \t	\t	\t	T_c \gets T_R; \; k_c \gets k_R \\
+      \t	\t	\t	Q.\push(p_L, (T_L, k_L)) \\
+      \t	\pcif k_c = |X_c| \pcthen \label{lin:PSUCA_add_condition}\\
+      \t	\t	\posSet \gets \posSet \cup X_c \\
+      \t	\pcelse \\
+      \t	\t	\negSet \gets \negSet \cup X_c \\
+      \pcreturn \posSet, \negSet
+    }
+    % \pchspace
+    \procedure[linenumbering]{$\mathsf{buildTree}(\setT)$}{
+      \text{Initialize a tree $T$ with a single}\pcskipln \\
+      %% TODO: Add \pcparbox latex command
+      % \pcparbox{node $\treeRoot$, which stores \setT.
+      % Build a balanced binary search tree by recursively dividing the set stored at a node 
+      % into two disjoint subsets of roughly equal size.} \\
+      \pcreturn T
+    }
+  \end{pcvstack}
+  \caption{Intersection-recovery attack $\PSUCAattack$ with oracle access to
+    $\PSUCA(\cdot, Y)$ for a fixed victim set $Y$.  Note that $Y$ is part of
+    the oracle and unknown to the adversary. Changes to $\PSICAattack$ are
+    highlighted in gray.}\label{fig:PSUCA_attack}
+\end{figure}
+
+
+
+
+
+
+
+
+
+
+
+
+
 % \begin{figure}
-% 	\begin{pchstack}[boxed, center]
-% 		\procedure[linenumbering]{$\PSUattack^{\PSU(\cdot, Y)}(X)$}{
-% 			\text{Partition $X$ into $X_1, X_2$} \\
-% 			Z_1 \gets \PSU(X_1, Y) \\
-% 			Z_2 \gets \PSU(X_2, Y) \\
-% 			Z \gets Z_1 \cup Z_2 \\
-% 			D_Y \gets Z \setminus X \\
-% 			D_{X_1} \gets X_1 \setminus Z_2 \pccomment{\cref{prop:PSU_comp_partial_difference}} \\
-% 			D_{X_2} \gets X_2 \setminus Z_1 \pccomment{\cref{prop:PSU_comp_partial_difference}} \\
-% 			D_X \gets D_{X_1} \cup D_{X_2} \pccomment{\cref{prop:PSU_difference_distributes}} \\
-% 			S \gets Z \setminus D_Y \setminus D_X \pccomment{\cref{eqn:PSU_basis}}\\
-% 			\pcreturn S
+%   \begin{pchstack}[boxed, center]
+%     \procedure[linenumbering]{$\PSUattack^{\PSU(\cdot, Y)}(X)$}{
+%     \text{Partition $X$ into $X_1, X_2$} \\
+%     Z_1 \gets \PSU(X_1, Y) \\
+%     Z_2 \gets \PSU(X_2, Y) \\
+%     Z \gets Z_1 \cup Z_2 \\
+%     D_Y \gets Z \setminus X \\
+%     D_{X_1} \gets X_1 \setminus Z_2 \pccomment{\cref{prop:PSU_comp_partial_difference}} \\
+%     D_{X_2} \gets X_2 \setminus Z_1 \pccomment{\cref{prop:PSU_comp_partial_difference}} \\
+%     D_X \gets D_{X_1} \cup D_{X_2} \pccomment{\cref{prop:PSU_difference_distributes}} \\
+%     S \gets Z \setminus D_Y \setminus D_X \pccomment{\cref{eqn:PSU_basis}}\\
+%     \pcreturn S
 % 		}
-% 	\end{pchstack}
-% 	\caption{Intersection-recovery attack \PSU attack with oracle access to $\PSU(\cdot, Y)$ for a fixed $Y$. 
-% 	Note that $Y$ is part of the oracle and unknown to the adversary.}
-% 	\label{fig:PSU_attack}
+%   \end{pchstack}
+%   \caption{Intersection-recovery attack \PSU attack with oracle access to $\PSU(\cdot, Y)$ for a fixed $Y$. 
+%   Note that $Y$ is part of the oracle and unknown to the adversary.}
+%   \label{fig:PSU_attack}
 % \end{figure}
 
 % \subsection{Proof of \Cref{prop:PSUCA_comp_m}}\label{ap:PSUCA_comp_m}
 
 % \begin{proof}
-% 	Let $n = |X|$, $n_1 = |X_1|$, and $n_2 = |X_2|$. By definition, $X_1$ contains exactly $n - n_1$ fewer elements than $X$, and $X_1 \cap Y$ contains $z - z_1 \leq n - n_1$ fewer elements than $X \cap Y$.
-% 	Thus, exactly $d := (n - n_1) - (z - z_1)$ 
-% 	elements of $X \setminus X_1$ must be contained in $Y$, that is, $|(X\setminus X_1) \cap Y| = d$.
-% 	Since $X_1$ and $X_2$ form a partition of $X$, we have $X\setminus X_1 = X_2$ and $n-n_1 = n_2$
-% 	and, thus, $|X_2 \cap Y| = d$. Then,
-% 	\begin{equation*}
-% 		\begin{split}
-% 			z_2 & = |X_2 \cup Y| \\
+%   Let $n = |X|$, $n_1 = |X_1|$, and $n_2 = |X_2|$. By definition, $X_1$ contains exactly $n - n_1$ fewer elements than $X$, and $X_1 \cap Y$ contains $z - z_1 \leq n - n_1$ fewer elements than $X \cap Y$.
+%   Thus, exactly $d := (n - n_1) - (z - z_1)$ 
+%   elements of $X \setminus X_1$ must be contained in $Y$, that is, $|(X\setminus X_1) \cap Y| = d$.
+%   Since $X_1$ and $X_2$ form a partition of $X$, we have $X\setminus X_1 = X_2$ and $n-n_1 = n_2$
+%   and, thus, $|X_2 \cap Y| = d$. Then,
+%   \begin{equation*}
+%     \begin{split}
+        %         z_2 & = |X_2 \cup Y| \\
 % 			& = |X_2| + |Y| - |X_2 \cap Y| \\
 % 			& = n_2 + |Y| - ((n-n_1) - (z - z_1)) \\
 % 			& = n_2 + |Y| - (n_2 - (z - z_1)) \\
