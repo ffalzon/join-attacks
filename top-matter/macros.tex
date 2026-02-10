@@ -89,7 +89,14 @@
 \newcommand{\recV}[1]{\rec{\calV}{#1}}
 
 
-\newcommand{\Ispace}[1]{\ensuremath{\mathbb{I}_{#1}}}
+%\newcommand{\Ispace}[1]{\ensuremath{\mathbb{V}{(#1)}}}
+\makeatletter
+\newcommand{\Ispace}[1][]{
+  \@ifempty{#1}{\mathbb{V}}{\mathbb{V}{(#1)}}
+}
+\makeatother
+
+
 
 \newcommand{\setX}{\ensuremath{\mathcal{X}}}
 \newcommand{\setY}{\ensuremath{\mathcal{Y}}}
