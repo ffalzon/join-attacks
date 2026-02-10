@@ -4,26 +4,27 @@
 \toprule
 \textbf{Attacks} & \textbf{Functionality} & \textbf{Adv's Input} & \textbf{Recovery Goal} & \textbf{\# Queries} & \textbf{Approx.} & \textbf{Adaptive} & \textbf{Auxiliary Data} \\
 \midrule
-Guo et al.~\cite{USENIX:GHLWJL22} & PSI-CA & $\{v_i\}_i$ & Intersection &  &  & \checkmark &  \\ 
+Guo et al.~\cite{USENIX:GHLWJL22} & PSI-CA & Set & Intersection & $\bigO{n}$ &  & \checkmark &  \\ 
 \hline
-Jiang et al.~\cite{NDSS:JiaDuYan24} & PSI-CA & $\{v_i\}_i$ & Intersection &  &  &  & \checkmark \\ 
-Jiang et al.~\cite{NDSS:JiaDuYan24} & PSI-CA & $\{v_i\}_i$ & Intersection &  & \checkmark &  \checkmark &  \\ 
-Jiang et al.~\cite{NDSS:JiaDuYan24} & PSI-Sum~\cite{EuroSP:IKNPSS20} & $\{(k_i, v_i)\}_i$ & Intersection &  &  &  \checkmark &  \\
+Jiang et al.~\cite{NDSS:JiaDuYan24} & PSI-CA & Set & Intersection & $\bigO{n}$ &  &  & \checkmark \\ 
+Jiang et al.~\cite{NDSS:JiaDuYan24} & PSI-CA & Set & Intersection & $\bigO{n}$ & \checkmark &  \checkmark &  \\ 
+Jiang et al.~\cite{NDSS:JiaDuYan24} & PSI-Sum~\cite{EuroSP:IKNPSS20} &  KV Store & Intersection & -- &  &  \checkmark &  \\
 \hline
-Falzon \& Tang~\cite{USENIX:FalTan25} & \multirow{4}{*}{PJC~\protect\cite{AC:LPRST21}} & $\{(k_i, v_i)\}_i$ & Key-value & $O(k \log n)$ &  &  \checkmark &  \\
-Falzon \& Tang~\cite{USENIX:FalTan25} &  & $\{(k_i, v_i)\}_i$ & Key-value & -- & \checkmark &   & Value Distribution \\
-Falzon \& Tang~\cite{USENIX:FalTan25} &  & $\{(k_i, v_i)\}_i$ & Key-value & $2k$ &  &   & Intersection size $k$ \\
-Falzon \& Tang~\cite{USENIX:FalTan25} &  & $\{(k_i, v_i)\}_i$ & Key-value & $\Theta(s \log(n/s))$ & \checkmark &   &  \\
+Falzon \& Tang~\cite{USENIX:FalTan25} & \multirow{4}{*}{PJC~\protect\cite{AC:LPRST21}} &  KV Store & Key-value & $\bigO{k \log n}$ &  &  \checkmark &  \\
+Falzon \& Tang~\cite{USENIX:FalTan25} &  &  KV Store & Key-value & -- & \checkmark &   & Value Distribution \\
+Falzon \& Tang~\cite{USENIX:FalTan25} &  &  KV Store & Key-value & $2k$ &  &   & Intersection size $k$ \\
+Falzon \& Tang~\cite{USENIX:FalTan25} &  & KV Store & Key-value & $\Theta(k \log(n/k))$ & \checkmark &   & Upper bound of $k$  \\
 \hline
-\textbf{This work} (\S\ref{sec:psu-attack}) & PSU & $\{v_i\}_i$ & Intersection & 2 &  &   &  \\
-\textbf{This work} (\S\ref{sec:psu-ca-attack}) & PSU-CA & $\{v_i\}_i$ & Intersection & add bound &  &  \checkmark &  \\
-\textbf{This work} & \multirow{4}{*}{MK-PMC~\protect\cite{MKPMC}} &  & Max-Set Recon. & 1 &  &  \checkmark &  \\
-\textbf{This work} &  &  & Max-Set Recon. & 1 &  &  \checkmark &  \\
-\textbf{This work} &  &  & Max-Set Recon. & 1 &  &  \checkmark &  \\
-\textbf{This work} &  &  & Max-Set Recon. & 1 &  &  \checkmark &  \\
+\textbf{This work} (\S\ref{sec:psu-attack}) & PSU & Set & Intersection & 2 &  &   &  \\
+\textbf{This work} (\S\ref{sec:PSUCA_attack}) & PSU-CA & Set & Intersection & $\bigO{n}$ &  &  \checkmark &   \\
+\textbf{This work} (\S\ref{sec:PSUCA_to_matching}) & $\MKPM$~\protect\cite{MKPMC} & Set of Records & Matchable Rec. Recovery & $\bigO{n}$ &  &  \checkmark &  \\
+\textbf{This work} (\S\ref{sec:st-mkpm-attack}) & \multirow{4}{*}{$\LMKPM$~\protect\cite{MKPMC}} & Set of Records & ID Intersec. Recovery & $\bigO{n}$ &  &  \checkmark &  \\
+\textbf{This work} (\S\ref{sec:baseline-attack}) &  & Set of Records & Max-Set Recon. & 1 &  &   &  \\
+\textbf{This work} (\S\ref{sec:rec_enum_attack}) &  & Set of Records & Max-Set Recon. & 1 &  &   &  \\
+\textbf{This work} (\S\ref{sec:snake_attack}) &  & Set of Records & Max-Set Recon. & 1 &  &   &  \\
 \bottomrule
 \end{tabular}
 \vspace{3mm}
-\caption{An overview of PSI functionalities and their corresponding attacks. Each attack operates in the input-malicious model, where the adversary behaves honestly according to the protocol specification but may provide maliciously chosen inputs. Let $T$ be the target set of values that the adversary wishes to learn, and $Y$ be the other party's input.}
+\caption{An overview of functionalities and their corresponding attacks. In all the attacks, the adversary behaves honestly according to the protocol specification but may provide maliciously chosen inputs. For each attack, we report the recovery goal, the number of queries required, whether the attack can reconstruct the values approximately, whether it is adaptive, and if it requires additional knowledge. Here $n$ denotes the size of the adversary's target set and $k$ is the size of the intersection of the target set and the recovery set. }
 \label{tab:protocol_comparison}
 \end{table*}
