@@ -33,17 +33,10 @@ $(X \cup Y) \setminus X = Y \setminus X$.
 The challenge lies in determining $X \setminus Y$. To address
 this, we make two additional observations.
 
-\begin{prop}\label{prop:PSU_difference_distributes}
+\begin{proposition}\label{prop:PSU_difference_distributes}
   Let $X$ and $Y$ be sets and $X_1 \cup X_2$ be a partition of $X$. It holds that
   $X \setminus Y = (X_1 \setminus Y) \cup (X_2 \setminus Y).$
-\end{prop}
-
-\begin{proof}
-  This follows from the fact that the set difference distributes over the
-  union:
-  $X \setminus Y = (X_1 \cup X_2) \setminus Y = (X_1 \setminus Y) \cup (X_2
-  \setminus Y)$.
-\end{proof}
+\end{proposition}
 
 \begin{proposition}
   \label{prop:PSU_comp_partial_difference}
@@ -53,28 +46,16 @@ this, we make two additional observations.
   $X_2 \setminus Y = X_2 \setminus Z_1$.
 \end{proposition}
 
-\begin{proof}
-  We prove $X_1 \setminus Y = X_1 \setminus Z_2$, i.e., for any $x \in X_1$ we
-  have $x \not \in Y \iff x \not \in Z_2$.  We prove the two directions separately.
-    \begin{description}
-    \item[$(\Rightarrow)$] Assume $x \in X_1$ and $x \not \in Y$.  Since $X_1
-      \cap X_2 = \emptyset$, we have $x \not \in X_2$.  Since $x \not \in Y$ by
-      assumption, we have $x \not \in (X_2 \cup Y) = Z_2$.
-    \item[$(\Leftarrow)$] To arrive at a contradiction, assume $x \in X_1, x
-      \not \in Z_2$ and $x \in Y$.  $x \not \in Z_2$ implies $x\not\in X_2$ and
-      $x\not\in Y$, the latter of which directly contradicts our assumptions.
-    \end{description}
-The proof for $X_2 \setminus Y = X_2 \setminus Z_1$ follows analogously.
-\end{proof}
-  
+The proofs can be found in Appendix~\ref{proof:PSU_difference_distributes} and~\ref{proof:PSU_comp_partial_difference}, respectively.
+
 We could combine Propositions~\ref{prop:PSU_difference_distributes} and
 \ref{prop:PSU_comp_partial_difference} with to obtain $X \cap Y$ with three
 evaluations of $\PSU$. However, since
 $X \cup Y = (X_1 \cup Y) \cup (X_2 \cup Y)$, the adversary can compute the full
 union from the two partial unions, thus, saving one evaluation.  
 
-The complete
-attack \PSUattack{} is given in Figure~\ref{fig:PSU_attack}.
+Thus, by querying $\calF_{\PSU}(;Y)$ on two disjoint sets $X_1\cup X_2=T$ that form a partition of the target set, $\tP_1$ can recover the intersection. The pseudocode for the
+attack \PSUattack{} is given in Figure~\ref{fig:PSU_attack} (Appendix~\ref{ap:psu-attack-pseudocode}).
 
 \begin{theorem}
   Let $T$ be the target set and $Y$ be the recovery set. The attack $\PSUattack^{\calF_{PSU}(\cdot; Y)}(T)$ (Figure~\ref{fig:PSU_attack}) achieves intersection recovery (Def.~\ref{def:intersection-recovery}).
@@ -89,28 +70,6 @@ This is a very general attack, which only requires that $\calF_{\PSU}$ be evalua
 twice on disjoint sets while the
 recovery set $Y$ remains static. These assumptions are well within the security model of proposed PSU protocols. 
 
-\begin{figure}
-  \begin{pchstack}[boxed, center]
-    \procedure[linenumbering]{$\PSUattack^{\PSU(\cdot, Y)}(X)$}{
-      \rule{0pt}{2em}%
-      \text{Partition $X$ into $X_1, X_2$} \\
-      Z_1 \gets \PSU(X_1, Y) \\
-      Z_2 \gets \PSU(X_2, Y) \\
-      Z \gets Z_1 \cup Z_2 \\
-      D_Y \gets Z \setminus X \pccomment{$D_Y = Y \setminus X$} \label{lin:PSUDiff_Z-X}\\
-      D_{X_1} \gets X_1 \setminus Z_2 \pccomment{\ref{prop:PSU_comp_partial_difference}} \\
-      D_{X_2} \gets X_2 \setminus Z_1 \pccomment{\ref{prop:PSU_comp_partial_difference}}  \\
-      D_X \gets D_{X_1} \cup D_{X_2}
-      \pccomment{\ref{prop:PSU_difference_distributes}} \\
-      S \gets Z \setminus D_Y \setminus D_X \\
-      \pcreturn S
-    }
-  \end{pchstack}
-  \caption{Intersection-recovery attack with oracle access to $\PSU(\cdot, Y)$
-    for a fixed $Y$. Note that $Y$ is part of the oracle and unknown to the
-    adversary.}
-  \label{fig:PSU_attack}
-\end{figure}
 
 \subsection{PSU-CA Attack}\label{sec:PSUCA_attack}
 The $\PSUCA$ functionality leaks considerably less information about the victim
