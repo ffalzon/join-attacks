@@ -13,7 +13,7 @@ The adversarial party $\tP_1$ holds a \textbf{target set} $T$ of elements (resp.
 \subsubsection{Recovery Goal Against $\calF_{\PSU}$ and $\calF_{\PSUCA}$}\label{sec:IR_goal}
 The goal of private set union (PSU) is to hide the intersection of the input sets~\cite{USENIX:JSZG24}. The natural recovery goal for attacks against PSU and PSU-CA is to thus recover this intersection and determine the membership of elements in the target set $T$ that are also present in $Y$.
 
-\begin{definition}
+\begin{definition}\label{def:intersection-recovery}
 	Let $T$ be the target set and $Y$ be the recovery set. An adversary $\adv$ achieves \textbf{intersection recovery} if it outputs $T \cap Y$.
 \end{definition}
 

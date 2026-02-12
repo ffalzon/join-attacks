@@ -16,97 +16,30 @@ executions and which does not rely on the adversarial input set being empty or
 disjoint from the victim set. We then prove that PSU-CA leaks at least as much
 information as PSI-CA by constructing a reduction showing that any PSI-CA attack
 with $q$ queries can be transformed into a PSU-CA attack with $q{+}3$
-queries. Finally, we show that our PSU-CA attack extends to Meta's $\PrivateID$
-protocol and, under mild assumptions, to the $\MKPM$ functionality.
+queries. Finally, in the next section, we show that our PSU-CA attack extends to Meta's $\calF_{\MKPM}$ functionality.
 
 \subsection{Analysis of PSU}
 \label{sec:psu-attack}
-Recall that the input-malicious party $\calA$ knows its own input set $X$ and
-can learn $X' \cup Y$ by invoking $\PSU(;Y)$. The adversary's goal is to recover
-$X \cap Y$.
-
-Our attack is based on the following equality:
+Recall that the input-malicious party $\tP_1$ knows the target set $T$ and can invoke $\calF_{\PSU}(;Y)$ on any set $X$. The adversary's goal is to recover $T \cap Y$. Our attack is based on the following equation. For any two sets $X$ and $Y$ we have 
 \begin{equation}
   \label{eqn:PSU_basis}
-  X \cap Y = (X \cup Y) \setminus (Y \setminus X) \setminus (X \setminus Y)
+  X \cap Y = (X \cup Y) \setminus (Y \setminus X) \setminus (X \setminus Y).
 \end{equation} 
 
-Note that both $X \cup Y$ and $Y \setminus X$ can be easily determined. The
-former is the direct output of evaluating $\PSU{}$, and the latter can be
-omputed as
-$(X \cup Y) \setminus X = (X \setminus X) \cup (Y \setminus X) = Y \setminus X$.
-The key challenge, therefore, lies in determining $X \setminus Y$. To address
-this, we make two key observations.
+Both $X \cup Y$ and $Y \setminus X$ can be easily determined. The
+former is the output of evaluating $\calF_{PSU}(X;Y)$, and the latter can be
+computed as
+$(X \cup Y) \setminus X = Y \setminus X$.
+The challenge lies in determining $X \setminus Y$. To address
+this, we make two additional observations.
 
 \begin{prop}\label{prop:PSU_difference_distributes}
-  For any sets $X, Y$ and any partition $X_1 \cup X_2$ of $X$, it holds that
+  Let $X$ and $Y$ be sets and $X_1 \cup X_2$ be a partition of $X$. It holds that
   $X \setminus Y = (X_1 \setminus Y) \cup (X_2 \setminus Y).$
 \end{prop}
 
-We show that these precautions are ineffective by presenting an intersection
-recovery attack against PSU which requires only two PSU evaluations and does not
-rely on empty sets or sets that are disjoint with the victim set as inputs.
-
-Furthermore, we show that the PSU-CA functionality reveals at least as much
-information about its inputs as PSI-CA by reducing PSI-CA to PSU-CA. Namely,
-we show that any intersection recovery attack against PSI-CA that makes $q$
-PSI-CA evaluations can be used to construct an intersection recovery attack
-against PSU-CA that makes $q+3$ PSU-CA evaluations.  We then merge this
-reduction with Guo et al.'s PSI-CA attack, which allows us to save two of the
-three additional PSU-CA evaluations.  Moreover, we demonstrate that our PSU-CA
-attack also applies to the functionality of Meta's PrivateID protocol and --
-under reasonable assumptions -- to the MKPM functionality we formalized in
-
-
-As mentioned previously, while the PSU and PSU-CA functionalities have received
-increased attention lately, the information they reveal about their inputs has
-not been studied yet.  However, some special cases have been acknowledged in the
-literature.  Frikken~\cite{Frikken07} points out that providing the empty set as
-input for PSU immediately reveals the other party's input and proposes
-countermeasures against this, such as aborting the protocol execution if one of
-the input sets is empty or only computing the set union if the intersection is
-not empty.  More recently, Jia et al.~\cite{Jia24} analyzed the leakage patterns
-of common PSU protocols and highlight that Guo et al.'s attack on PSI-CA also
-applies to some of these leakage patterns, even when the protocol executions are
-aborted early. They propose an ``enhanced'' PSU functionality which can only be
-implemented by protocols that reveal their leakage at the end of the protocol
-execution in order to make rate-limiting a more effective countermeasure.
-
-Furthermore, we show that the PSU-CA functionality reveals at least as much
-information about its inputs as PSI-CA by reducing PSI-CA to PSU-CA. Namely, we
-show that any intersection recovery attack against PSI-CA that makes $q$ PSI-CA
-evaluations can be used to construct an intersection recovery attack against
-PSU-CA that makes $q+3$ PSU-CA evaluations.  We then merge this reduction with
-Guo et al.'s PSI-CA attack, which allows us to save two of the three additional
-PSU-CA evaluations.  Moreover, we demonstrate that our PSU-CA attack also
-applies to the functionality of Meta's PrivateID protocol and -- under
-reasonable assumptions -- to the MKPM functionality we formalized in.
-
-\subsection{Et Two, PSU?}
-\label{sec:PSU_attack}
-Recall that we assume an input-malicious party $A$ which knows its own input set
-$X$ and can learn $X' \cup Y$ for arbitrarily many choices of $X'$ against a
-fixed set $Y$ by evaluating $\PSU$. The goal of $A$ is to recover $X \cap Y$.
-Our attack is based on the following equality:
-\begin{equation}
-  \label{eqn:PSU_basis}
-  X \cap Y = (X \cup Y) \setminus (Y \setminus X) \setminus (X \setminus Y)
-\end{equation} 
-
-Note that $(X\cup Y)$ and $Y\setminus X$ can easily be determined. The former is
-a direct result of evaluating $\PSU$ and one can subsequently compute
-$(X \cup Y) \setminus X = (X \setminus X) \cup (Y \setminus X) = Y \setminus X$.
-The actual interest therefore lies in determining $X\setminus Y$.  To this end,
-we make two observations. Recall that a partition of a set $X$ is a pair of
-subsets $X_1, X_2 \subseteq X$ such that $X_1 \cap X_2 = \emptyset$ and
-$X_1 \cup X_2 = X$.
-
-\begin{proposition}\label{prop:PSU_difference_distributes}
-  For any two sets $X$ and $Y$ and any partition $X_1, X_2$ of $X$, we have
-  $X \setminus Y = (X_1 \setminus Y) \cup (X_2 \setminus Y)$.
-\end{proposition}
 \begin{proof}
-  Follows directly from the fact that the set difference distributes over the
+  This follows from the fact that the set difference distributes over the
   union:
   $X \setminus Y = (X_1 \cup X_2) \setminus Y = (X_1 \setminus Y) \cup (X_2
   \setminus Y)$.
@@ -114,7 +47,7 @@ $X_1 \cup X_2 = X$.
 
 \begin{proposition}
   \label{prop:PSU_comp_partial_difference}
-  Let $X$ and $Y$ be two sets and let $X_1, X_2$ be a partition of $X$.
+  Let $X$ and $Y$ be sets and let $X_1\cup X_2$ be a partition of $X$.
   Furthermore, let $Z_1 := X_1 \cup Y$ and $Z_2 := X_2 \cup Y$.  Then,
   $X_1 \setminus Y = X_1 \setminus Z_2$ and
   $X_2 \setminus Y = X_2 \setminus Z_1$.
@@ -138,30 +71,28 @@ We could combine Propositions~\ref{prop:PSU_difference_distributes} and
 \ref{prop:PSU_comp_partial_difference} with to obtain $X \cap Y$ with three
 evaluations of $\PSU$. However, since
 $X \cup Y = (X_1 \cup Y) \cup (X_2 \cup Y)$, the adversary can compute the full
-union from the two partial unions, thus, saving one evaluation.  The complete
-attack \PSUattack{}.
+union from the two partial unions, thus, saving one evaluation.  
+
+The complete
+attack \PSUattack{} is given in Figure~\ref{fig:PSU_attack}.
 
 \begin{theorem}
-  For any sets $X$ and $Y$, $\PSUattack^{\PSU(\cdot, Y)}(X)$ outputs
-  $X\cap Y$.
+  Let $T$ be the target set and $Y$ be the recovery set. The attack $\PSUattack^{\calF_{PSU}(\cdot; Y)}(T)$ (Figure~\ref{fig:PSU_attack}) achieves intersection recovery (Def.~\ref{def:intersection-recovery}).
 \end{theorem}
 \begin{proof}
-  Follows directly from \ref{} and
+  The theorem follows from
   Propositions~\ref{prop:PSU_difference_distributes} and
   \ref{prop:PSU_comp_partial_difference}.
 \end{proof}
 
-This is a very general attack, which only requires that $\PSU$ can be evaluated
-twice with the disjoint sets $X_1$ and $X_2$ as the adversary's inputs while the
-victim set $Y$ remains static. These assumptions are well within the security
-model of common PSU deployments. The attack could even be considered valid
-assuming a more restricted semi-honest adversary, as long as the attacker can
-observe the result of two $\PSU$ evaluations involving disjoint adversarial
-inputs and a static victim set.
+This is a very general attack, which only requires that $\calF_{\PSU}$ be evaluated
+twice on disjoint sets while the
+recovery set $Y$ remains static. These assumptions are well within the security model of proposed PSU protocols. 
 
 \begin{figure}
   \begin{pchstack}[boxed, center]
     \procedure[linenumbering]{$\PSUattack^{\PSU(\cdot, Y)}(X)$}{
+      \rule{0pt}{2em}%
       \text{Partition $X$ into $X_1, X_2$} \\
       Z_1 \gets \PSU(X_1, Y) \\
       Z_2 \gets \PSU(X_2, Y) \\
