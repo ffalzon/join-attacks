@@ -70,9 +70,7 @@ We plot the number of queries for both attacks in Figures~\ref{fig:plot_ST_queri
 and their runtimes in Figure~\ref{fig:st_time_all}.
 
 The time and query measurements of the two attacks are largely symmetric with respect to the intersection ratio and match rate.
-Specifically, for any $\varepsilon$, measurements for experiments with $\rho, \eta \in \{\varepsilon, 1-\varepsilon\}$ are nearly identical. We therefore only report measurements for $\rho, \eta \leq 0.5$ in this subsection. This symmetry follows from the number of queries performed by the attacks:
-isolating a small set of matched elements from a large set of unmatched ones (small intersection ratio) is equivalent to isolating a large set of matched elements from a small set of unmatched ones (large intersection ratio).
-The expected number of queries is the same in both cases.
+Specifically, for any $\varepsilon$, measurements for experiments with $\rho, \eta \in \{\varepsilon, 1-\varepsilon\}$ are nearly identical. We therefore only report measurements for $\rho, \eta \leq 0.5$. This symmetry follows from the number of queries performed by the attacks. Isolating a small set of matched elements from a large set of unmatched ones (small intersection ratio) is equivalent to isolating a large set of matched elements from a small set of unmatched ones (large intersection ratio). In both cases, the expected number of queries is the same.
 
 
 \begin{figure}
@@ -92,11 +90,11 @@ The expected number of queries is the same in both cases.
 
 \subsubsection{Queries.}\label{sec:st-queries}
 Figures~\ref{fig:plot_ST_queries_over_n} and \ref{fig:plot_ST_queries_over_mr} (Appendix~\ref{ap:evaluation}) plot the number of queries required by each attack as functions of the target set size, and intersection ratio $\rho$ and match rate $\eta$, respectively.
-We observe that values of $\rho$ and $\eta$ near $0.5$ incur the highest percentages: $36\%$ occurs for $\rho, \eta \in \{0.1, 0.9\}$ and $73\%$ for $\rho = \eta = 0.5$, and these percentages are consistent across target set sizes. Figure~\ref{fig:plot_ST_queries_over_n} also shows that the absolute number of queries grows linearly with the target set size, matching the linear theoretical bounds.
+Figure~\ref{fig:plot_ST_queries_over_n} shows that the number of queries grows linearly with the target set size, matching our linear theoretical bounds. In Figure~\ref{fig:plot_ST_queries_over_mr}, we observe that values of $\rho$ and $\eta$ near $0.5$ incur the largest number of queries, and that this is consistent across target set sizes.
 
-Both attacks make almost the same number of queries, despite \mkpsiattack{} having a stricter early-termination criterion. For any experiment, their difference never exceeds $0.5\%$ of the theoretical upper bound, with \mkpsiattack{} slightly higher. The only exception is when $\rho$ or $\eta$ is $0$ or $1$: then \PSUCAattack{} always uses three queries, while \mkpsiattack{} uses only one, due to the two extra queries \PSUCAattack{} needs to determine $|Y|$.
+Both attacks make almost the same number of queries, despite \mkpsiattack{} having a stricter early-termination criterion (i.e., to avoid pushing a node onto the stack, its record set must not share any values with the recovery set). In all experiments, the attacks' difference never exceeds $0.5\%$ of the theoretical upper bound. The exception is when $\rho$ or $\eta$ is $0$ or $1$: \mkpsiattack{} issues only one query, whereas \PSUCAattack{} always issues three queries. This is because \PSUCAattack{} requires two additional queries to determine $|Y|$.
 
-The heuristic used to choose which child to follow during path traversal, and which subset to process next after termination, has only a minimal impact on the number of queries. This is expected, as the attacks terminate only once all subsets in the priority queue have been processed. The number of subsets in the queue depends solely on the (random) partitioning, not on the heuristic. We therefore report only the measurements for the positive heuristics $p_{\PSICA}^{+}$ and $p_{MK}^{+}$ in this section.
+The heuristic used to choose which child to follow during path traversal and which subset to process next after termination, has only a minimal impact on the number of queries. This is expected, as the attacks terminate only once all subsets in the priority queue have been processed. The number of subsets in the queue depends solely on the (random) partitioning, not on the heuristic. In this subsection, we thus only report the measurements for the positive heuristics ($p_{\PSICA}^{+}$ and $p_{\mathsf{MK}}^{+}$) in this section. 
 
 
 \begin{figure}[t]
@@ -135,11 +133,11 @@ The heuristic used to choose which child to follow during path traversal, and wh
 
 \subsubsection{Runtime.} Figure~\ref{fig:st_time_all} shows the runtimes of both attacks as a function of the intersection ratio $\rho$ or match rate $\eta$ and the target set size.
 \PSUCAattack{} runs in \SIrange{3}{130}{\milli\second}, depending on the parameters.
-\mkpsiattack{} is markedly slower, with runtimes from \SI{145}{\milli\second} for $\eta = 0$ and $n = 0.5 \cdot 10^4$
-up to \SI{177}{\second} for $\eta = 0.5$ and $n = 1.5 \cdot 10^4$.
+\mkpsiattack{} is markedly slower, with runtimes from \SI{145}{\milli\second} ($\eta = 0$ and $n = 0.5 \cdot 10^4$)
+up to \SI{177}{\second} ($\eta = 0.5$ and $n = 1.5 \cdot 10^4$).
 
 Although the two attacks issue almost the same number of queries,
-\mkpsiattack{} is more than three orders of magnitude slower than \PSUCAattack. We attribute this to the computation of \colCA{}, which is recomputed after every query and scans all values in $\hYone$ and the current target subset.
+\mkpsiattack{} is more than three orders of magnitude slower than \PSUCAattack. We attribute this to the computation of \colCA{}, which is recomputed after every query and requires scanning all values in $\hYone$ and the current target subset.
 
 Figures~\ref{fig:st_time_psuca_mr} and \ref{fig:st_time_mkpsi_mr} demonstrate that runtimes are significantly influenced by $\rho$ and $\eta$, peaking for values near $0.5$, which aligns with our prior observation that this regime involves the highest query counts.
 Meanwhile, Figures~\ref{fig:st_time_psuca_n} and \ref{fig:st_time_mkpsi_n} indicate that runtimes for both attacks scale roughly linearly with target set size, despite theoretical complexities of \bigO{n \log n} for \PSUCAattack{} and \bigO{\lambda n(\log n + m)} for \mkpsiattack. We believe the logarithmic overhead from priority-queue operations only becomes noticeable in larger data sets.
@@ -148,12 +146,12 @@ In Appendix~\ref{ap:evaluation}, we present additional experiments conducted und
 
 \subsection{L-MKPM Attack Evaluation}
 The maximum set reconstruction attacks presented in section~\ref{sec:lmkpm-attacks}---$\baselineattack{}$, $\recenumattack{}$, and $\snakeattack{}$---all require just a single protocol execution. 
-We only discuss the runtime measurements, 
+We thus only discuss the runtime measurements, 
 which are plotted against the match rate $\eta$ and target set size $n$ in Figure~\ref{fig:leakage_attacks_time_plot}.
 
 The attacks are all highly efficient. $\baselineattack{}$ is the fastest, with runtimes from \SI{38}{\milli\second} ($n = 0.5 \cdot 10^4$) to \SI{112}{\milli\second} ($n = 1.5 \cdot 10^4$). \snakeattack{} is $1.5$--$2\times$ slower, ranging from \SI{66}{\milli\second} to \SI{214}{\milli\second}, due to simpler pre-processing but costlier post-processing. \recenumattack{} is the slowest, with runtimes from \SI{266}{\milli\second} to \SI{884}{\milli\second}, because its encoding and decoding operations involve prepending and inspecting $\log_2 n$ values per record.
 
-Figure~\ref{fig:leakage_attacks_time_plot:left} shows that all three attack runtimes are largely independent of the match rate. This is consistent with theory since match rate affects only the reconstruction dictionary size. Figure~\ref{fig:leakage_attacks_time_plot:right} shows that $\baselineattack{}$ and $\snakeattack{}$ runtimes increase linearly with target set size, matching their theoretical time complexity. In contrast, \recenumattack{} incurs longer runtimes and steeper growth as $n$ increases.
+Figure~\ref{fig:leakage_attacks_time_plot:left} shows that all three attack runtimes are largely independent of the match rate. This is consistent with theory since match rate affects only the reconstruction dictionary size. Figure~\ref{fig:leakage_attacks_time_plot:right} shows that $\baselineattack{}$ and $\snakeattack{}$ runtimes increase linearly with target set size, matching their theoretical time complexity. We also see that \recenumattack{} incurs the longest runtimes and steepest growth as $n$ increases.
 
 
 

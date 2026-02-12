@@ -1,6 +1,6 @@
-\section{Identifier Intersection Recovery with $\calF_{\LMKPM}$}\label{sec:st-mkpm-attack}
+\section{Value Intersection Recovery with $\calF_{\LMKPM}$}\label{sec:st-mkpm-attack}
 
-We now leverage the additional leakage that $\calF_{\LMKPM}$ outputs to $\tP_1$ to mount stronger attacks. We adapt Guo et al.'s search tree approach~\cite{USENIX:GHLWJL22}, designed for $\calF_{\PSICA}$, to recover the identifiers shared between the party inputs and achieve \emph{identifier intersection recovery} (Definition~\ref{def:IRR_goal}). 
+We now leverage the additional leakage that $\calF_{\LMKPM}$ outputs to $\tP_1$ to mount stronger attacks. We adapt Guo et al.'s search tree approach~\cite{USENIX:GHLWJL22}, designed for $\calF_{\PSICA}$, to recover the identifiers shared between the party inputs and achieve \emph{value intersection recovery} (Definition~\ref{def:VIR_goal}). 
 In the full version, we additionally show how to recover the multiplicities of each identifier.
 
 In this section, we restrict the adversary to using only subsets of its target set $T$ as input: it may submit any $T' \subseteq T$ but cannot append, split, or rearrange identifiers within records (this contrasts with Section~\ref{sec:lmkpm-attacks}, where the adversary can modify record contents by appending or reordering identifiers). 
