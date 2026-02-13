@@ -1,58 +1,47 @@
 \section{Discussion}
-\heading{Extensions.} \tianxin{What should we include here?} 
-\ff{could maybe discuss if we could apply these attacks to the dynamic setting, or other related works.}
-Following the two-party join work \cite{}, multi-party \cite{} and designated-party \cite{}
-variants have been proposed. Their security relies on a trust assumption, namely
-non-collusion between two parties. However, certain attacks such as learning
-honest-party inputs via adversarially chosen inputs are often left
-unaddressed. This raises a critical question: if such attacks are allowed, in
-which application scenarios do they genuinely not arise? The scope should
-therefore be made explicit at the time of proposal. Otherwise, this effectively
-renders the security proof of limited practical meaning, risking misuse in
-unintended settings. \tianxin{Maybe merge this with the next paragraph?}
 
-\heading{Mitigations.} As hinted in the introduction, standard security models
-in the MPC literature do not account for inference attacks arising from
-functionality outputs. Such attacks are often addressed only indirectly, for
-example through countermeasures such as set-size thresholds or restrictions on
-authorized inputs. However, our results show that in the PSU setting, an
-adversary can arbitrarily choose its input set and recover the other party's
-input set. For multi-key join operations, similar risks reappear and are not
-mitigated. These findings underscore the need for a deeper examination of
-existing countermeasures. In addition, several follow-up works rely on a strict
-non-collusion assumption to enable efficient designs. In practice, however, this
-assumption may fail; for example, under subpoena power or single-administrator
-access, thereby giving rise to risks similar to those identified in our
-analysis. \tianxin{Is it standard join instead?}\ff{the delegateable private match paper is a standard left-join, and Anja's paper is an $n$-party inner join}
+\heading{Re-thinking Security.}
+Standard security models in the MPC literature do not explicitly account for inference attacks arising from functionality outputs. Such attacks are often handled only indirectly, for example, through set-size thresholds. Our analysis of $\calF_{\PSU}$, $\calF_{\PSUCA}$, and Meta's multi-key private matching functionality $\calF_{\LMKPM}$, together with prior work~\cite{USENIX:GHLWJL22,NDSS:JiaDuYan24,USENIX:FalTan25,USENIX:ZinCaoGre23}, underscores the need for a more systematic treatment of MPC protocol security. The functionality outputs should be explicitly incorporated into the security model. Failing to do so results in weak input privacy guarantees: in the worst case, a single query may suffice to partially or even fully recover another party's input.
 
-More broadly, our study reiterates that functionality outputs must be th
-explicitly incorporated into the security model. Failing to do so results in
-weak input privacy guarantees: in the worst case, a single query may suffice to
-recover another party's entire input. \tianxin{Check.}
+\heading{Mitigations.}
+Simple mitigations such as rate limiting can help against attacks that require $\omega(1)$ queries (e.g., our search-tree attacks and prior attacks~\cite{USENIX:GHLWJL22,NDSS:JiaDuYan24,USENIX:FalTan25}). However, two concerns arise. First, attacks typically improve over time, so only information-theoretic lower bounds---and not the current best-known attack---should inform ``query budgets.'' Second, rate limits can be circumvented via Sybil attacks, which are often outside the protocol threat model but represent a very real risk.
 
-% The mitigation of the record enumeration attack is clearly more 
-% involved than with the baseline attack,
-% since MK-PrivateID heavily relies on the preservation of the identifier order 
-% and the deterministic hiding of identifiers
-% in order to compute its multi-key matching logic (see \cref{fig:match_logic}).
-% A simple approach is to limit record lengths to smaller than $\lceil \log_2 n\rceil$,
-% in order to prohibit an exhaustive enumeration of all records.
-% However, there are more space-efficient encodings that require fewer identifiers to be added. 
-% For instance, using a base-$(\ell + 1)$ encoding and omitting certain indices
-% allows us to encode and recover $(\ell + 1)^\ell - \ell^2$ records with prefixes of length $\ell$.
-% It is therefore unclear, what the maximum allowed record length should be.
+To that end, more holistic mitigation techniques that restrict inputs have also been proposed. ACORNS~\cite{USENIX:BGLLMR23} use range proofs to ensure that inputs are within the specified input domain. 
+Goel et al. introduced PICS~\cite{USENIX:GMVS26}, a PSI framework in which protocol participants must first publicly commit to their input sets. The malciously-secure PSI protocol is augmented with zero-knowledge proofs to ensure that the computation is consistent with the committed inputs across multiple executions. 
+%However, when inputs change (e.g., a user is added to a database), a fresh commitment must be computed, so inputs must change infrequently or remain static. 
+%The authors highlight applications that tolerate this limitation, such as Apple's CSAM detection system~\cite{AppleCSAM}.
 
-% Other mitigation strategies that inspect the input directly
-% such as limiting the maximum number occurrences per identifier are effective, 
-% but burden the victim with additional computation.
-% Moreover, they too become complex when trying to guard against various different encodings.
-% Limiting the number of occurrences of any identifier specifically 
-% comes at the additional risk of accidentally prohibiting honest protocol executions, 
-% since certain types of identifiers may naturally occur often.
-% IP addresses behind a Network Address Translation (NAT) device serve as an immediate example.
+% Differential Privacy (DP)~\cite{DworkDP} provides a formal way to quantify information leakage about inputs. Informally, a function is differentially private if small changes in its inputs induce only small changes in the distribution of its outputs. Differentially private variants of PSI-CA~\cite{DP-PSICA} and PSU~\cite{DP-PSU1,DP-PSU2}, as well as a differentially private record-matching functionality~\cite{DP-Match}, have already been proposed. Estimating the performance of our attacks against differentially private PSU or PSU-CA is non-trivial and would require additional experiments. However, composition theorems for DP~\cite{DworkDP} state that repeated sequential evaluations of DP mechanisms degrade overall privacy guarantees. Indeed, some of the attacks against PSI-CA in~\cite{DP-PSICA} were evaluated against a differentially private PSI-CA variant and were found to remain effective despite DP.
 
-\heading{Looking towards Deployment.} We observe a growing adoption of MPC
-technologies by large companies. At the same time, this raises concerns about
-users' privacy expectations. When the limitations of the security model are not
-clearly communicated, users may contribute their data under a false sense of
-privacy, potentially leading to unintended data exposure.
+
+\heading{Looking Towards Deployment.}
+Following the two-party join work~\cite{}, multi-party~\cite{} and delegatable private matching~\cite{} variants have been proposed, typically relying on a non-collusion assumption between two parties. At the same time, we observe growing adoption of MPC technologies by large organizations (e.g., Google's Private Join and Compute~\cite{EuroSP:IKNPSS20}). This raises concerns about users' privacy expectations, especially since attacks that learn honest-party inputs via adversarially chosen inputs are often left unaddressed.
+
+This leads to a critical question: if such attacks are within scope, in which application scenarios do they genuinely not arise? The intended scope and trust assumptions (e.g., non-collusion) should be made explicit at the time of proposal; otherwise, security proofs risk having limited practical relevance and may be misapplied in unintended settings. In practice, non-collusion assumptions may fail—for example, under subpoena power, regulatory pressure, or single-administrator access—leading to risks similar to those identified in our analysis. Clearly communicating these assumptions and their implications is therefore essential for responsible deployment and for avoiding a false sense of privacy among users.
+
+
+
+
+% \heading{Re-thinking Security.} Standard security models
+% in the MPC literature do not account for inference attacks arising from functionality outputs. Such attacks are often addressed only indirectly, for
+% example, through countermeasures such as set-size thresholds or restrictions on authorized inputs. However, our analysis of $\calF_{\PSU}$, $\calF_{\PSUCA}$, and Meta's multi-key private matching functionality, $\calF_{\LMKPM}$, underscore the need for a deeper examination of existing countermeasures. 
+
+% While simple mitigations, such as rate limiting can help against attacks that require $\bigO{n}$ queries (e.g., our search-tree attacks and prior work~\cite{USENIX:GHLWJL22,NDSS:JiaDuYan24,USENIX:FalTan25}), we observe to counterpoints. Firstly, attacks are usually improved over time, and only information theoretic lower bounds, and not attacks, should be used to determine "query budget". Secondly, the mitigation can be easily circumvented via a Sybil attack (which is often outside of the scope of the protocol threat model, but which poses a very real problem). 
+
+% This highlights the need for more sophisticated mitigation techniques, and re-thinking how we model security of MPC. The functionality outputs should
+% explicitly incorporated into the security model Failing to do so results in weak input privacy guarantees: in the worst case, a single query may suffice to recover another party's entire input. 
+
+
+% \heading{Looking towards Deployment.} We observe a growing adoption of MPC
+% technologies by large companies. At the same time, this raises concerns about
+% users' privacy expectations. When the limitations of the security model are not
+% clearly communicated, users may contribute their data under a false sense of
+% privacy, potentially leading to unintended data exposure.
+
+% In addition, several follow-up works rely on a strict
+% non-collusion assumption to enable efficient designs. In practice, however, this
+% assumption may fail; for example, under subpoena power or single-administrator
+% access, thereby giving rise to risks similar to those identified in our
+% analysis. 
+
+% \tianxin{Is it standard join instead?}\ff{the delegateable private match paper is a standard left-join, and Anja's paper is an $n$-party inner join}
