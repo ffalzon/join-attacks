@@ -13,26 +13,44 @@ set of all permutations of $X$.
 \tianxin{Are record lengths used anywhere?}
 
 
-
-
 \subsection{Multi-key Private Matching Functionality}
 \label{sec:MKPM-functionality}
 
 \tianxin{clarify the usage of identifier.}
 
 The Multi-Key PrivateID (MK-PrivateID) protocol~\cite{MKPMC} extends the
-single-key PrivateID protocol~\cite{PMC} to support matching on multiple
-identifiers. We call the functionality that MK-PrivateID implements the
-\emph{Multi-key Private Matching (MKPM)} functionality. In this setting, two
-parties $P_1$ and $P_2$ hold tables of records $X$ and $Y$, respectively, where
-each record contains multiple identifiers (e.g., names or email addresses). The
-matching process produces a one-to-one correspondence between records in $X$ and
-$Y$ such that each matched pair shares at least one identifier.
+single-key PrivateID protocol~\cite{PMC} to support matching on multiple keys
+(e.g., names or email addresses). In the original paper \cite{MKPMS},
+\emph{identifiers} are used instead. We call the functionality that MK-PrivateID
+implements the \emph{Multi-key Private Matching (MKPM)} functionality. In this
+setting, two parties $P_1$ and $P_2$ hold tables of records $X$ and $Y$,
+respectively, where each record contains multiple identifiers. The matching
+process produces a one-to-one correspondence between records in $X$ and $Y$ such
+that each matched pair shares at least one key. \tianxin{Clarify the one-to-one
+  correspondence.}
 
+MK-PrivateID’s strength lies in handling one-to-many and many-to-one matches
+i.e., when a record from one party shares identifiers with multiple records from
+the other. The protocol resolves many-to-one matches using a ranked,
+deterministic join, and resolves one-to-many matches randomly. Each party
+outputs a mapping of universal identifiers (UIDs) to their records such that
+matching records are assigned the same UID, while unmatched records receive
+distinct UIDs. These UIDs enable further downstream computation over the
+associated data. Figure~\ref{fig:matching-logic-example} illustrates an example
+input featuring a one-to-many match (Fig.~\ref{fig:match-input}) that is
+resolved to a one-to-one correspondence, along with the resulting output
+(Fig.~\ref{fig:match-output}).
 
-MK-PrivateID’s strength lies in handling one-to-many and many-to-one matches i.e., when a record from one party shares identifiers with multiple records from the other. The protocol resolves many-to-one matches using a ranked, deterministic join, and resolves one-to-many matches randomly. Each party outputs a mapping of universal identifiers (UIDs) to their records such that matching records are assigned the same UID, while unmatched records receive distinct UIDs. These UIDs enable further downstream computation over the associated data. Figure~\ref{fig:matching-logic-example} illustrates an example input featuring a one-to-many match (Fig.~\ref{fig:match-input}) that is resolved to a one-to-one correspondence, along with the resulting output (Fig.~\ref{fig:match-output}).
-
-The original work~\cite{MKPMC} provides a proof sketch for security against a semi-honest adversary. We note that the specified functionality leaks more information than desired ouput. We therefore distinguish the intended functionality---which computes the set of UIDs and the mapping of UIDs to records ($\calF_{\MKPM{}}$)---from the real functionality ($\calF_{\LMKPM{}}$), which additionally leaks the entire bipartite graph of all matches. Returning to our example, given the tables in Figure~\ref{fig:match-input}, $\calF_{\MKPM{}}$ outputs only the maps and UID sets shown in Figure~\ref{fig:match-output}, whereas $\calF_{\LMKPM{}}$ additionally leaks to party $P_1$ a graph isomorphic to that comprising the green and red edges in Figure~\ref{fig:match-input}.
+The original work~\cite{MKPMC} provides a proof sketch for security against a
+semi-honest adversary. We note that the specified functionality leaks more
+information than desired ouput. We therefore distinguish the intended
+functionality---which computes the set of UIDs and the mapping of UIDs to
+records ($\calF_{\MKPM{}}$)---from the real functionality ($\calF_{\LMKPM{}}$),
+which additionally leaks the entire bipartite graph of all matches. Returning to
+our example, given the tables in Figure~\ref{fig:match-input}, $\calF_{\MKPM{}}$
+outputs only the maps and UID sets shown in Figure~\ref{fig:match-output},
+whereas $\calF_{\LMKPM{}}$ additionally leaks to party $P_1$ a graph isomorphic
+to that comprising the green and red edges in Figure~\ref{fig:match-input}.
 
 \subsubsection{Functionality}
 \label{sec:mkpmc_functionality}
@@ -70,9 +88,20 @@ that
 \[
   \by_k[\ell] = \bx_i[j],
 \]
-where $i$ is minimal. By processing identifiers in this order, Party $P_1$ can prioritize matching on identifiers that are less likely to change. For example, matching on a social security number yields higher-quality results than matching on a phone number, which is more likely to change.
+where $i$ is minimal. By processing identifiers in this order, Party $P_1$ can
+prioritize matching on identifiers that are less likely to change. For example,
+matching on a social security number yields higher-quality results than matching
+on a phone number, which is more likely to change.
 
-The matching logic assigns a unique identifier from a space $\calG$ to every pair of matched records, as well as to each unmatched record in $X$ and $Y$; we denote the resulting set of identifiers by $\UID$. The procedure also constructs two maps, $M_X: \UID \to X\cup \{\bot\}$ and $M_Y: \UID \to Y \cup \{\bot\}$, which link each UID to its corresponding record in $X$ or $Y$, or to $\bot$ if it corresponds to an unmatched record of the other party. Party $P_1$ receives $\UID$ and $M_X$, while $P_2$ receives $\UID$ and $M_Y$. Both parties obtain a common set of universal identifiers along with a mapping from each UID to their local records or $\bot$ for unmatched records.
+The matching logic assigns a unique identifier from a space $\calG$ to every
+pair of matched records, as well as to each unmatched record in $X$ and $Y$; we
+denote the resulting set of identifiers by $\UID$. The procedure also constructs
+two maps, $M_X: \UID \to X\cup \{\bot\}$ and $M_Y: \UID \to Y \cup \{\bot\}$,
+which link each UID to its corresponding record in $X$ or $Y$, or to $\bot$ if
+it corresponds to an unmatched record of the other party. Party $P_1$ receives
+$\UID$ and $M_X$, while $P_2$ receives $\UID$ and $M_Y$. Both parties obtain a
+common set of universal identifiers along with a mapping from each UID to their
+local records or $\bot$ for unmatched records.
 
 The detailed description of $\calF_{\MKPM}$ can be found in
 Figure~\ref{fig:MKPM}.
@@ -114,8 +143,11 @@ Figure~\ref{fig:MKPM}.
       \end{enumerate}
     \end{minipage}
   }
-  \caption{The Multi-Key Private Matching functionality $\calF_{\MKPM}(X; Y)$. The additional steps of the leakage-aware functionality $\calF_{\LMKPM}(X; Y)$ are shown in \protect\dbox{dashed boxes}.
-    The record-matching procedure \match{} is defined in Figure~\ref{fig:match_logic}.}
+  \caption{The Multi-Key Private Matching functionality $\calF_{\MKPM}(X;
+    Y)$. The additional steps of the leakage-aware functionality
+    $\calF_{\LMKPM}(X; Y)$ are shown in \protect\dbox{dashed boxes}. The
+    record-matching procedure \match{} is defined in
+    Figure~\ref{fig:match_logic}.}
   \label{fig:MKPM}
 \end{figure}
 
@@ -144,30 +176,46 @@ Figure~\ref{fig:MKPM}.
       \input{figures/match-output.tex}
     }
   }
-  \caption{In (a), we illustrate a one-to-many match: party $P_1$’s record $\bx_0$ matches party $P_2$’s records $\by_0$ on email and $\by_1$ on phone (red edges). The conflict is resolved randomly, yielding a one-to-one mapping in which $\bx_0$ and $\by_0$ are assigned the same UID (2093), while $\by_1$ is assigned a distinct UID (9349). Record $\bx_1$ matches only $\by_2$ on email (blue edge) and thus both are assigned UID 3042. Both parties learn their local mappings and the universe of UIDs.
+  \caption{In (a), we illustrate a one-to-many match: party $P_1$’s record
+    $\bx_0$ matches party $P_2$’s records $\by_0$ on email and $\by_1$ on phone
+    (red edges). The conflict is resolved randomly, yielding a one-to-one
+    mapping in which $\bx_0$ and $\by_0$ are assigned the same UID (2093), while
+    $\by_1$ is assigned a distinct UID (9349). Record $\bx_1$ matches only
+    $\by_2$ on email (blue edge) and thus both are assigned UID 3042. Both
+    parties learn their local mappings and the universe of UIDs.
     \label{fig:matching-logic-example}}
 \end{figure*}
 
 
-
-
 \subsubsection{Leakage.}
-In favor of higher efficiency, MK-PrivateID leaks additional information which we capture with an extended ``leaky'' functionality $\calF_{\LMKPM{}}$. 
-We distinguish between the leakage observed by $P_1$ and that observed by $P_2$.
+In favor of higher efficiency, MK-PrivateID leaks additional information which
+we capture with an extended ``leaky'' functionality $\calF_{\LMKPM{}}$.  We
+distinguish between the leakage observed by $P_1$ and that observed by $P_2$.
 
-The leakage to party $P_1$ consists of a renamed copy of the shuffled sets $X'$ and 
-$Y'$. Concretely, we sample an injective random function $f_1:\Ispace\to\calG$, referred to as a hiding function, and apply it to each identifier in $X'$ and 
-$Y'$. Party $P_1$ observes the resulting hidden sets.
+The leakage to party $P_1$ consists of a renamed copy of the shuffled sets $X'$
+and $Y'$. Concretely, we sample an injective random function
+$f_1:\Ispace\to\calG$, referred to as a hiding function, and apply it to each
+identifier in $X'$ and $Y'$. Party $P_1$ observes the resulting hidden sets.
 
-Equivalently, the leakage to $P_1$ can be viewed as a bipartite graph $G = (V_X \cup V_Y, E)$, where $V_X$ corresponds to the records in $X'$ and $V_Y$ corresponds to the records in $Y'$. An edge $(\bx_i', \by_k') \in E$ exists if and only if the records
-$\bx_i' \in X'$ and $\by_k' \in Y'$ share at least one identifier. Further note that, because the identifier order within records of $X'$ is preserved, the matching process induces a priority ordering over edges, determined by the position of shared identifiers within records of $X'$.
+Equivalently, the leakage to $P_1$ can be viewed as a bipartite graph
+$G = (V_X \cup V_Y, E)$, where $V_X$ corresponds to the records in $X'$ and
+$V_Y$ corresponds to the records in $Y'$. An edge $(\bx_i', \by_k') \in E$
+exists if and only if the records $\bx_i' \in X'$ and $\by_k' \in Y'$ share at
+least one identifier. Further note that, because the identifier order within
+records of $X'$ is preserved, the matching process induces a priority ordering
+over edges, determined by the position of shared identifiers within records of
+$X'$.
 
 
-Although the procedure $\match$ computes only a partial matching in $G$, such that each vertex is matched to at most one
-vertex in the other vertex set, party $P_1$ still learns the full graph $G$.
+Although the procedure $\match$ computes only a partial matching in $G$, such
+that each vertex is matched to at most one vertex in the other vertex set, party
+$P_1$ still learns the full graph $G$.
 
-The leakage observed by $P_2$ consists only of a hidden copy of $X$. The records of $X$ with fresh randomness, yielding a set $X''$. Then, a new hiding function $f_2 : \Ispace \to \calG$ is sampled and used to hide the identifiers in $X''$.
+The leakage observed by $P_2$ consists only of a hidden copy of $X$. The records
+of $X$ with fresh randomness, yielding a set $X''$. Then, a new hiding function
+$f_2 : \Ispace \to \calG$ is sampled and used to hide the identifiers in $X''$.
 $P_2$ observes the hidden and re-shuffled set $X''$.
 
-The pseudocode can be found in Figure~\ref{fig:MKPM} with the additional leakage contained in a dashed boxed.
+The pseudocode can be found in Figure~\ref{fig:MKPM} with the additional leakage
+contained in a dashed boxed.
 
