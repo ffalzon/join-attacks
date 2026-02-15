@@ -1,64 +1,34 @@
 \section{Preliminaries}
-
 \heading{Notation.} For $n \in \NN$, we define $[n] := \{1, \dots, n\}$.
-For any $\ell, n\in \NN$ such that $\ell \geq \lfloor \log_2 (n+1)\rfloor$, $\Bin{\ell}(n) \in \{0,1\}^\ell$ denotes the $\ell$-bit binary representation of $n$. 
+For any $\ell, n\in \NN$ such that $\ell \geq \lfloor \log_2 (n+1)\rfloor$,
+$\Bin{\ell}(n) \in \{0,1\}^\ell$ denotes the $\ell$-bit binary representation of
+$n$.
+
+For sets $X,Y$ and any function $f:X\to Y$, we denote the image of $X$ under $f$
+as $f(X) := \{f(x) | x \in X\} \subseteq Y$.  Moreover, $\Funcs[X, Y]$ denotes
+the space of functions $f: X \to Y$ and $\InjFuncs[X, Y] \subset \Funcs[X, Y]$
+denotes the set of injective functions $f: X \to Y$.  $\Perms[X]$ denotes the
+set of all permutations of $X$.
+
+\tianxin{Are record lengths used anywhere?}
 
 
-For sets $X,Y$ and any function $f:X\to Y$, we denote the image of $X$ under $f$ as $f(X) := \{f(x) | x \in X\} \subseteq Y$.
-Moreover, $\Funcs[X, Y]$ denotes the space of functions $f: X \to Y$ and 
-$\InjFuncs[X, Y] \subset \Funcs[X, Y]$ denotes the set of injective functions $f: X \to Y$.
-$\Perms[X]$ denotes the set of all permutations of $X$.
-
-
-
-
-\begin{figure}
-    \fbox{%
-    \begin{minipage}[t]{0.98\columnwidth}
-		\textbf{Parameters:} Two parties, $P_1$ and $P_2$, set sizes $n, m\in \NN$ and
-		record lengths $n_i, m_j \in \NN$ for $i\in[n]$ and $j\in[m]$.\\
-		\textbf{Functionality} $\calF_{\MKPM}(X; Y)$ \dbox{$\calF_{\LMKPM}(X; Y)$}~: 
-        %%%
-        \begin{enumerate}
-			\item Receive the input from party $P_1$: $X = \{\bx_i \setdsc i \in [n]\}$
-			\item Receive the input from party $P_2$: $Y = \{\by_i \setdsc i \in [m]\}$
-			\item Sample $\pi_X \sample \Perms[[n]]$ and $\pi_Y \sample \Perms[[m]]$
-			\item Let $X' := \{\bx'_i \setdsc i \in [n]\}$, where $\bx'_i := \bx_{\pi_X(i)}$
-			\item Let $Y' := \{\by'_i \setdsc i \in [m]\}$, where $\by'_i := \by_{\pi_Y(i)}$
-			\item Shuffle the identifiers in $\by'_i$ for all $i \in [m]$
-			\item Compute $\UID, \MX, \MY \gets \match(X', Y')$ (Figure \ref{fig:match_logic})
-		\end{enumerate}
-        \begin{adjustbox}{minipage=0.98\textwidth,precode=\dbox}
-        \begin{enumerate}
-				\addtocounter{enumi}{7}
-				\item  Sample $f_1, f_2 \sample \InjFuncs[\Ispace,\; \calG]$
-				\item  $\hXone := \{(f_1(\bx'_i[1]), \dots, f_1(\bx'_i[n_i])) \setdsc i \in [n]\}$.
-				\item  $\hYone := \{(f_1(\by'_i[1]), \dots, f_1(\by'_i[m_i])) \setdsc i \in [m]\}$.
-				\item  $\pi \sample \Perms[[n]]$.
-				\item  $X'' := \{\bx''_i \setdsc i \in [n]\}$, where $\bx''_i := \bx_{\pi(i)}$.
-				\item  $\hXtwo := \{(f_2(\bx''_i[1]), \dots, f_2(\bx''_i[n_i])) \setdsc i \in [n]\}$.
-				\item $\leak^1 \gets (\hXone,\hYone)$,\ \  $\leak^2 \gets \hXtwo$
-			\end{enumerate}
-		\end{adjustbox}
-			\begin{enumerate}
-			\addtocounter{enumi}{13}
-			\item Output:\hfill \begin{itemize}
-					\item Send $\UID, \MX$ \dbox{$,\leak^1$} to $P_1$.
-					\item Send $\UID, \MY$ \dbox{$,\leak^2$} to $P_2$.
-			\end{itemize}
-		\end{enumerate}
-    \end{minipage}
-    }
-	\caption{The Multi-Key Private Matching functionality $\calF_{\MKPM}(X; Y)$. The additional steps of the leakage-aware functionality $\calF_{\LMKPM}(X; Y)$ are shown in \protect\dbox{dashed boxes}.
-	The record-matching procedure \match{} is defined in Figure~\ref{fig:match_logic}.}
-\label{fig:MKPM}
-\end{figure}
 
 
 \subsection{Multi-key Private Matching Functionality}
 \label{sec:MKPM-functionality}
 
-The Multi-Key PrivateID (MK-PrivateID) protocol~\cite{MKPMC} extends the single-key PrivateID protocol~\cite{PMC} to support matching on multiple identifiers. We call the functionality that MK-PrivateID implements the \emph{Multi-key Private Matching (MKPM)} functionality. In this setting, two parties $P_1$ and $P_2$ hold tables of records $X$ and $Y$, respectively, where each record contains multiple identifiers (e.g., names or email addresses). The matching process produces a one-to-one correspondence between records in $X$ and $Y$ such that each matched pair shares at least one identifier.
+\tianxin{clarify the usage of identifier.}
+
+The Multi-Key PrivateID (MK-PrivateID) protocol~\cite{MKPMC} extends the
+single-key PrivateID protocol~\cite{PMC} to support matching on multiple
+identifiers. We call the functionality that MK-PrivateID implements the
+\emph{Multi-key Private Matching (MKPM)} functionality. In this setting, two
+parties $P_1$ and $P_2$ hold tables of records $X$ and $Y$, respectively, where
+each record contains multiple identifiers (e.g., names or email addresses). The
+matching process produces a one-to-one correspondence between records in $X$ and
+$Y$ such that each matched pair shares at least one identifier.
+
 
 MK-PrivateID’s strength lies in handling one-to-many and many-to-one matches i.e., when a record from one party shares identifiers with multiple records from the other. The protocol resolves many-to-one matches using a ranked, deterministic join, and resolves one-to-many matches randomly. Each party outputs a mapping of universal identifiers (UIDs) to their records such that matching records are assigned the same UID, while unmatched records receive distinct UIDs. These UIDs enable further downstream computation over the associated data. Figure~\ref{fig:matching-logic-example} illustrates an example input featuring a one-to-many match (Fig.~\ref{fig:match-input}) that is resolved to a one-to-one correspondence, along with the resulting output (Fig.~\ref{fig:match-output}).
 
@@ -66,55 +36,115 @@ The original work~\cite{MKPMC} provides a proof sketch for security against a se
 
 \subsubsection{Functionality}
 \label{sec:mkpmc_functionality}
-We start by presenting a formal description of the intended functionality $\calF_{\MKPM{}}$. Let $\calI$ denote the universe of identifiers and let $\lambda \in \NN$ be the maximum number of identifiers per record. Party $P_1$ holds
+\tianxin{Add indicator set.}
+We start by presenting a formal description of the intended functionality
+$\calF_{\MKPM{}}$. Let $\calI$ denote the universe of identifiers and let
+$\lambda \in \NN$ be the maximum number of identifiers per record. Party $P_1$
+holds
+
 \[
-X:= \{\bx_i = (x_{i,1}, \ldots, x_{i,n_i}) \mid i \in [n]\},
+  X:= \{\bx_i = (x_{i,1}, \ldots, x_{i,n}) \mid i \in [n]\},
 \]
 and party $P_2$ holds
 \[
-Y := \{\by_k = (y_{k,1}, \ldots, y_{k,m_k}) \mid k \in [m]\},
+  Y := \{\by_k = (y_{k,1}, \ldots, y_{k,m}) \mid k \in [m]\},
 \]
-where all identifiers $x_{i,j}$ and $y_{k,\ell}$ are in $\calI$.
+where all identifiers $x_{i,j}$ and $y_{k,\ell}$ are in
+$\calI$. \tianxin{Check.}
 
-The functionality takes $X$ and $Y$ as inputs from the respective parties and then applies a random permutation. The records of $X$ are permuted while preserving the order of identifiers within each record, whereas in $Y$ both the records and the identifiers within each record are permuted. We denote the resulting collections by $X'$ and $Y'$, respectively.\footnote{Although sets are unordered, the implementation~\cite{PIDRepo} treats inputs as ordered lists of records; we follow the authors of~\cite{MKPMC} in adopting this terminology.}
+The functionality takes $X$ and $Y$ as inputs from the respective parties and
+then applies a random permutation. The records of $X$ are permuted while
+preserving the order of identifiers within each record, whereas in $Y$ both the
+records and the identifiers within each record are permuted. We denote the
+resulting collections by $X'$ and $Y'$, respectively.\footnote{Although sets are
+  unordered, the implementation~\cite{PIDRepo} treats inputs as ordered lists of
+  records; we follow the authors of~\cite{MKPMC} in adopting this terminology.}
 
-The core of the protocol is the record-matching procedure $\match$ (see Appendix~\ref{ap:mkpc} for detailed pseudocode), which takes shuffled inputs $X'$ and $Y'$. Each record in $X'$ (resp. $Y'$) is matched with at most one record in $Y'$ (resp. $X'$). For each identifier position $j$ in $X'$, $\match$ scans all $\by_k \in y'$ and matches $\by_k$ to the first $\bx_i \in X'$ whose $j$-th identifier appears in $\by_k$ i.e., for which there exists $\ell$ such that
+The core of the protocol is the record-matching procedure $\match$ (see
+Appendix~\ref{ap:mkpc} for detailed pseudocode), which takes shuffled inputs
+$X'$ and $Y'$. Each record in $X'$ (resp. $Y'$) is matched with at most one
+record in $Y'$ (resp. $X'$). For each identifier position $j$ in $X'$, $\match$
+scans all $\by_k \in y'$ and matches $\by_k$ to the first $\bx_i \in X'$ whose
+$j$-th identifier appears in $\by_k$ i.e., for which there exists $\ell$ such
+that
 \[
-\by_k[\ell] = \bx_i[j],
+  \by_k[\ell] = \bx_i[j],
 \]
 where $i$ is minimal. By processing identifiers in this order, Party $P_1$ can prioritize matching on identifiers that are less likely to change. For example, matching on a social security number yields higher-quality results than matching on a phone number, which is more likely to change.
 
 The matching logic assigns a unique identifier from a space $\calG$ to every pair of matched records, as well as to each unmatched record in $X$ and $Y$; we denote the resulting set of identifiers by $\UID$. The procedure also constructs two maps, $M_X: \UID \to X\cup \{\bot\}$ and $M_Y: \UID \to Y \cup \{\bot\}$, which link each UID to its corresponding record in $X$ or $Y$, or to $\bot$ if it corresponds to an unmatched record of the other party. Party $P_1$ receives $\UID$ and $M_X$, while $P_2$ receives $\UID$ and $M_Y$. Both parties obtain a common set of universal identifiers along with a mapping from each UID to their local records or $\bot$ for unmatched records.
 
-The detailed description of $\calF_{\MKPM}$ can be found in Figure~\ref{fig:MKPM}.
+The detailed description of $\calF_{\MKPM}$ can be found in
+Figure~\ref{fig:MKPM}.
 
+\begin{figure}
+  \fbox{%
+    \begin{minipage}[t]{0.98\columnwidth}
+      \textbf{Parameters:} Two parties, $P_1$ and $P_2$, set sizes $n, m\in \NN$ and
+      record lengths $n_i, m_j \in \NN$ for $i\in[n]$ and $j\in[m]$.\\
+      \textbf{Functionality} $\calF_{\MKPM}(X; Y)$ \dbox{$\calF_{\LMKPM}(X; Y)$}~: 
+      %%% 
+      \begin{enumerate}
+      \item Receive the input from party $P_1$: $X = \{\bx_i \setdsc i \in [n]\}$
+      \item Receive the input from party $P_2$: $Y = \{\by_i \setdsc i \in [m]\}$
+      \item Sample $\pi_X \sample \Perms[[n]]$ and $\pi_Y \sample \Perms[[m]]$
+      \item Let $X' := \{\bx'_i \setdsc i \in [n]\}$, where $\bx'_i := \bx_{\pi_X(i)}$
+      \item Let $Y' := \{\by'_i \setdsc i \in [m]\}$, where $\by'_i := \by_{\pi_Y(i)}$
+      \item Shuffle the identifiers in $\by'_i$ for all $i \in [m]$
+      \item Compute $\UID, \MX, \MY \gets \match(X', Y')$ (Figure \ref{fig:match_logic})
+      \end{enumerate}
+      \begin{adjustbox}{minipage=0.98\textwidth,precode=\dbox}
+        \begin{enumerate}
+          \addtocounter{enumi}{7}
+        \item  Sample $f_1, f_2 \sample \InjFuncs[\Ispace,\; \calG]$
+        \item  $\hXone := \{(f_1(\bx'_i[1]), \dots, f_1(\bx'_i[n_i])) \setdsc i \in [n]\}$.
+        \item  $\hYone := \{(f_1(\by'_i[1]), \dots, f_1(\by'_i[m_i])) \setdsc i \in [m]\}$.
+        \item  $\pi \sample \Perms[[n]]$.
+        \item  $X'' := \{\bx''_i \setdsc i \in [n]\}$, where $\bx''_i := \bx_{\pi(i)}$.
+        \item  $\hXtwo := \{(f_2(\bx''_i[1]), \dots, f_2(\bx''_i[n_i])) \setdsc i \in [n]\}$.
+        \item $\leak^1 \gets (\hXone,\hYone)$,\ \  $\leak^2 \gets \hXtwo$
+        \end{enumerate}
+      \end{adjustbox}
+      \begin{enumerate}
+        \addtocounter{enumi}{13}
+      \item Output:\hfill \begin{itemize}
+        \item Send $\UID, \MX$ \dbox{$,\leak^1$} to $P_1$.
+        \item Send $\UID, \MY$ \dbox{$,\leak^2$} to $P_2$.
+        \end{itemize}
+      \end{enumerate}
+    \end{minipage}
+  }
+  \caption{The Multi-Key Private Matching functionality $\calF_{\MKPM}(X; Y)$. The additional steps of the leakage-aware functionality $\calF_{\LMKPM}(X; Y)$ are shown in \protect\dbox{dashed boxes}.
+    The record-matching procedure \match{} is defined in Figure~\ref{fig:match_logic}.}
+  \label{fig:MKPM}
+\end{figure}
 
 \begin{figure*}[t]
-    \centering
-    \def\rowspace{-.4pt}
-    \def\minwidthemail{2.1cm}
-    \def\minwidthphone{2.1cm}
-    \def\minwidthid{.5cm}
-    \def\minwidthuid{.8cm}
-    \def\linecorr{-.4pt}
-    \def\blockminheight{1.3em}
-    \definecolor{added-id}{HTML}{15b01a}
-    \definecolor{matched-light}{HTML}{DCEDC8}
-    \definecolor{matched-dark}{HTML}{C4E1A3}
-    \definecolor{tiebreaker}{HTML}{A3CEE1}
-    \definecolor{highlight-blue}{HTML}{4A90E2} 
-    % Subfigures
-    \subfloat[\label{fig:match-input}The inputs from Parties $P_1$ (left) and $P_2$ (right).]{
-        \resizebox{1.335\columnwidth}{!}{%
-        \input{figures/match-input.tex}
-        }
+  \centering
+  \def\rowspace{-.4pt}
+  \def\minwidthemail{2.1cm}
+  \def\minwidthphone{2.1cm}
+  \def\minwidthid{.5cm}
+  \def\minwidthuid{.8cm}
+  \def\linecorr{-.4pt}
+  \def\blockminheight{1.3em}
+  \definecolor{added-id}{HTML}{15b01a}
+  \definecolor{matched-light}{HTML}{DCEDC8}
+  \definecolor{matched-dark}{HTML}{C4E1A3}
+  \definecolor{tiebreaker}{HTML}{A3CEE1}
+  \definecolor{highlight-blue}{HTML}{4A90E2} 
+  % Subfigures
+  \subfloat[\label{fig:match-input}The inputs from Parties $P_1$ (left) and $P_2$ (right).]{
+    \resizebox{1.335\columnwidth}{!}{%
+      \input{figures/match-input.tex}
     }
-    \subfloat[\label{fig:match-output}The outputs to Parties $P_1$ (left) and $P_2$ (right).]{
-        \resizebox{0.76\columnwidth}{!}{%
-        \input{figures/match-output.tex}
-        }
+  }
+  \subfloat[\label{fig:match-output}The outputs to Parties $P_1$ (left) and $P_2$ (right).]{
+    \resizebox{0.76\columnwidth}{!}{%
+      \input{figures/match-output.tex}
     }
-    \caption{In (a), we illustrate a one-to-many match: party $P_1$’s record $\bx_0$ matches party $P_2$’s records $\by_0$ on email and $\by_1$ on phone (red edges). The conflict is resolved randomly, yielding a one-to-one mapping in which $\bx_0$ and $\by_0$ are assigned the same UID (2093), while $\by_1$ is assigned a distinct UID (9349). Record $\bx_1$ matches only $\by_2$ on email (blue edge) and thus both are assigned UID 3042. Both parties learn their local mappings and the universe of UIDs.
+  }
+  \caption{In (a), we illustrate a one-to-many match: party $P_1$’s record $\bx_0$ matches party $P_2$’s records $\by_0$ on email and $\by_1$ on phone (red edges). The conflict is resolved randomly, yielding a one-to-one mapping in which $\bx_0$ and $\by_0$ are assigned the same UID (2093), while $\by_1$ is assigned a distinct UID (9349). Record $\bx_1$ matches only $\by_2$ on email (blue edge) and thus both are assigned UID 3042. Both parties learn their local mappings and the universe of UIDs.
     \label{fig:matching-logic-example}}
 \end{figure*}
 
