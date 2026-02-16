@@ -72,197 +72,48 @@ recovery set $Y$ remains static. These assumptions are well within the security 
 
 
 \subsection{PSU-CA Attack}\label{sec:PSUCA_attack}
-The $\PSUCA$ functionality leaks considerably less information about the victim
-set than $\PSU$, preventing the direct inference of the intersection presented
-in the last section.  However, there is a close relationship between the
-cardinalities of the union and the intersection of two sets.  This raises the
-question whether existing intersection recovery attacks against PSI-CA can be
-modified to work against PSU-CA.  We answer this question affirmatively in this
-section by presenting a generic construction that transforms any intersection
-recovery attack against PSI-CA into one against PSU-CA. We then merge this
-construction with Guo et al.'s attack against PSI-CA, resulting in an
-intersection recovery attack against PSU-CA which requires fewer PSU-CA
-evaluations than the generic construction.
+There is a close relationship between the
+cardinalities of the union and the intersection of two sets.  In this next subsection, we give a generic technique that transforms any intersection recovery attack against PSI-CA (e.g.,~\cite{USENIX:GHLWJL22}) into one against PSU-CA. Specifically, if $T$ is the target set and $Y$ is the recovery set, then the adversarial party $\tP_1$ is able to recover $T\cap Y$.
 
-Let $X$ and $Y$ be two sets. As before, $X$ is the attacker's target set and $Y$
-the victim set. The attacker can determine $|X' \cup Y|$ for arbitrarily many
-choices of $X'$ by evaluating $\PSUCA$ and must recover $X \cap Y$.  Our generic
-construction is based on the following relation between the set union and
-intersection cardinalities:
+Let $X$ and $Y$ be two sets. Our
+attack is based on the following relation between the set union and intersection cardinalities:
 
 \begin{equation}\label{eqn:union_intersect_cardinalities}
-  |X \cup Y| = |X| + |Y| - |X \cap Y|
+  |X \cap Y| = |X| + |Y| - |X \cup Y|
 \end{equation}
 
-Reorganizing terms yields $|X \cap Y| = |X| + |Y| - |X \cup Y|$.  In other
-words, the attacker can compute the cardinality of the intersection if it knows
-the cardinalities of the victim set and the union of the victim and target sets.
+In words, the attacker can compute the cardinality of the intersection if it knows
+the cardinalities of the recovery set and the union.
 This enables the adversary to translate between the PSU-CA and PSI-CA
-functionalities, thus, allowing it to leverage any intersection recovery attack
-for PSI-CA against PSU-CA.
+functionalities, thus, allowing it to leverage any intersection recovery attack for PSI-CA against PSU-CA.
 
 One issue remains: the adversary does not know $|Y|$ in the general case.
-While some PSU-CA protocols may leak this information, not all do and we do
-not want to concede this loss of generality.  As an immediate solution, the
-attacker could choose the empty set as input for $\PSUCA$ in order to obtain
-$|\emptyset \cup Y| = |Y|$.  However, in light of the commonly acknowledged
-loss of privacy when using an empty set as input for $\PSU$ -- which we
-outlined in the introduction of this chapter -- precautions against this may
-have also been taken in deployments of $\PSUCA$ protocols.  We therefore present
-a method to determine $|Y|$ with three $\PSUCA$ evaluations that avoids
-evaluating $\PSUCA(\emptyset, Y)$.
+While some PSU-CA protocols may leak this information, not all do.   We therefore present
+a general method to determine $|Y|$ with three $\PSUCA$ evaluations that avoids the trivial solution of querying the empty set, ie.., $\calF_{\PSUCA}(\emptyset; Y)$.
 
 \begin{proposition}\label{prop:PSUCA_comp_m} Let $X$ and $Y$ be two sets and let
-$X_1, X_2$ be a partition of $X$.  Moreover, let $z:= |X \cup Y|$, $z_1 := |X_1
-\cup Y|$ and $z_2 := |X_2 \cup Y|$. Then, we have
-  \begin{equation*} |Y| = z_2 - (z - z_1)
-  \end{equation*}
+$X_1\cup X_2$ be a partition of $X$.  Moreover, let $z:= |X \cup Y|$, $z_1 := |X_1
+\cup Y|$ and $z_2 := |X_2 \cup Y|$. Then, we have $|Y| = z_2 - (z - z_1)$.
 \end{proposition}
 
-\begin{proof}
-  Let $n = |X|, n_1 = |X_1|$ and $n_2 = |X_2|$.  By definition, $X_1$ contains
-  exactly $n - n_1$ fewer elements than $X$ and $X_1 \cap Y$ exactly
-  $z-z_1 \leq n - n_1$ fewer than $X \cap Y$.  Exactly
-  $d := (n - n_1) - (z - z_1)$ elements of $X \setminus X_1$ must therefore be
-  contained in $Y$, i.e., $|(X\setminus X_1) \cap Y| = d$.  Since $X_1$ and
-  $X_2$ form a partition of $X$, we have $X\setminus X_1 = X_2$ and
-  $n-n_1 = n_2$ and, thus, $|X_2 \cap Y| = d$. Then,
-  \begin{equation*}
-    \begin{split}
-      z_2 & = |X_2 \cup Y| \\
-          & = |X_2| + |Y| - |X_2 \cap Y| \\
-          & = n_2 + |Y| - ((n-n_1) - (z - z_1)) \\
-          & = n_2 + |Y| - (n_2 - (z - z_1)) \\
-          & = |Y| + (z - z_1)
-    \end{split}
-  \end{equation*}
-  Reordering terms concludes the proof.
-\end{proof}
 
+We give the proof in Appendix~\ref{proof:PSUCA_comp_m}.
+Thus, with three additional $\calF_{\PSUCA}$ evaluations at the start of the attack, the adversary can simulate the $\calF_{\PSICA}$ functionality. In particular, for any PSI-CA attack, the adversary can replace each 
+query $z\gets \calF_{\PSICA}(X;Y)$ with $z'\gets \calF_{\PSUCA}(X;Y)$ and then compute $z$ as $|X|+|Y|-z'$.
 
-\iffalse
-  \begin{figure}
-    \centering
-    \begin{pchstack}[boxed, center]
-      \procedure[linenumbering]{$\bdv_\adv^{\PSUCA(\cdot, Y)}(X)$}{
-        \text{Partition $X$ into two disjoint } \pcskipln\\
-        %% TODO: add \pcparbox command
-        \pcparbox{subsets $X_1, X_2$.} \\
-        z \gets \PSUCA(X, Y) \label{lin:PSUCA_generic_1}\\
-        z_1 \gets \PSUCA(X_1, Y) \\
-        z_2 \gets \PSUCA(X_2, Y) \label{lin:PSUCA_generic_3}\\
-        m \gets z_2 - (z - z_1) \pccomment{\ref{prop:PSUCA_comp_m}} \\
-        Z \gets \adv^{\PSICA\text{-}\textsf{Sim}}(X) \\
-        \pcreturn Z
-      }
-      \pchspace
-      \procedure[linenumbering]{$\PSICA\text{-}\textsf{Sim}(X')$}{
-        z \gets \PSUCA(X', Y) \\
-        k \gets |X'| + m - z \pccomment{\ref{eqn:union_intersect_cardinalities}} \\
-        \pcreturn k
-      }
-    \end{pchstack}
-    \caption{Generic construction of an intersection recovery attack $\bdv$
-      against PSU-CA given an intersection recovery attack $\adv$ against
-      PSI-CA.  Note that $Y$ is part of the oracle and unknown to either
-      attack.}
-    \label{fig:PSUCA_generic}
-  \end{figure}
+We state our result in the following theorem:
 
-\fi  
-
-With three additional PSU-CA evaluations in the beginning of the attack, the
-adversary can therefore simulate the PSI-CA functionality perfectly.  We state
-our result in the following theorem:
-
-\begin{theorem}
-  Let $X$ and $Y$ be two arbitrary sets.
-  For every adversary $\adv$ such that $\adv^{\PSICA(\cdot, Y)}(X) = X \cap Y$
+\begin{theorem}\label{thm:PSICA-to-PSUCA}
+  Let $T$ be the target set and $Y$ be the recovery set.
+  For every adversary $\adv$ such that $\adv^{\PSICA(\cdot; Y)}(T) = T \cap Y$
   which makes $q\in\N$ $\PSICA$ queries,
-  there is an an adversary $\bdv$ with oracle access to $\PSUCA(\cdot, Y)$
-  which recovers $X \cap Y$ and makes $q + 3$ $\PSUCA$ queries.
+  there is an an adversary $\bdv$ with oracle access to $\calF_{\PSUCA}(\cdot, Y)$
+  which recovers $T \cap Y$ and makes $q + 3$ $\PSUCA$ queries.
 \end{theorem}
-\begin{proof}
-  We provide a concrete construction of \bdv{} for any \adv{} in
-  \ref{fig:PSUCA_generic}.
-  Correctness of \bdv{} follows directly from
-  \ref{eqn:union_intersect_cardinalities} and \ref{prop:PSUCA_comp_m}.
-  Clearly, \bdv{} makes three PSU-CA evaluations on
-  lines~\ref{lin:PSUCA_generic_1}~-~\ref{lin:PSUCA_generic_3} and one for every
-  \PSICA{} query made by \adv{}.
-  Since determining $m$ and translating union cardinalities to intersection
-  cardinalities only involves simple integer arithmetic,
-  $\bdv{}$ has a similar runtime to $\adv{}$.
-\end{proof}
 
-We now integrate the generic construction from \ref{fig:PSUCA_generic} into
-the $\mathsf{PSI\text{-}CA\text{-}Search}\allowbreak\mathsf{Tree}$ attack,
-which we introduced in \ref{ch:PSICA_attack}.  Recall that the attack starts
-by building a binary tree $T$ such that the root $T.\treeRoot$ holds the
-target set $X$ and the sets stored at the two children of any node in the tree
-form a partition of the set stored at their parent.  In particular, the
-immediate children of $T.\treeRoot$ store the sets $X_1$ and $X_2$, which form
-a partition of $X$.  The attack then evaluates \PSICA{} on $X$ and $X_1$ (the
-latter happens in the first loop iteration) and computes
-$|X_2 \cap Y| = |X \cap Y| - |X_1 \cap Y|$.  This inference is not possible if
-the attacker can only evaluate \PSUCA, as it needs to know $m$.  However,
-using \ref{prop:PSUCA_comp_m} the attacker can determine $m$ by evaluating
-\PSUCA on $X$, $X_1$ and $X_2$ and then infer
-$|X \cap Y| = |X| + m - |X \cup Y|$ and
-$|X_i \cap Y| = |X_i| + m - |X_i \cup Y|$ for $i\in\{1,2\}$.  This is almost
-equivalent to how \PSICA attack processes the tree root and its two child
-nodes,
+The proof is given in Appendix~\ref{proof:PSICA-to-PSUCA}.
+In Appendix~\ref{attack:PSUCA}, we concretely describe and analyze $\PSUCAattack$---an attack that uses the transformation described above to turn the PSI-CA attack from Guo et al.\cite{USENIX:GHLWJL22} (See Appendix~\ref{ap:guo_attack} for an overview) to one against PSU-CA.  
 
-with the difference that we require an additional evaluation of \PSUCA to
-determine $|X_2 \cap Y|$.  After that, the attacker can carry out the rest of
-the PSI-CA attack, translating union to intersection cardinalities using
-\ref{eqn:union_intersect_cardinalities}. The attack is shown in
-\ref{fig:PSUCA_attack}.  Note that in contrast to \PSICA, we maintain two sets
-$\posSet$ and $\negSet$, where $\posSet$ contains all elements of $X$ that
-belong to the intersection and $\negSet$ all elements that do not occur in
-$Y$.  This allows us to evaluate the performance of the attack in more detail
-under limited query budgets, see \ref{ch:experiments}.  We state the
-correctness in the following theorem:
 
-\begin{theorem}
-  Let $X$ and $Y$ be two arbitrary sets. \\
-  $\PSUCAattack^{\PSUCA(\cdot, Y)}(X)$ outputs $X \cap Y$.
-\end{theorem}
-\begin{proof}
-  Follows directly from the correctness of $\PSICAattack$ and
-  \ref{prop:PSUCA_comp_m} and \ref{eqn:union_intersect_cardinalities}.
-\end{proof}
 
-For our experimental evaluation in \ref{ch:experiments}, we additionally propose
-two further heuristics: $p_{\PSICA}^-$, which prioritizes the reconstruction of
-the set difference $X \setminus Y$ over that of the intersection, and
-$p_{\PSICA}^*$, whose aim is to maximize the total (positive and negative)
-membership information we can infer.  In light of these additional definitions,
-we define the alias $p_{\PSICA}^+ := p_{\PSICA}$ to avoid confusion in the
-presentation of our experimental results.
-$$p_{\PSICA}^-(k, |X|) := \frac{|X| - k}{|X|}$$
-$$p_{\PSICA}^*(k, |X|) := \frac{\max(k, |X| - k)}{|X|}$$
-
-\heading{Time and Query Complexity.} We assume $n = |X|$ is a power of
-two. However, the analysis holds for general $n$; see the argument in the
-analysis of \PSICAattack{} in \ref{ch:PSICA_attack}.  As $n$ is a power of two,
-there are $\sum_{i=0}^{\log n} 2^i = 2n - 1$ nodes in $T$.  The two loops
-collectively visit each of these nodes at most once.  The body of the inner loop
-requires only constant time except for the $\push$ operation, which requires
-amortized \bigO{\log n} time.  This yields an overall time complexity of
-\bigO{n\log n}.
-
-$\PSUCAattack$ evaluates $\PSUCA$ three times in
-lines~\ref{lin:PSUCA_attack_eval1}~-~\ref{lin:PSUCA_attack_eval3}. Ignoring
-early terminations, the attack then makes further evaluations for at most half
-of the nodes in the rest of the binary search tree (excluding the root and its
-two direct children).  As mentioned above, there are $2n - 1$ nodes in $T$.  The
-attack therefore evaluates \PSUCA at most $(2n - 4) / 2 + 3 = n + 1$ times.
-Recall from \ref{ch:PSICA_attack} that $\PSICAattack$ makes at most $n$ $\PSICA$
-evaluations. In the worst case, $\PSUCAattack$ therefore requires two protocol
-invocations less than the generic construction in \ref{fig:PSUCA_generic}.
-
-As is the case with \PSICAattack{}, we can expect this number to be lower due to
-the early termination of DFS path traversals. See \ref{ch:experiments} for an
-empirical evaluation.
 

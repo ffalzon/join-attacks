@@ -116,10 +116,115 @@ The pseudocode can be found in Figure~\ref{fig:PSU_attack}.
 
 
 
+\subsection{Proof of Prop.~\ref{prop:PSUCA_comp_m}}\label{proof:PSUCA_comp_m}
+
+\begin{proof}
+  Let $n = |X|, n_1 = |X_1|$ and $n_2 = |X_2|$.  By definition, $X_1$ contains
+  exactly $n - n_1$ fewer elements than $X$ and $X_1 \cap Y$ exactly
+  $z-z_1 \leq n - n_1$ fewer than $X \cap Y$.  Exactly
+  $d := (n - n_1) - (z - z_1)$ elements of $X \setminus X_1$ must therefore be
+  contained in $Y$, i.e., $|(X\setminus X_1) \cap Y| = d$.  Since $X_1$ and
+  $X_2$ form a partition of $X$, we have $X\setminus X_1 = X_2$ and
+  $n-n_1 = n_2$ and, thus, $|X_2 \cap Y| = d$. Then,
+  \begin{equation*}
+    \begin{split}
+      z_2 & = |X_2 \cup Y| \\
+          & = |X_2| + |Y| - |X_2 \cap Y| \\
+          & = n_2 + |Y| - ((n-n_1) - (z - z_1)) \\
+          & = n_2 + |Y| - (n_2 - (z - z_1)) \\
+          & = |Y| + (z - z_1)
+    \end{split}
+  \end{equation*}
+  Reordering terms concludes the proof.
+\end{proof}
+
+\subsection{Proof of Prop.~\ref{thm:PSICA-to-PSUCA}}\label{proof:PSICA-to-PSUCA}
+
+
+\begin{proof}
+  We provide a concrete construction of \bdv{} for any \adv{} in
+  \ref{fig:PSUCA_generic}.
+  Correctness of \bdv{} follows directly from
+  \ref{eqn:union_intersect_cardinalities} and \ref{prop:PSUCA_comp_m}.
+  Clearly, \bdv{} makes three PSU-CA evaluations on
+  lines~\ref{lin:PSUCA_generic_1}~-~\ref{lin:PSUCA_generic_3} and one for every
+  \PSICA{} query made by \adv{}.
+  Since determining $m$ and translating union cardinalities to intersection
+  cardinalities only involves simple integer arithmetic,
+  $\bdv{}$ has a similar runtime to $\adv{}$.
+\end{proof}
+
+\subsection{Instantiating the PSI-CA Attack}\label{attack:PSUCA}
+
+We now integrate the generic construction from \ref{fig:PSUCA_generic} into
+the $\mathsf{PSI\text{-}CA\text{-}Search}\allowbreak\mathsf{Tree}$ attack,
+which we introduced in \ref{ch:PSICA_attack}.  
+
+Recall that the attack starts
+by building a binary tree $\calT$ such that the root $\calT.\treeRoot$ holds the
+target set $X$ and the sets stored at the two children of any node in the tree
+form a partition of the set stored at their parent.  In particular, the
+immediate children of $T.\treeRoot$ store the sets $X_1$ and $X_2$, which form
+a partition of $X$.  The attack then evaluates \PSICA{} on $X$ and $X_1$ (the
+latter happens in the first loop iteration) and computes
+$|X_2 \cap Y| = |X \cap Y| - |X_1 \cap Y|$.  This inference is not possible if
+the attacker can only evaluate \PSUCA, as it needs to know $m$.  However,
+using \ref{prop:PSUCA_comp_m} the attacker can determine $m$ by evaluating
+\PSUCA on $X$, $X_1$ and $X_2$ and then infer
+$|X \cap Y| = |X| + m - |X \cup Y|$ and
+$|X_i \cap Y| = |X_i| + m - |X_i \cup Y|$ for $i\in\{1,2\}$.  This is almost
+equivalent to how \PSICA attack processes the tree root and its two child
+nodes,
+
+with the difference that we require an additional evaluation of \PSUCA to
+determine $|X_2 \cap Y|$.  After that, the attacker can carry out the rest of
+the PSI-CA attack, translating union to intersection cardinalities using
+\ref{eqn:union_intersect_cardinalities}. The attack is shown in
+\ref{fig:PSUCA_attack}.  Note that in contrast to \PSICA, we maintain two sets
+$\posSet$ and $\negSet$, where $\posSet$ contains all elements of $X$ that
+belong to the intersection and $\negSet$ all elements that do not occur in
+$Y$.  This allows us to evaluate the performance of the attack in more detail
+under limited query budgets, see \ref{ch:experiments}.  We state the
+correctness in the following theorem:
+
+\begin{theorem}
+  Let $X$ and $Y$ be two arbitrary sets. \\
+  $\PSUCAattack^{\PSUCA(\cdot, Y)}(X)$ outputs $X \cap Y$.
+\end{theorem}
+\begin{proof}
+  Follows directly from the correctness of $\PSICAattack$ and
+  \ref{prop:PSUCA_comp_m} and \ref{eqn:union_intersect_cardinalities}.
+\end{proof}
+
+For our experimental evaluation in \ref{ch:experiments}, we additionally propose
+two further heuristics: $p_{\PSICA}^-$, which prioritizes the reconstruction of
+the set difference $X \setminus Y$ over that of the intersection, and
+$p_{\PSICA}^*$, whose aim is to maximize the total (positive and negative)
+membership information we can infer.  In light of these additional definitions,
+we define the alias $p_{\PSICA}^+ := p_{\PSICA}$ to avoid confusion in the
+presentation of our experimental results.
+$$p_{\PSICA}^-(k, |X|) := \frac{|X| - k}{|X|}$$
+$$p_{\PSICA}^*(k, |X|) := \frac{\max(k, |X| - k)}{|X|}$$
 
 
 
+\heading{Time and Query Complexity.} Suppose that $n = |X|$ is a power of two (the analysis extends to general $n$; see the argument in the
+analysis of $\PSICAattack$ in Appendix~\ref{ap:guo_attack}). There are $2n - 1$ nodes in $\calT$.  The two loops in Figure~\ref{fig:PSUCA_attack}
+collectively visit each of these nodes at most once.  The body of the inner loop
+requires constant time except for the $\push$ operation, which requires
+amortized \bigO{\log n} time.  This yields an overall time complexity of
+\bigO{n\log n}.
 
+$\PSUCAattack$ evaluates $\PSUCA$ three times in
+lines~\ref{lin:PSUCA_attack_eval1}~-~\ref{lin:PSUCA_attack_eval3}. Ignoring
+early terminations, the attack then makes further evaluations for at most half
+of the nodes in the rest of the binary search tree (excluding the root and its
+two direct children).  As mentioned above, there are $2n - 1$ nodes in $T$.  The
+attack therefore evaluates \PSUCA{} at most $(2n - 4) / 2 + 3 = n + 1$ times.
+
+As is the case of \PSICAattack{}, we can expect this number to be lower due to
+the early termination of DFS path traversals. See \ref{ch:experiments} for an
+empirical evaluation.
 
 
 
