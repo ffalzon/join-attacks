@@ -1,6 +1,6 @@
 \section{Preliminaries}
-\heading{Notation.} For $n \in \NN$, we define $[n] := \{1, \dots, n\}$.
-For any $\ell, n\in \NN$ such that $\ell \geq \lfloor \log_2 (n+1)\rfloor$,
+\heading{Notation.} For $n \in \NN$, we define $[n] := \{1, \dots, n\}$.  For
+any $\ell, n\in \NN$ such that $\ell \geq \lfloor \log_2 (n+1)\rfloor$,
 $\Bin{\ell}(n) \in \{0,1\}^\ell$ denotes the $\ell$-bit binary representation of
 $n$.
 
@@ -9,14 +9,6 @@ as $f(X) := \{f(x) | x \in X\} \subseteq Y$.  Moreover, $\Funcs[X, Y]$ denotes
 the space of functions $f: X \to Y$ and $\InjFuncs[X, Y] \subset \Funcs[X, Y]$
 denotes the set of injective functions $f: X \to Y$.  $\Perms[X]$ denotes the
 set of all permutations of $X$.
-
-\tianxin{
-  \begin{itemize}
-  \item Are record lengths used anywhere?
-  \item Clarify the usage of identifier.
-  \item Clarify the one-to-one correspondence.
-  \end{itemize}
-}
 
 \subsection{Multi-key Private Matching Functionality}
 \label{sec:MKPM-functionality}
@@ -32,7 +24,7 @@ representation). The keys themselves are implicit.
 MK-PrivateID as the \emph{Multi-key Private Matching (MKPM)} functionality. In
 this setting, two parties $P_1$ and $P_2$ hold sets of records $X$ and $Y$,
 respectively. MKPM first groups records that share at least one common indexed
-value., and then applies a tailored matching procedure to produce a one-to-one
+value, and then applies a tailored matching procedure to produce a one-to-one
 correspondence between the two sets. This design is motivated by the use case in
 which partially duplicated records correspond to the same individual, and a
 one-to-one mapping suffices for downstream data analysis.
@@ -53,35 +45,34 @@ example input featuring a one-to-many match (Fig.~\ref{fig:match-input}) that is
 resolved into a one-to-one correspondence, along with the resulting output
 (Fig.~\ref{fig:match-output}).
 
-\heading{Security guarantee.} \tianxin{wip.} The original work~\cite{MKPMC}
-provides a proof sketch for security against a semi-honest adversary. We note
-that the specified functionality leaks more information than desired ouput. We
-therefore distinguish the intended functionality---which computes the set of
-UIDs and the mapping of UIDs to records ($\calF_{\MKPM{}}$)---from the real
-functionality ($\calF_{\LMKPM{}}$), which additionally leaks the entire
-bipartite graph of all matches. Returning to our example, given the tables in
-Figure~\ref{fig:match-input}, $\calF_{\MKPM{}}$ outputs only the maps and UID
-sets shown in Figure~\ref{fig:match-output}, whereas $\calF_{\LMKPM{}}$
-additionally leaks to party $P_1$ a graph isomorphic to that comprising the
-green and red edges in Figure~\ref{fig:match-input}.
+\heading{Security guarantee.} The original work~\cite{MKPMC} sketches a proof
+for semi-honest security. However, we note that the specified functionality
+leaks more information than the intended ouput. We therefore distinguish the
+intended functionality, which computes the set of UIDs and the mapping of UIDs
+to records ($\calF_{\MKPM{}}$), from the real functionality
+($\calF_{\LMKPM{}}$), which reveals additional information. Returning to our
+example, given the tables in Figure~\ref{fig:match-input}, $\calF_{\MKPM{}}$
+outputs only the maps and UID sets shown in Figure~\ref{fig:match-output},
+whereas $\calF_{\LMKPM{}}$ additionally leaks to party $P_1$ a graph isomorphic
+to that comprising the green and red edges in Figure~\ref{fig:match-input}.
 
 \subsubsection{Functionality}
 \label{sec:mkpmc_functionality}
-\tianxin{Add indicator set.}
-We start by presenting a formal description of the intended functionality
-$\calF_{\MKPM{}}$. Let $\calI$ denote the universe of identifiers and let
-$\lambda \in \NN$ be the maximum number of identifiers per record. Party $P_1$
-holds
+We now present a formal description of the functionality $\calF_{\MKPM{}}$. Let
+$\Ispace$ denote the universe of record values and let $\lambda \in \NN$ be the
+maximum number of values per record. The record length,
 
+Party $P_1$ holds
 \[
-  X:= \{\bx_i = (x_{i,1}, \ldots, x_{i,n}) \mid i \in [n]\},
+  X:= \{\bx_i = (x_{i,1}, \ldots, x_{i,j}, \ldots, x_{i, n_i}) \mid j \in
+  [n_i]\},
 \]
 and party $P_2$ holds
 \[
-  Y := \{\by_k = (y_{k,1}, \ldots, y_{k,m}) \mid k \in [m]\},
+  Y := \{\by_k = (y_{k,1}, \ldots, y_{k,\ell}, \ldots, y_{k, m_k}) \mid \ell \in
+  [m_k]\},
 \]
-where all identifiers $x_{i,j}$ and $y_{k,\ell}$ are in
-$\calI$. \tianxin{Check.}
+where all values $x_{i,j}$ and $y_{k,\ell}$ are in $\Ispace$.
 
 The functionality takes $X$ and $Y$ as inputs from the respective parties and
 then applies a random permutation. The records of $X$ are permuted while
@@ -94,19 +85,19 @@ resulting collections by $X'$ and $Y'$, respectively.\footnote{Although sets are
 The core of the protocol is the record-matching procedure $\match$ (see
 Appendix~\ref{ap:mkpc} for detailed pseudocode), which takes shuffled inputs
 $X'$ and $Y'$. Each record in $X'$ (resp. $Y'$) is matched with at most one
-record in $Y'$ (resp. $X'$). For each identifier position $j$ in $X'$, $\match$
-scans all $\by_k \in y'$ and matches $\by_k$ to the first $\bx_i \in X'$ whose
-$j$-th identifier appears in $\by_k$ i.e., for which there exists $\ell$ such
-that
+record in $Y'$ (resp. $X'$). For each identifier position $j$ in $X'$
+\tianxin{Update this.}, $\match$ scans all $\by_k \in y'$ and matches $\by_k$ to
+the first $\bx_i \in X'$ whose $j$-th value appears in $\by_k$ i.e., for which
+there exists $\ell$ such that
 \[
   \by_k[\ell] = \bx_i[j],
 \]
 where $i$ is minimal. By processing identifiers in this order, Party $P_1$ can
-prioritize matching on identifiers that are less likely to change. For example,
-matching on a social security number yields higher-quality results than matching
-on a phone number, which is more likely to change.
+prioritize matching on indexed values that are less likely to change. For
+example, matching on a social security number yields higher-quality results than
+matching on a phone number, which is more likely to change.
 
-The matching logic assigns a unique identifier from a space $\calG$ to every
+The matching logic assigns a unique identifier from a space $\Uspace$ to every
 pair of matched records, as well as to each unmatched record in $X$ and $Y$; we
 denote the resulting set of identifiers by $\UID$. The procedure also constructs
 two maps, $M_X: \UID \to X\cup \{\bot\}$ and $M_Y: \UID \to Y \cup \{\bot\}$,
@@ -123,33 +114,41 @@ Figure~\ref{fig:MKPM}.
   \fbox{%
     \begin{minipage}[t]{0.98\columnwidth}
       \textbf{Parameters:} Two parties, $P_1$ and $P_2$, set sizes $n, m\in \NN$ and
-      record lengths $n_i, m_j \in \NN$ for $i\in[n]$ and $j\in[m]$.\\
+      record lengths $n_i, m_k \in \NN$ for $i\in[n]$ and $k\in[m]$.\\
       \textbf{Functionality} $\calF_{\MKPM}(X; Y)$ \dbox{$\calF_{\LMKPM}(X; Y)$}~: 
       %%% 
       \begin{enumerate}
-      \item Receive the input from party $P_1$: $X = \{\bx_i \setdsc i \in [n]\}$
-      \item Receive the input from party $P_2$: $Y = \{\by_i \setdsc i \in [m]\}$
+      \item Receive the input from party $P_1$: $X = \{\bx_i \setdsc i \in
+        [n]\}$
+      \item Receive the input from party $P_2$:
+        $Y = \{\by_k \setdsc k \in [m]\}$
       \item Sample $\pi_X \sample \Perms[[n]]$ and $\pi_Y \sample \Perms[[m]]$
       \item Let $X' := \{\bx'_i \setdsc i \in [n]\}$, where $\bx'_i := \bx_{\pi_X(i)}$
-      \item Let $Y' := \{\by'_i \setdsc i \in [m]\}$, where $\by'_i := \by_{\pi_Y(i)}$
-      \item Shuffle the identifiers in $\by'_i$ for all $i \in [m]$
-      \item Compute $\UID, \MX, \MY \gets \match(X', Y')$ (Figure \ref{fig:match_logic})
+      \item Let $Y' := \{\by'_k \setdsc k \in [m]\}$, where $\by'_k :=
+        \by_{\pi_Y(k)}$
+      \item Shuffle the values in $\by'_k$ for all $k \in [m]$
+      \item Compute set $\UID$, mappings $\MX, \MY$ $\gets \match(X', Y')$ (See
+        Figure \ref{fig:match_logic} in the Appendix~\ref{ap:mkpc}.)
       \end{enumerate}
       \begin{adjustbox}{minipage=0.98\textwidth,precode=\dbox}
         \begin{enumerate}
           \addtocounter{enumi}{7}
-        \item  Sample $f_1, f_2 \sample \InjFuncs[\Ispace,\; \calG]$
-        \item  $\hXone := \{(f_1(\bx'_i[1]), \dots, f_1(\bx'_i[n_i])) \setdsc i \in [n]\}$.
-        \item  $\hYone := \{(f_1(\by'_i[1]), \dots, f_1(\by'_i[m_i])) \setdsc i \in [m]\}$.
+        \item  Sample $f_1, f_2 \sample \InjFuncs[\Ispace,\; \Uspace]$
+        \item  $\hXone := \{(f_1(\bx'_i[1]), \dots, f_1(\bx'_i[n_i])) \setdsc i
+          \in [n]\}$.
+        \item  $\hYone := \{(f_1(\by'_i[1]), \dots, f_k(\by'_k[m_k])) \setdsc k
+          \in [m]\}$.
         \item  $\pi \sample \Perms[[n]]$.
-        \item  $X'' := \{\bx''_i \setdsc i \in [n]\}$, where $\bx''_i := \bx_{\pi(i)}$.
+        \item  $X'' := \{\bx''_i \setdsc i \in [n]\}$, where $\bx''_i :=
+          \bx_{\pi(i)}$.
         \item  $\hXtwo := \{(f_2(\bx''_i[1]), \dots, f_2(\bx''_i[n_i])) \setdsc i \in [n]\}$.
         \item $\leak^1 \gets (\hXone,\hYone)$,\ \  $\leak^2 \gets \hXtwo$
         \end{enumerate}
       \end{adjustbox}
       \begin{enumerate}
-        \addtocounter{enumi}{13}
-      \item Output:\hfill \begin{itemize}
+        \addtocounter{enumi}{14}
+      \item Output:\hfill
+        \begin{itemize}[label=-]
         \item Send $\UID, \MX$ \dbox{$,\leak^1$} to $P_1$.
         \item Send $\UID, \MY$ \dbox{$,\leak^2$} to $P_2$.
         \end{itemize}
@@ -160,7 +159,7 @@ Figure~\ref{fig:MKPM}.
     Y)$. The additional steps of the leakage-aware functionality
     $\calF_{\LMKPM}(X; Y)$ are shown in \protect\dbox{dashed boxes}. The
     record-matching procedure \match{} is defined in
-    Figure~\ref{fig:match_logic}.}
+    Figure~\ref{fig:match_logic} in Appendix~\ref{ap:mkpc}.}
   \label{fig:MKPM}
 \end{figure}
 
@@ -207,7 +206,7 @@ distinguish between the leakage observed by $P_1$ and that observed by $P_2$.
 
 The leakage to party $P_1$ consists of a renamed copy of the shuffled sets $X'$
 and $Y'$. Concretely, we sample an injective random function
-$f_1:\Ispace\to\calG$, referred to as a hiding function, and apply it to each
+$f_1:\Ispace\to\Uspace$, referred to as a hiding function, and apply it to each
 identifier in $X'$ and $Y'$. Party $P_1$ observes the resulting hidden sets.
 
 Equivalently, the leakage to $P_1$ can be viewed as a bipartite graph
@@ -219,15 +218,14 @@ records of $X'$ is preserved, the matching process induces a priority ordering
 over edges, determined by the position of shared identifiers within records of
 $X'$.
 
-
 Although the procedure $\match$ computes only a partial matching in $G$, such
 that each vertex is matched to at most one vertex in the other vertex set, party
 $P_1$ still learns the full graph $G$.
 
 The leakage observed by $P_2$ consists only of a hidden copy of $X$. The records
 of $X$ with fresh randomness, yielding a set $X''$. Then, a new hiding function
-$f_2 : \Ispace \to \calG$ is sampled and used to hide the identifiers in $X''$.
-$P_2$ observes the hidden and re-shuffled set $X''$.
+$f_2 : \Ispace \to \Uspace$ is sampled and used to hide the identifiers in
+$X''$. $P_2$ observes the hidden and re-shuffled set $X''$.
 
 The pseudocode can be found in Figure~\ref{fig:MKPM} with the additional leakage
 contained in a dashed boxed.
