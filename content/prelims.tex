@@ -10,47 +10,60 @@ the space of functions $f: X \to Y$ and $\InjFuncs[X, Y] \subset \Funcs[X, Y]$
 denotes the set of injective functions $f: X \to Y$.  $\Perms[X]$ denotes the
 set of all permutations of $X$.
 
-\tianxin{Are record lengths used anywhere?}
-
+\tianxin{
+  \begin{itemize}
+  \item Are record lengths used anywhere?
+  \item Clarify the usage of identifier.
+  \item Clarify the one-to-one correspondence.
+  \end{itemize}
+}
 
 \subsection{Multi-key Private Matching Functionality}
 \label{sec:MKPM-functionality}
+\heading{Indexed records.} The Multi-Key PrivateID (MK-PrivateID)
+protocol~\cite{MKPMC} extends the single-key PrivateID protocol~\cite{PMC} to
+support matching on multiple keys (e.g., names or email addresses). We use terms
+\emph{identifiers} and \emph{keys} interchangeably, following the terminology of
+the original paper \cite{MKPMC}. Each record contains multiple indexed values
+under different keys (See Section~\ref{sec:mkpmc_functionality} for the
+representation). The keys themselves are implicit.
 
-\tianxin{clarify the usage of identifier.}
+\heading{Matching procedure.} We refer to the functionality implemented by
+MK-PrivateID as the \emph{Multi-key Private Matching (MKPM)} functionality. In
+this setting, two parties $P_1$ and $P_2$ hold sets of records $X$ and $Y$,
+respectively. MKPM first groups records that share at least one common indexed
+value., and then applies a tailored matching procedure to produce a one-to-one
+correspondence between the two sets. This design is motivated by the use case in
+which partially duplicated records correspond to the same individual, and a
+one-to-one mapping suffices for downstream data analysis.
 
-The Multi-Key PrivateID (MK-PrivateID) protocol~\cite{MKPMC} extends the
-single-key PrivateID protocol~\cite{PMC} to support matching on multiple keys
-(e.g., names or email addresses). In the original paper \cite{MKPMS},
-\emph{identifiers} are used instead. We call the functionality that MK-PrivateID
-implements the \emph{Multi-key Private Matching (MKPM)} functionality. In this
-setting, two parties $P_1$ and $P_2$ hold tables of records $X$ and $Y$,
-respectively, where each record contains multiple identifiers. The matching
-process produces a one-to-one correspondence between records in $X$ and $Y$ such
-that each matched pair shares at least one key. \tianxin{Clarify the one-to-one
-  correspondence.}
+During matching, one-to-many and many-to-one relationships may arise (i.e., when
+a record from one party shares indexed values with multiple records from the
+other.). The protocol resolves many-to-one matches using a ranked, deterministic
+join logic, and resolves one-to-many matches randomly.
 
-MK-PrivateID’s strength lies in handling one-to-many and many-to-one matches
-i.e., when a record from one party shares identifiers with multiple records from
-the other. The protocol resolves many-to-one matches using a ranked,
-deterministic join, and resolves one-to-many matches randomly. Each party
-outputs a mapping of universal identifiers (UIDs) to their records such that
-matching records are assigned the same UID, while unmatched records receive
-distinct UIDs. These UIDs enable further downstream computation over the
-associated data. Figure~\ref{fig:matching-logic-example} illustrates an example
-input featuring a one-to-many match (Fig.~\ref{fig:match-input}) that is
-resolved to a one-to-one correspondence, along with the resulting output
+To enable downstream computation over the associated data, the protocol
+introduces \emph{universal identifiers (UIDs)} to label joined records. It
+outputs to each party a mapping from \emph{universal identifiers (UIDs)} to its
+records such that matched records are assigned the same UID, while unmatched
+records receive distinct UIDs.
+
+Figure~\ref{fig:matching-logic-example} illustrates this process. It shows an
+example input featuring a one-to-many match (Fig.~\ref{fig:match-input}) that is
+resolved into a one-to-one correspondence, along with the resulting output
 (Fig.~\ref{fig:match-output}).
 
-The original work~\cite{MKPMC} provides a proof sketch for security against a
-semi-honest adversary. We note that the specified functionality leaks more
-information than desired ouput. We therefore distinguish the intended
-functionality---which computes the set of UIDs and the mapping of UIDs to
-records ($\calF_{\MKPM{}}$)---from the real functionality ($\calF_{\LMKPM{}}$),
-which additionally leaks the entire bipartite graph of all matches. Returning to
-our example, given the tables in Figure~\ref{fig:match-input}, $\calF_{\MKPM{}}$
-outputs only the maps and UID sets shown in Figure~\ref{fig:match-output},
-whereas $\calF_{\LMKPM{}}$ additionally leaks to party $P_1$ a graph isomorphic
-to that comprising the green and red edges in Figure~\ref{fig:match-input}.
+\heading{Security guarantee.} \tianxin{wip.} The original work~\cite{MKPMC}
+provides a proof sketch for security against a semi-honest adversary. We note
+that the specified functionality leaks more information than desired ouput. We
+therefore distinguish the intended functionality---which computes the set of
+UIDs and the mapping of UIDs to records ($\calF_{\MKPM{}}$)---from the real
+functionality ($\calF_{\LMKPM{}}$), which additionally leaks the entire
+bipartite graph of all matches. Returning to our example, given the tables in
+Figure~\ref{fig:match-input}, $\calF_{\MKPM{}}$ outputs only the maps and UID
+sets shown in Figure~\ref{fig:match-output}, whereas $\calF_{\LMKPM{}}$
+additionally leaks to party $P_1$ a graph isomorphic to that comprising the
+green and red edges in Figure~\ref{fig:match-input}.
 
 \subsubsection{Functionality}
 \label{sec:mkpmc_functionality}
