@@ -105,10 +105,7 @@ We now analyze the output to $\tP_1$ when $\calF_{\LMKPM}(\ \cdot\ ; Y)$ is invo
 By distinguishing between these two cases, the adversary can recover the index encoded in the prefix of each $\hbx \in \hXone$ and establish a correspondence between the hidden records in $\hXone$ and the plaintext records in $X$. To determine whether a hidden value $e$ corresponds to $v_0$ or $v_1$, observe that since $n$ is not a power of two and $|T| < 2^{\lenc}$, no record is assigned index $2^{\lenc} - 1$, and the corresponding encoding $(v_1,\ldots,v_1)$ is not used. This serves as a tiebreaker: the encoding of index $0$ is the only encoding composed of a single value, namely $(v_0,\ldots,v_0)$.
 
 Without loss of generality, suppose that $e = f_X(v_0)$. The decoding procedure first identifies the hidden record in $\hXone$ whose first $\lenc$ values are all equal; denote this record by $\hbx_0$. Since values are not permuted within records, we must have $\hbx_0[0] = f_X(v_0) = e$. As before, the adversary can now compute a dictionary that maps hidden values to plaintext values. It initializes an empty dictionary $\Dict$.
-Then using the encoded prefix of each $\hbx \in \hXone$, the adversary recovers the corresponding index $i \in [0,n-1]$. For each $\hbx \in \hXone$ and each $j = 0,\dots,|\hbx|-1$, it sets
-\[
-  \Dict : \hbx[j] \mapsto \bx_i[j],
-\]
+Then using the encoded prefix of each $\hbx \in \hXone$, the adversary recovers the corresponding index $i \in [0,n-1]$. For each $\hbx \in \hXone$ and each $j = 0,\dots,|\hbx|-1$, it sets $\Dict : \hbx[j] \mapsto \bx_i[j]$,
 where $\bx_i$ is the record in $X$ with index $i$. As before, this dictionary, together with $\hYone$, can be used to compute a maximum set reconstruction $R_Y$.
 
 %%%%%%%%%%%%%
@@ -157,54 +154,51 @@ Overall, the attack runs in time \bigO{n \log n + \ell_{\rec}(n+m)} and requires
 	\def\blockminheight{1.3em}
 	\definecolor{added-id}{HTML}{15b01a}
     \subfloat[\label{subfig:snake_example_unique}]{
-        \resizebox{0.85\columnwidth}{!}{%
+        \resizebox{0.75\columnwidth}{!}{%
         \input{figures/snake_encode1_example.tex}
         }
     }
     \quad
 	\subfloat[\label{subfig:snake_example_general}]{
-        \resizebox{0.85\columnwidth}{!}{%
+        \resizebox{0.75\columnwidth}{!}{%
         \input{figures/snake_encode2_example.tex}
         }
     }
 	}
-	\caption{Results of preprocessing a set of records \textbf{(\ref{subfig:snake_example_unique})} if there is a column that only contains unique identifiers 
+	\caption{Results of preprocessing a set of records \textbf{(\ref{subfig:snake_example_unique})} if there is a column that only contains unique values 
 	and \textbf{(\ref{subfig:snake_example_general})} if an artificial unique column needs to be added.
-	The original records have black borders. Added identifiers are highlighted in green. Arrows indicate the (implicit) linked list.}\label{fig:snake_exmp}
+	The original records have black borders. Added values are highlighted in green. Arrows indicate the (implicit) linked list.}\label{fig:snake_exmp}
 \end{figure}
 
 
-While the record enumeration attack improves over the baseline in terms of detectability, it still requires an input whose record lengths grow with the target set size. We address this limitation by imposing an order on the records without explicitly assigning a unique index to each one. This approach extends each record by only two identifiers.
+While $\recenumattack$ improves over $\baselineattack$ in terms of detectability, it still requires inputs whose record lengths grow with the target set size. We address this limitation by imposing an order on the records without explicitly assigning a unique index to each one. Concretely, we extend each record by only two values; these values form a chain of pointers that enables the adversary to reconstruct a total order on the records.
 
-The attack starts by checking whether there exists a column $j^*$ in $T$ in which every identifier is unique, i.e., $|\{\bt[j^*] \setdsc \bt \in T\}| = |T|$.
-This is a reasonable assumption since many identifiers such as email addresses are usually unique across users.
-If no such column exists, the adversary can create one by sampling $n$ distinct identifiers
-and prepending each identifier to a distinct  record in $T$ (in this case $j^* = 0$).
+The attack starts by checking whether there exists a column (attribute) $j^*$ in $T$ such that every value in that column is unique, i.e., $|\{\bt[j^*] \setdsc \bt \in T\}| = |T|$. This is a reasonable assumption, as many identifiers (e.g., email addresses) are typically unique per user. If no such column exists, the adversary can create one by sampling $n$ distinct values in $\Ispace[]$ and prepending one value to each record in $T$ (in which case $j^* = 0$).
 
-We can then link the records of $T$ by first choosing some arbitrary ordering $T= \{\bt_0, \dots, \bt_{n-1}\}$ and appending the unique index of the $i+1$-th record to the $i$-th record for all $i \in [n-1]$.
-See Figure~\ref{subfig:snake_example_unique} for a small example. The linking procedure \snakeencodeUnique{} outputs the modified target set $X$ as a list $(\bx_0, \dots, \bx_{n-1})$, such that $\bt_i$ corresponds to $\bx_i$ in the (implicit) linked list.
+The adversary links the records of $T$ by fixing an arbitrary ordering $(\bt_0, \dots, \bt_{n-1})$ and appending the unique value of the $(i+1)$-st record to the $i$-th record for all $i \in [n-1]$. See Figure~\ref{subfig:snake_example_unique} for a small example. This yields an input set $X = \{\bx_0, \dots, \bx_{n-1}\}$ such that $\bt_i$ corresponds to $\bx_i$ in an (implicit) linked list. Party $\tP_1$ then invokes the functionality $\calF_{\LMKPM}(\ \cdot\ ;Y)$ on $X$ to obtain the output.  
 
-Since the identifier hiding function in $\calF_\LMKPM$ is injective and deterministic for repeating identifiers, the pointers are preserved in the leakage $\hXone$.
-The adversary can therefore find the start of the linked list by finding the (unique) record whose $j^*$-th identifier is not appended to any other record and traverse the linked list to recover the original ordering of $X$.
+Since the hiding function $f_X$ used in $\calF_\LMKPM$ is injective and deterministic, the pointers in $X$ are preserved in the corresponding leakage $\hXone$. The adversary can thus locate the start of the list as the record whose $j^*$-th value is not appended to any other record (i.e., the head of the linked list), and traverse the linked list to recover the original ordering of $X$.
 
+Formally, given the leaked set $\hXone$ and the column index $j^*$, the adversary can reorder the elements of $\hXone$ into a list $(\bs_0, \dots, \bs_{n-1})$ as follows: $\bs_0$ is the unique record whose $j^*$-th value does not appear as an appended ``next'' value in any other record, and for each $i \geq 1$, $\bs_i$ is the unique record whose $j^*$-th value equals the appended pointer in $\bs_{i-1}$. Thus, $\bs_i$ corresponds to the $i$-th plaintext record in the linked list. 
 
-The procedure \snakerecoverUnique{} takes the input set leakage $\hXone$ and $j^*$ and outputs the elements of $\hXone$ as a list $(\bs_0, \dots, \bs_{n-1})$ such that $\bs_i$ has index $i$ in the linked list. Once the hidden records in $\hXone$ are matched with the corresponding plaintext records in $X$, we can apply a substitution-based transformation to recover a maximum reconstruction from $\hYone$.
+The adversary then initializes an empty dictionary $\Dict$ and, for each $i = 0,\dots,n-1$ and each $j = 0,\dots,|\bs_i|-1$, sets $\Dict : \bs_i[j] \mapsto \bx_i[j]$.
+The adversary can once again apply this dictionary to $\hYone$ to recover a maximum set reconstruction of $Y$ with respect to $T$.
 
-The pseudocode for the full attack are given in Figure~\ref{fig:snakeattack}.
+The pseudocode of $\snakeattack$ is given in Figure~\ref{fig:snakeattack}.
 
 
 
 \begin{theorem}\label{thm:snakeattack:correctness}
 	Let $T$ be the adversary's target set and $Y$ be the victim's input.
-    $\snakeattack^{\calF_\LMKPM(\cdot, Y)}(T)$ (Figure~\ref{fig:rec_enum_attack}) produces a maximum reconstruction of $Y$ with respect to $T$ (Def.~\ref{def:max_recons}).
+    $\snakeattack^{\calF_\LMKPM(\cdot, Y)}(T)$ (Figure~\ref{fig:rec_enum_attack}) achieves maximum set reconstruction of $Y$ with respect to $T$ (Def.~\ref{def:max_recons}).
 \end{theorem}
 
 The proof of Theorem~\ref{thm:snakeattack:correctness} can be found in Appendix~\ref{sec:snakeattack:correctness}.
 
 \heading{Time and query complexity.} 
-Assuming \id{} in line \ref{lin:snake_encode_last_id} can be located in constant time, \snakeencodeUnique{} has an average-case time complexity of \(\bigO{n}\) for \(n = |T|\). The same applies to \snakerecoverUnique. Finding the starting index in line \ref{lin:snake_recover_c} involves inserting the last identifier of each record into a dictionary and checking for the presence of the \(j^*\)-th identifier, while the loop in lines \ref{lin:snake_recover_dowhile}--\ref{lin:snake_recover_dowhile_end} performs \(n\) iterations, traversing the linked list once.
-
-Let \(\ell_{\rec}\) denote the length of the largest record in either \(T\) or \(Y\). Determining whether a column in \(T\) contains only unique identifiers can be done in $\bigO{\ell_{\rec} n}$ time, assuming that dictionary operations are average-case constant time. Constructing the dictionary $\Dict$ involves up to \(\ell_{\rec} n\) writes. Factoring in \dictInfer's \(\bigO{\ell_{\rec} m}\) complexity with \(m = |Y|\), the overall average-case time complexity for \snakeattack{} is \(\bigO{\ell_{\rec} (n + m)}\). Similar to the previous attacks, \snakeattack{} requires only one protocol invocation.
+Let \(\ell_{\rec}\) denote the length of the largest record in \(T\) and \(Y\). Determining whether a column in \(T\) contains only unique identifiers can be done in $\bigO{\ell_{\rec} n}$ time.
+Constructing the (implicit) linked list has an average-case time complexity of \(\bigO{n}\), as does identifying the linked list in the leakge. 
+Constructing the dictionary involves up to \(\ell_{\rec} n\) writes. Computing $R_Y$ using $\Dict$ and $\hYone$ requires time $\bigO{\ell_{\rec} m}$. The overall average-case time complexity for \snakeattack{} is \(\bigO{\ell_{\rec} (n + m)}\). Similar to the previous attacks, it requires only one protocol invocation.
 
 % \heading{Discussion and mitigation.}
 % While requiring the same number of protocol invocations and incurring a comparable computational complexity to the other attacks, \snakeattack{} stands out for requiring only minimal modifications to the target set and is applicable to scenarios where the record length is constrained to a small constant.
