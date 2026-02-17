@@ -1,30 +1,68 @@
-\begin{table*}[h!]
+\begin{table}[h!]
+\small
 \centering
-\begin{tabular}{r c c c c c c c}
+\begin{tabular}{l c c c c c }
 \toprule
-\textbf{Attacks} & \textbf{Functionality} & \textbf{Adv's Input} & \textbf{Recovery Goal} & \textbf{\# Queries} & \textbf{Approx.} & \textbf{Adaptive} & \textbf{Auxiliary Data} \\
+\textbf{Ref.} & \textbf{Func.} & \textbf{Goal} & \textbf{\#Qry} & \textbf{Approx.} & \textbf{Adapt.} \\
 \midrule
-Guo et al.~\cite{USENIX:GHLWJL22} & PSI-CA & Set & Intersection & $\bigO{n}$ &  & \checkmark &  \\ 
+\cite{USENIX:GHLWJL22} & PSI-CA & IR & $\bigO{n}$ &  & \checkmark  \\ 
 \hline
-Jiang et al.~\cite{NDSS:JiaDuYan24} & PSI-CA & Set & Intersection & $\bigO{n}$ &  &  & \checkmark \\ 
-Jiang et al.~\cite{NDSS:JiaDuYan24} & PSI-CA & Set & Intersection & $\bigO{n}$ & \checkmark &  \checkmark &  \\ 
-Jiang et al.~\cite{NDSS:JiaDuYan24} & PSI-Sum~\cite{EuroSP:IKNPSS20} &  KV Store & Intersection & -- &  &  \checkmark &  \\
+\cite{NDSS:JiaDuYan24} & PSI-CA  & IR & $\bigO{n}$ &  & \\ 
+ & & & & \checkmark & \checkmark \\ 
+ & PSI-Sum & Intersec. & -- & & \checkmark \\
 \hline
-Falzon \& Tang~\cite{USENIX:FalTan25} & \multirow{4}{*}{PJC~\protect\cite{AC:LPRST21}} &  KV Store & Key-value & $\bigO{k \log n}$ &  &  \checkmark &  \\
-Falzon \& Tang~\cite{USENIX:FalTan25} &  &  KV Store & Key-value & -- & \checkmark &   & Value Distribution \\
-Falzon \& Tang~\cite{USENIX:FalTan25} &  &  KV Store & Key-value & $2k$ &  &   & Intersection size $k$ \\
-Falzon \& Tang~\cite{USENIX:FalTan25} &  & KV Store & Key-value & $\Theta(k \log(n/k))$ & \checkmark &   & Upper bound of $k$  \\
+\cite{USENIX:FalTan25} & \multirow{4}{*}{PJC}  & KVR & $\bigO{k\log n}$ &  & \checkmark  \\
+ & & KVR & -- & \checkmark &   \\
+ & & KVR & $2k$ &  &   \\
+ & & KVR & $\Theta(k\log(n/k))$ & \checkmark &   \\
 \hline
-\textbf{This work} (\S\ref{sec:psu-attack}) & PSU & Set & Intersection & 2 &  &   &  \\
-\textbf{This work} (\S\ref{sec:PSUCA_attack}) & PSU-CA & Set & Intersection & $\bigO{n}$ &  &  \checkmark &   \\
-\textbf{This work} (\S\ref{sec:PSUCA_to_matching}) & $\MKPM$~\protect\cite{MKPMC} & Set of Records & Matchable Rec. Recovery & $\bigO{n}$ &  &  \checkmark &  \\
-\textbf{This work} (\S\ref{sec:st-mkpm-attack}) & \multirow{4}{*}{$\LMKPM$~\protect\cite{MKPMC}} & Set of Records & ID Intersec. Recovery & $\bigO{n}$ &  &  \checkmark &  \\
-\textbf{This work} (\S\ref{sec:baseline-attack}) &  & Set of Records & Max-Set Recon. & 1 &  &   &  \\
-\textbf{This work} (\S\ref{sec:rec_enum_attack}) &  & Set of Records & Max-Set Recon. & 1 &  &   &  \\
-\textbf{This work} (\S\ref{sec:snake_attack}) &  & Set of Records & Max-Set Recon. & 1 &  &   &  \\
+\S\ref{sec:psu-attack} & PSU & IR & 2 &  &   \\
+\S\ref{sec:PSUCA_attack} & PSU-CA & IR & $\bigO{n}$ &  & \checkmark \\
+\S\ref{sec:PSUCA_to_matching} & $\MKPM$ & MRR & $\bigO{n}$ &  & \checkmark \\
+\S\ref{sec:st-mkpm-attack} & \multirow{4}{*}{$\LMKPM$} & VIR & $\bigO{n}$ &  & \checkmark \\
+\S\ref{sec:baseline-attack} & & MSR & 1 & & \\
+\S\ref{sec:rec_enum_attack} & & MSR & 1 & & \\
+\S\ref{sec:snake_attack} & & MSR & 1 & & \\
 \bottomrule
 \end{tabular}
 \vspace{3mm}
-\caption{An overview of functionalities and their corresponding attacks. In all the attacks, the adversary behaves honestly according to the protocol specification but may provide maliciously chosen inputs. For each attack, we report the recovery goal, the number of queries required, whether the attack can reconstruct the values approximately, whether it is adaptive, and if it requires additional knowledge. Here $n$ denotes the size of the adversary's target set and $k$ is the size of the intersection of the target set and the recovery set. }
+\caption{An overview of our attacks and prior work. We report the recovery goal, the number of queries required, whether the attack can reconstruct the values approximately, and whether it is adaptive. 
+We abbreviate the recovery goals as follows: IR$=$intersection recovery (Def.~\ref{def:intersection-recovery}), KVR$=$key-value recovery,
+MRR$=$matchable record recovery (Def.~\ref{def:matchable_records_recovery}), VIR$=$value intersection recovery (Def.~\ref{def:VIR_goal}), and MSR$=$maximum-set reconstruction (Def.~\ref{def:max_recons}).
+Here $n$ denotes the size of the adversary's target set and $k$ is the size of the intersection of the target set and the recovery set. }
 \label{tab:protocol_comparison}
-\end{table*}
+\vspace{-5mm}
+\end{table}
+
+
+% \begin{table}[h!]
+% \centering
+% \small
+% \begin{tabular}{r c c c c c }
+% \toprule
+% \textbf{Attacks} & \textbf{Functionality}  & \textbf{Recovery Goal} & \textbf{\# Queries} & \textbf{Approx.} & \textbf{Adaptive} \\
+% \midrule
+% Guo et al.~\cite{USENIX:GHLWJL22} & PSI-CA & IR & $\bigO{n}$ &  & \checkmark  \\ 
+% \hline
+% Jiang et al.~\cite{NDSS:JiaDuYan24} & PSI-CA  & IR & $\bigO{n}$ &  & \\ 
+% Jiang et al.~\cite{NDSS:JiaDuYan24} & PSI-CA  & IR & $\bigO{n}$ & \checkmark &  \checkmark \\ 
+% Jiang et al.~\cite{NDSS:JiaDuYan24} & PSI-Sum~\cite{EuroSP:IKNPSS20} & Intersection & -- &  &  \checkmark \\
+% \hline
+% Falzon \& Tang~\cite{USENIX:FalTan25} & \multirow{4}{*}{PJC~\protect\cite{AC:LPRST21}}  & Key-value & $\bigO{k \log n}$ &  &  \checkmark  \\
+% Falzon \& Tang~\cite{USENIX:FalTan25} &  &  Key-value & -- & \checkmark &   \\
+% Falzon \& Tang~\cite{USENIX:FalTan25} &  &  Key-value & $2k$ &  &    \\
+% Falzon \& Tang~\cite{USENIX:FalTan25} &  &  Key-value & $\Theta(k \log(n/k))$ & \checkmark &    \\
+% \hline
+% \textbf{This work} (\S\ref{sec:psu-attack}) & PSU & IR (Def.~\ref{def:intersection-recovery}) & 2 &  &    \\
+% \textbf{This work} (\S\ref{sec:PSUCA_attack}) & PSU-CA &  IR (Def.~\ref{def:intersection-recovery}) & $\bigO{n}$ &  &  \checkmark   \\
+% \textbf{This work} (\S\ref{sec:PSUCA_to_matching}) & $\MKPM$~\protect\cite{MKPMC} &  MRR (Def.~\ref{def:matchable_records_recovery}) & $\bigO{n}$ &  &  \checkmark  \\
+% \textbf{This work} (\S\ref{sec:st-mkpm-attack}) & \multirow{4}{*}{$\LMKPM$~\protect\cite{MKPMC}} &  VIR (Def.~\ref{def:VIR_goal}) & $\bigO{n}$ &  &  \checkmark  \\
+% \textbf{This work} (\S\ref{sec:baseline-attack}) &  & MSR (Def.~\ref{def:max_recons}) & 1 &  &   \\
+% \textbf{This work} (\S\ref{sec:rec_enum_attack}) &  &  MSR (Def.~\ref{def:max_recons}) & 1 &  &   \\
+% \textbf{This work} (\S\ref{sec:snake_attack}) &  &  MSR (Def.~\ref{def:max_recons}) & 1 &  &    \\
+% \bottomrule
+% \end{tabular}
+% \vspace{3mm}
+% \caption{An overview of functionalities and their corresponding attacks. In all the attacks, the adversary behaves honestly according to the protocol specification but may provide maliciously chosen inputs. For each attack, we report the recovery goal, the number of queries required, whether the attack can reconstruct the values approximately, and whether it is adaptive. Here $n$ denotes the size of the adversary's target set and $k$ is the size of the intersection of the target set and the recovery set. }
+% \label{tab:protocol_comparison}
+% \end{table}
