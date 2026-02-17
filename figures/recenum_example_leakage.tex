@@ -6,28 +6,28 @@
 	>=Stealth]
 	% Nodes
 	\node[block=\minwidthid, draw=none] (eve_idx) {$\bx_2:$};
-	\node[block=\minwidthid,fill=trow-dark, right=\linecorr of eve_idx](eve1) {$e_1$};
-	\node[block=\minwidthid,fill=trow-dark, right=\linecorr of eve1] (eve2) {$e_2$};
-	\node[block=\minwidthid,fill=trow-dark, right=\linecorr of eve2] (eve3) {$e_3$};
-	\node[block=\minwidthid,fill=trow-dark, right=\linecorr of eve3] (eve4) {$e_4$};
+	\node[block=\minwidthid,fill=trow-dark, right=\linecorr of eve_idx](eve1) {$e_0$};
+	\node[block=\minwidthid,fill=trow-dark, right=\linecorr of eve1] (eve2) {$e_1$};
+	\node[block=\minwidthid,fill=trow-dark, right=\linecorr of eve2] (eve3) {$e_2$};
+	\node[block=\minwidthid,fill=trow-dark, right=\linecorr of eve3] (eve4) {$e_3$};
 
 	\node[block=\minwidthid,below=\rowspace of eve_idx, draw=none ] (bob_idx) {$\bx_1:$};
-	\node[block=\minwidthid,fill=trow-light, right=\linecorr of bob_idx] (bob1) {$e_2$};
-	\node[block=\minwidthid,fill=trow-light, right=\linecorr of bob1] (bob2) {$e_1$};
-	\node[block=\minwidthid,fill=trow-light, right=\linecorr of bob2] (bob3) {$e_5$};
-	\node[block=\minwidthid,fill=trow-light, right=\linecorr of bob3] (bob4) {$e_6$};
+	\node[block=\minwidthid,fill=trow-light, right=\linecorr of bob_idx] (bob1) {$e_1$};
+	\node[block=\minwidthid,fill=trow-light, right=\linecorr of bob1] (bob2) {$e_0$};
+	\node[block=\minwidthid,fill=trow-light, right=\linecorr of bob2] (bob3) {$e_4$};
+	\node[block=\minwidthid,fill=trow-light, right=\linecorr of bob3] (bob4) {$e_5$};
 
 	\node[block=\minwidthid,below=\rowspace of bob_idx, draw=none ] (gus_idx) {$\bx_3:$};
-	\node[block=\minwidthid,fill=trow-dark, right=\linecorr of gus_idx] (gus1) {$e_1$};
-	\node[block=\minwidthid,fill=tiebreaker, right=\linecorr of gus1] (gus2) {$e_7$};
-	\node[block=\minwidthid,fill=trow-dark, right=\linecorr of gus2] (gus3) {$e_8$};
-	\node[block=\minwidthid,fill=trow-dark, right=\linecorr of gus3] (gus4) {$e_9$};
+	\node[block=\minwidthid,fill=trow-dark, right=\linecorr of gus_idx] (gus1) {$e_0$};
+	\node[block=\minwidthid,fill=tiebreaker, right=\linecorr of gus1] (gus2) {$e_6$};
+	\node[block=\minwidthid,fill=trow-dark, right=\linecorr of gus2] (gus3) {$e_7$};
+	\node[block=\minwidthid,fill=trow-dark, right=\linecorr of gus3] (gus4) {$e_8$};
 	
 	\node[block=\minwidthid,below=\rowspace of gus_idx, draw=none ] (alice_idx) {$\bx_0:$};
-	\node[block=\minwidthid,fill=matched-light, right=\linecorr of alice_idx] (alice1) {$e_2$};
-	\node[block=\minwidthid,fill=matched-light, right=\linecorr of alice1] (alice2) {$e_2$};
-	\node[block=\minwidthid,fill=trow-light, right=\linecorr of alice2] (alice3) {$e_{10}$};
-	\node[block=\minwidthid,fill=trow-light, right=\linecorr of alice3] (alice4) {$e_{11}$};
+	\node[block=\minwidthid,fill=matched-light, right=\linecorr of alice_idx] (alice1) {$e_1$};
+	\node[block=\minwidthid,fill=matched-light, right=\linecorr of alice1] (alice2) {$e_1$};
+	\node[block=\minwidthid,fill=trow-light, right=\linecorr of alice2] (alice3) {$e_{9}$};
+	\node[block=\minwidthid,fill=trow-light, right=\linecorr of alice3] (alice4) {$e_{10}$};
 
 	\draw[draw=added-id, line width=.7pt] (eve1.north west) rectangle (alice2.south east);
 \end{tikzpicture}

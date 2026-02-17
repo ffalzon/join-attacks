@@ -1,33 +1,33 @@
 \section{Maximum Set Reconstruction with $\calF_{\LMKPM}$}\label{sec:lmkpm-attacks}
 
-In this section, we describe three powerful attacks that exploit the ``leaky'' functionality $\calF_{\LMKPM}$. 
-The authors of MK-PrivateID \cite{MKPMC} acknowledge the existence of their protocol’s leakage but deem it acceptable as an aggregate metric that would only cause concern across multiple executions. We contradict this by presenting three attacks that achieve \emph{maximum set reconstruction} (Definition~\ref{def:max_recons}) with only a single protocol invocation.
+In this section, we describe three powerful attacks that exploit the ``leaky'' functionality $\calF_{\LMKPM}$. Buddhavarapu et al.~\cite{MKPMC} acknowledge this leakage but deem it acceptable as an aggregate metric that would only raise concerns across multiple executions. In contrast, we present three attacks that achieve \emph{maximum set reconstruction} (Definition~\ref{def:max_recons}) with a single protocol invocation.
 
 We first present a baseline attack that is highly efficient but relies on a strong assumption on the protocol inputs. We then describe two additional attacks that progressively relax these assumptions.
-All three attacks preprocess the target set $T$ so that the resulting records are uniquely identifiable from the protocol output in a single invocation. This allows the adversary to map hidden identifiers revealed by the leakage back to their plaintext values. 
+% All three attacks preprocess the target set $T$ so that the resulting records are uniquely identifiable from the protocol output in a single invocation. This allows the adversary to map hidden identifiers revealed by the leakage back to their plaintext values. 
 
 
 \subsection{The Baseline Attack}
 \label{sec:baseline-attack}
 
-We first observe that record matching is trivial when the target set contains a single record.
-Exploiting this, our baseline attack flattens the target set $T$ into a modified input table $X$ with one record containing all identifiers in $\Ispace{T}$.
-Evaluating this record against the victim set via $\leak_1$ yields unambiguous matches.
+We first observe that record matching is trivial when the adversary’s input set contains one record. Exploiting this, we present \baselineattack{}, which flattens the target set $T$ into an input $X$ consisting of a single record that contains all values in $\Ispace[T]$.
 
-Recall that the records in $X$ are hidden and shuffled, while the order of identifiers within each record is preserved to support prioritized matching.
-The baseline attack leverages the single record in $X$ to construct a dictionary that maps hidden identifiers appearing in the leakage back to their original plaintext identifiers. This is possible because the adversary knows the plaintext record and can align it with its hidden counterpart, $\hXone$.
-Applying this dictionary to the leaked, hidden records of the victim set, $\hYone$, allows the adversary to reconstruct all victim records that share at least one identifier with $T$. This results in a maximum set reconstruction of $Y$ with respect to $T$.
+Recall that while the records in the input $X$ are hidden and shuffled, the order of values \emph{within} each record is preserved to support prioritized matching.
+The baseline attack constructs a dictionary $\Dict$ that maps hidden values appearing in the leakage $\hXone = \{\hbx\}$ back to their original plaintext values in the input $X = \{\bx\}$. Specifically, for all $j = 0, \dots, |\hbx|$, the adversary sets
+\[
+    \Dict : \hbx[j] \mapsto \bx[j].
+\]
+It then uses $\Dict$ to recover plaintext values in the recovery set $\hYone$. It initializes an empty multiset $R_Y$, and for each hidden record $\hby_i \in \hYone$ it initializes an empty record $\bs_i$. For all $j = 0, \dots, |\hby_i|$, it checks whether $\hby_i[j] \in \Dict$; if so, it appends $\Dict[\hby_i[j]]$ to $\bs_i$. Finally, it adds $\bs_i$ to $R_Y$. In this way, the adversary recovers the plaintexts of all values in $Y$ that are in common with those in $T$.
+This procedure yields a maximum set reconstruction $R_Y$ of $Y$ with respect to $T$.
 
-For convenience, we refer to this attack as the \baselineattack{}.
-We omit a full proof of correctness, as the construction directly follows from the fact that all identifiers in the flattened target record are uniquely identifiable in a single invocation of $\calF_{\LMKPM}$.
+We omit a full proof of correctness. Correctness of the attack directly follows from the fact that all values in the flattened target record are uniquely identifiable in a single invocation of $\calF_{\LMKPM}$.
 
 
 \heading{Time and query complexity.}
-Let $\ell_{\rec}$ denote the maximum record length in $T$ and $Y$, and let $n := |T|$ and $m := |Y|$.
+Let $\ell_{\rec}$ denote the maximum record length in $T$ and $Y$, and let $n = |T|$ and $m = |Y|$.
 The attack has an asymptotic time complexity of
-$\bigO{(n\ell_{\rec})^2 + \ell_{\rec} m}$.
-The membership check can be reduced to constant time by maintaining an auxiliary set of already added identifiers, as set membership can be tested in constant time.
-The attack requires only one protocol invocation and therefore establishes a tight lower bound on the number of queries needed to achieve MR.
+$\bigO{\ell_{\rec}(n + m)}$.
+%The membership check can be reduced to constant time by maintaining an auxiliary set of already added identifiers, as set membership can be tested in constant time.
+The attack requires only one protocol invocation and therefore establishes a tight lower bound on the number of queries needed to achieve MSR (Definition~\ref{def:max_recons}).
 
 % \begin{figure*}
 % 	\input{pseudocode/recenum-code.tex}
@@ -62,17 +62,23 @@ The attack requires only one protocol invocation and therefore establishes a tig
     }
     \caption{
     An example of a target set transformation by \recenumattack.
-    (\ref{subfig:recenum_example_plain}) shows the target set $T$ (blue box) and the input set $X$, extended with prepended encoding identifiers (green box). 
-    Note the second identifier $\id_2$ in the last record.
-    (\ref{subfig:recenum_example_leakage}) shows the hidden, shuffled protocol records of $P_1$, $\hXone$.
-    The hidden identifiers corresponding to $(\id_0,\id_0)$ are highlighted in green, and that corresponding to $\id_2$ is highlighted in blue.
+    (\ref{subfig:recenum_example_plain}) shows the target set $T$ (blue box) and the input set $X$, extended with prepended encoding (green box). 
+    Note the second value $v_2$ in the last record.
+    (\ref{subfig:recenum_example_leakage}) shows the corresponding hidden, shuffled records $\hXone$.
+    The hidden values corresponding to $(v_0,v_0)$ are highlighted in green, and that corresponding to $v_2$ is highlighted in blue.
     }
     \label{fig:recenum_example}
 \end{figure}
 
-
 \subsubsection{A First Optimization}
-This baseline attack relies on an atypical input structure is both unnatural and easily detectable in practice, namely a table containing a single, long record. This limitation motivates the more refined attacks presented next, which achieve similar reconstruction goals while avoiding conspicuous, adversarial input patterns.
+The baseline attack relies on an atypical input structure---one very long record---which is both unnatural and easy to detect in practice. This motivates more refined attacks that achieve MSR without such conspicuous inputs.
+
+A first optimization avoids arbitrarily long records by exploiting that record lengths are preserved in the leakage. The values in $\Ispace[T]$ can be partitioned into multiple records, each of a \emph{unique} length. Let $X'$ denote the resulting set of records and ${\hXone}'$ the corresponding leakage. Since each record has a distinct length and the order of identifiers within records is preserved, the adversary can uniquely match each record in ${\hXone}'$ to the plaintext record of equal length in $X'$, build a dictionary as before, and again achieve MSR.
+
+\heading{Time and Query Complexity.}
+This optimized attack still uses a single protocol query and has time complexity \bigO{\ell_{\rec}(n + m)}. The maximum record length decreases from $|\Ispace[T]|$ to approximately $\sqrt{2|\Ispace[T]|}$. While less conspicuous than the single-record variant, it remains easily detectable. Our next two attacks remove this assumption.
+
+
 
 % \begin{figure*}[ht!]
 %     \centering
@@ -82,67 +88,50 @@ This baseline attack relies on an atypical input structure is both unnatural and
 % \end{figure*}
 
 
-One can avoid using arbitrarily long records by exploiting the fact that record lengths are preserved in the protocol leakage.
-Specifically, the identifiers in the target set $T$ can be partitioned into multiple smaller records, each of a \emph{unique} length. Let $X'$ denote the resulting table of unique-length records and ${\hXone}'$ the corresponding leaked, hidden records.
-Because each record has a distinct length and the identifier order within records is preserved, the adversary can still establish a unique correspondence between the values in ${\hXone}'$ and the plaintext identifiers in $X'$. Consequently, any identifier shared between $Y$ and $X'$ can be inferred by identifying values common to $\hYone$ and ${\hXone}'$ and then mapping them back to their plaintext identifiers via $X'$.
-
-
-\heading{Time and query complexity.} This optimized attack also requires one protocol query and has a time complexity of \bigO{(n\ell_{\rec})^2 + \ell_{\rec} m}.
-However, the maximum record length has decreased from $|\Ispace{T}|$ to $\frac{\sqrt{1+8|\Ispace{T}|}-1}{2} \approx \sqrt{2|\Ispace{T}|}$. While (arguably) less conspicuous than the single-record variant,  the victim can still detect such an attack by checking whether the adversary's input contains no two records with the same length. In our next two attacks, we thus remove this assumption.
-
 \subsection{Record Enumeration Attack}\label{sec:rec_enum_attack}
 
-In this subsection, we present a more general attack that applies even when all records in the target set have equal length.
-For clarity, we assume that every record in the target set $T$ contains the same number of identifiers, however, the attack extends directly to target sets with records of varying lengths.
+We now present an attack whose input set consists of equal-length records. For simplicity, we assume that every record in the target set $T$ has the same length; the attack extends directly to target sets with records of varying lengths.
 
-We refer to this attack as the \emph{Record Enumeration Attack}. It relies only on two properties of the extended functionality $\calF_{\LMKPM}$: (i) the order of identifiers within each target record is preserved in the leakage, and (ii) identifiers are hidden deterministically, so that repeated occurrences of the same identifier yield the same hidden value within a single protocol execution.
+We refer to this attack as the \emph{Record Enumeration Attack}. It relies only on two properties of the functionality $\calF_{\LMKPM}$: (i) the order of values within each record of $\tP_1$'s input is preserved in the corresponding hidden records in the leakage, and (ii) values are hidden deterministically, so that repeated occurrences of the same value yield the same hidden value within a single protocol execution.
+The attack proceeds by enumerating the records in $T$ and prepending to each record an encoding of its index using known values. If this enumeration can be recovered from the leakage, then the adversary can compute a dictionary $\Dict$ from hidden to plaintext values and subsequently use $\Dict$ to output a maximum set reconstruction of the victim’s input $Y$.
 
+Without loss of generality, assume that $|T|$ is not a power of two, and let $v_0, v_1 \in \Ispace[]$ be two distinct values. Fix an ordering $(\bt_0,\ldots,\bt_{n-1})$ of the records in $T$, where $\bt_i$ denotes the $i$-th record. Each index $i \in [0,n-1]$ is encoded as a binary string of length $\lenc := \lceil \log_2 n\rceil$, where bits $0$ and $1$ are represented by $v_0$ and $v_1$, respectively. This binary encoding is prepended to $\bt_i$, and we denote by $X$ the resulting set of extended records. For example, if $n = 5$, then $\lceil \log_2 5 \rceil = 3$, and the first record $\bt_0$ is augmented as $v_0 \| v_0 \| v_0 \| \bt_0$ and added to $X$.
 
+% See Figure~\ref{subfig:recenum_example_plain} for a small example. The encoding procedure \IdxToSeq{} is given in Figure~\ref{fig:idx_to_seq}.
 
-
-We leverage these properties by enumerating the records in the target set $T$ and prepending to each record an encoding of its index using known identifiers.
-If this enumeration can be recovered from the protocol leakage, we can construct a dictionary $\Dict$ from hidden to plaintext identifiers (see procedure $\dictInfer$ in \ref{fig:dict_infer}) and then use $\Dict$ to output a maximum reconstruction of the victim's input $Y$.
-
-Concretely, let $\id_0$ and $\id_1$ be two distinct identifiers (whether they already occur in the target or victim sets does not matter).
-Fix an ordering $(\bt_0,\ldots,\bt_{n-1})$ of the records in $T$, where $\bt_i$ denotes the $i$-th record.
-Each index $i \in [0,n-1]$ is encoded as a binary string of length $\ell := \lceil \log_2 n\rceil$ 
-where bits $0$ and $1$ are represented by $\id_0$ and $\id_1$, respectively.
-This ``binary'' encoding is prepended to $\bt_i$, and we denote by $X$ the resulting set of extended records.
-
-See Figure~\ref{subfig:recenum_example_plain} for a small example. The encoding procedure \IdxToSeq{} is given in Figure~\ref{fig:idx_to_seq}.
-
-We now analyze the leakage produced by invoking MK-PrivateID on the modified input $X$. Let $(\hXone,\hYone)$ denote the additional leakage revealed to the adversarial party $P_1$. Recall that $\calF_{\LMKPM}$ hides identifiers via an injective random function $f_X$ while preserving the order of identifiers within records of $X$. Consequently, for any $\hbx \in \hXone$, the first $\ell$ positions correspond exactly to the encoded prefix and therefore contain only two hidden identifiers, say $e$ and $e'$. Moreover, either $(e,e') = (f_X(\id_0), f_X(\id_1))$ or $(e,e') = (f_X(\id_1), f_X(\id_0))$.
-
-By distinguishing between these two cases, the adversary can recover the index $i$ encoded in the prefix of $\hbx$ and thereby establish a correspondence between the hidden identifiers in $\hXone$ and the plaintext identifiers in $X$. The decoding procedure is formalized by $\SeqToIdx$ in Figure~\ref{fig:seq_to_idx}.
-To determine whether a hidden identifier $e$ corresponds to $\id_0$ or $\id_1$, we assume that $n$ is not a power of two, i.e., $|T| < 2^\ell$. As such, no record is assigned index $2^\ell - 1$, and the corresponding encoding $(\id_1,\ldots,\id_1)$ never appears. This asymmetry serves as a tiebreaker: the encoding of index $0$, namely $(\id_0,\ldots,\id_0)$, must occur.
-
-In the leakage, this record is easily identified as the unique element of $\hXone$ whose first $\ell$ identifiers are all equal. Let $\hbx_0$ denote this record. It follows immediately that $\hbx_0[1] = f_X(\id_0)$, allowing the adversary to distinguish $f_X(\id_0)$ from $f_X(\id_1)$ and decode all remaining prefixes.
-
-The assumption that $n$ is not a power of two is without loss of generality.
-If $T$ is a power of two, the adversary can simply add or remove a single record from the target set.
-Altneratively, it can introduce a third, tie-breaking identifier $\id_2 \notin {\id_0,\id_1}$ and modify the encoding of the index $2^\ell-1$ by replacing its last symbol in $(\id_1,\ldots,\id_1)$ with $\id_2$. This modification guarantees a unique, identifiable prefix and removes the ambiguity between the encoding of $0$ and $2^n$. We adopt this tie-breaking approach in our presentation of the attack.
-
-An example of such leakage for the enumerated target set is shown in Figure~\ref{subfig:recenum_example_leakage}. The complete record enumeration attack is formalized in Figure~\ref{fig:rec_enum_attack}.
+We now analyze the output to $\tP_1$ when $\calF_{\LMKPM}(\ \cdot\ ; Y)$ is invoked on the augmented set of records $X$. Recall that $\calF_{\LMKPM}$ hides values via an injective random function $f_X$ while preserving the order of values within each record of $X$. Consequently, for any $\hbx \in \hXone$, the first $\lenc$ hidden values correspond to the encoded prefix and therefore comprise only two hidden values i.e., $e$ and $e'$. Moreover, we must have either $e = f_X(v_0)$ and $e' = f_X(v_1)$, or $e = f_X(v_1)$ and $e' = f_X(v_0)$.
 
 
+By distinguishing between these two cases, the adversary can recover the index encoded in the prefix of each $\hbx \in \hXone$ and establish a correspondence between the hidden records in $\hXone$ and the plaintext records in $X$. To determine whether a hidden value $e$ corresponds to $v_0$ or $v_1$, observe that since $n$ is not a power of two and $|T| < 2^{\lenc}$, no record is assigned index $2^{\lenc} - 1$, and the corresponding encoding $(v_1,\ldots,v_1)$ is not used. This serves as a tiebreaker: the encoding of index $0$ is the only encoding composed of a single value, namely $(v_0,\ldots,v_0)$.
 
+Without loss of generality, suppose that $e = f_X(v_0)$. The decoding procedure first identifies the hidden record in $\hXone$ whose first $\lenc$ values are all equal; denote this record by $\hbx_0$. Since values are not permuted within records, we must have $\hbx_0[0] = f_X(v_0) = e$. As before, the adversary can now compute a dictionary that maps hidden values to plaintext values. It initializes an empty dictionary $\Dict$.
+Then using the encoded prefix of each $\hbx \in \hXone$, the adversary recovers the corresponding index $i \in [0,n-1]$. For each $\hbx \in \hXone$ and each $j = 0,\dots,|\hbx|-1$, it sets
+\[
+  \Dict : \hbx[j] \mapsto \bx_i[j],
+\]
+where $\bx_i$ is the record in $X$ with index $i$. As before, this dictionary, together with $\hYone$, can be used to compute a maximum set reconstruction $R_Y$.
+
+%%%%%%%%%%%%%
+
+The assumption that $n$ is not a power of two can be dropped. The adversary can introduce a third tie-breaking identifier $\id_2 \notin \{\id_0,\id_1\}$ and modify the encoding of the index $2^\ell - 1$ by replacing the last symbol in $(\id_1,\ldots,\id_1)$ with $\id_2$. This guarantees a unique, identifiable prefix and removes the ambiguity between the encodings of $0$ and $2^\ell - 1$. We adopt this approach in our full attack.
+An example of a target set and its augmented input is shown in Figure~\ref{subfig:recenum_example_plain}. Its resulting leakage is shown in Figure~\ref{subfig:recenum_example_leakage}. 
+
+The pseudocode of $\recenumattack$ is given in Figure~\ref{fig:rec_enum_attack}.
 
 
 \begin{theorem}\label{thm:recenumattack:correctness}
 	Let $T$ be the adversary's target set and $Y$ be the victim's input.
-    $\recenumattack^{\calF_\LMKPM(\cdot, Y)}(T)$ (Figure~\ref{fig:rec_enum_attack}) produces a maximum reconstruction of $Y$ with respect to $T$ (Def.~\ref{def:max_recons}).
+    $\recenumattack^{\calF_\LMKPM(\cdot, Y)}(T)$ (Figure~\ref{fig:rec_enum_attack}) achieves maximum set reconstruction of $Y$ with respect to $T$ (Def.~\ref{def:max_recons}).
 \end{theorem}
 
 The proof of Theorem~\ref{thm:recenumattack:correctness} can be found in Appendix~\ref{sec:recenumattack:correctness}.
 
 
-
-
 \heading{Time and query complexity.}
-Assuming that $\Bin_\ell(i)$ can be computed in time $\bigO{\ell} = \bigO{\log n}$, both $\IdxToSeq$ and $\SeqToIdx$ run in time $\bigO{\ell}$. Encoding the target set therefore takes time $\bigO{n \log n}$.
-Identifying $\hbx_0$ requires scanning $\hXone$ and checking the first $\ell$ identifiers of each record, which also incurs time $\bigO{n \log n}$. Constructing the dictionary $\Dict$ takes time $\bigO{n(\log n + \lambda)}$, while applying $\dictInfer$ to the victim leakage requires time $\bigO{\lambda m}$, as established earlier.
+Assuming that the binary encoding can be computed in time $\bigO{\log n}$, then computing the augmented input set takes $\bigO{n \log n}$.
+Identifying $\hbx_0$ also incurs time $\bigO{n \log n}$. Constructing the dictionary $\Dict$ takes time $\bigO{n(\log n + \ell_{rec})}$, while computing $R_Y$ using $\Dict$ and $\hYone$ requires time $\bigO{\ell_{\rec} m}$.
 
-Overall, the attack runs in time \bigO{n (\log_2 n + \lambda) + \lambda m} and---like \baselineattack{}---\recenumattack{} requires only a single query.
+Overall, the attack runs in time \bigO{n \log n + \ell_{\rec}(n+m)} and requires only a single query.
 
 % \textbf{Discussion.}
 % Compared to the baseline attack, the records are now much shorter and are of uniform length.
