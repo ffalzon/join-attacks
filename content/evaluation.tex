@@ -65,8 +65,8 @@ As expected, runtimes grow approximately linearly in $|T|$.
 We observe runtime spikes between $|T| = 8 \cdot 10^5$ and $9 \cdot 10^5$ for $\rho = 0.4$ and between $|T| = 10^6$ and $1.1 \cdot 10^6$ for $\rho \in \{0.6, 0.8\}$; this is likely caused by the working set exceeding the processor’s L3 cache.
 
 \subsection{Search Tree Attacks Evaluation}
-We now evaluate our two search tree attacks: $\PSUCAattack$ (Figure~\ref{fig:PSUCA_attack}) and $\mkpsiattack$ (Figure~\ref{fig:MKPSIattack}). We used the same set sizes across experiments for both attacks.
-We plot the number of queries for both attacks in Figures~\ref{fig:plot_ST_queries_over_n} and \ref{fig:plot_ST_queries_over_mr},
+We now evaluate our search tree attacks: $\PSUCAattack$ (Figure~\ref{fig:PSUCA_attack}) and $\mkpsiattack$ (Figure~\ref{fig:MKPSIattack}). We used the same set sizes across experiments for both attacks.
+We plot the number of queries in Figures~\ref{fig:plot_ST_queries_over_n} and \ref{fig:plot_ST_queries_over_mr},
 and their runtimes in Figure~\ref{fig:st_time_all}.
 
 The time and query measurements of the two attacks are largely symmetric with respect to the intersection ratio and match rate.
@@ -84,6 +84,7 @@ Specifically, for any $\varepsilon$, measurements for experiments with $\rho, \e
 	\caption{The number of queries required by the (a) $\PSUCAattack${} and (b) $\mkpsiattack$ plotted against the target set size 
 	for intersection ratios $\rho$ and match rates $\eta$: \ref{legend:PSUCA_qn_n_0}~$0\%$, \ref{legend:PSUCA_qn_n_1}~$10\%$, \ref{legend:PSUCA_qn_n_2}~$20\%$, \ref{legend:PSUCA_qn_n_3}~$30\%$, \ref{legend:PSUCA_qn_n_4}~$40\%$ and \ref{legend:PSUCA_qn_n_5}~$50\%$.
 	The experiment was run with $|Y| = 10^4$.}\label{fig:plot_ST_queries_over_n}
+    \vspace{-5mm}
 \end{figure}
 
 
@@ -115,7 +116,7 @@ The heuristic used to choose which child to follow during path traversal and whi
     \mkpsiTimeNPlot{}{$n = |T|$}{}{measurements/leakage_attacks/mkpsi_time_over_n/V10000}
     \label{fig:st_time_mkpsi_n}
   }
-  \caption{Runtimes of the $\PSUCAattack$ and $\mkpsiattack$ attacks.
+  \caption{Runtimes of the two search-tree attacks.
   (a,b) Runtimes plotted against the intersection ratio $\rho$ and match rate $\eta$ for target set sizes
   \ref{legend:mkpsi_timeTlow}~$0.5\cdot 10^4$,
   \ref{legend:mkpsi_timeTmid}~$10^4$,

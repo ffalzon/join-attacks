@@ -86,3 +86,18 @@ Figure~\ref{fig:PSUCA_recon_qb_prios} shows that \PSUCAattack{} can partially re
 
 In contrast to Section~\ref{sec:st-queries} (where we ran the attacks to completion), the impact of the chosen heuristic for partial recovery is evident. Interestingly, the heuristic $p_{\PSICA}^+$, intended to maximize the recovery of $X \cap Y$, appears more efficient at increasing the recovery of $X \setminus Y$. Conversely, $p_{\PSICA}^-$ is more effective at optimizing the recovered intersection than the set difference. Morevoer, $p_{\PSICA}^*$ underperforms across all metrics, including total membership inference, which it was meant to optimize.
 
+
+
+\clearpage
+\begin{figure*}[h]
+	\input{pseudocode/recenum-code.tex}
+	\caption{Record enumeration attack $\recenumattack$ with oracle access to the extended MK-PrivateID functionality $\calF_{LMKPM}(\cdot; Y)$. 
+	Note that $Y$ is part of the oracle and not known to the adversary.}\label{fig:rec_enum_attack}\label{fig:idx_to_seq}\label{fig:seq_to_idx}\label{fig:dict_infer}
+\end{figure*}
+
+\begin{figure*}[h]
+    \centering
+    \vspace{0pt}
+	\input{pseudocode/snake-code.tex}
+    \caption{Snake attack with oracle access to the extended MKPM functionality $\calF_{\LMKPM}(\cdot, Y)$. $Y$ is part of the oracle and unknown to the adversary.\label{fig:snakeattack}\label{fig:snakeencode1}\label{fig:snakedecode1}} 
+\end{figure*}

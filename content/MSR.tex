@@ -29,11 +29,11 @@ $\bigO{(n\ell_{\rec})^2 + \ell_{\rec} m}$.
 The membership check can be reduced to constant time by maintaining an auxiliary set of already added identifiers, as set membership can be tested in constant time.
 The attack requires only one protocol invocation and therefore establishes a tight lower bound on the number of queries needed to achieve MR.
 
-\begin{figure*}
-	\input{pseudocode/recenum-code.tex}
-	\caption{Record enumeration attack $\recenumattack$ with oracle access to the extended MK-PrivateID functionality $\calF_{LMKPM}(\cdot, Y)$. 
-	Note that $Y$ is part of the oracle and not known to the adversary.}\label{fig:rec_enum_attack}\label{fig:idx_to_seq}\label{fig:seq_to_idx}\label{fig:dict_infer}
-\end{figure*}
+% \begin{figure*}
+% 	\input{pseudocode/recenum-code.tex}
+% 	\caption{Record enumeration attack $\recenumattack$ with oracle access to the extended MK-PrivateID functionality $\calF_{LMKPM}(\cdot; Y)$. 
+% 	Note that $Y$ is part of the oracle and not known to the adversary.}\label{fig:rec_enum_attack}\label{fig:idx_to_seq}\label{fig:seq_to_idx}\label{fig:dict_infer}
+% \end{figure*}
 
 \begin{figure}[t]
     \centering
@@ -74,12 +74,12 @@ The attack requires only one protocol invocation and therefore establishes a tig
 \subsubsection{A First Optimization}
 This baseline attack relies on an atypical input structure is both unnatural and easily detectable in practice, namely a table containing a single, long record. This limitation motivates the more refined attacks presented next, which achieve similar reconstruction goals while avoiding conspicuous, adversarial input patterns.
 
-\begin{figure*}[ht!]
-    \centering
-    \vspace{0pt}
-	\input{pseudocode/snake-code.tex}
-    \caption{Snake attack with oracle access to the extended MKPM functionality $\calF_{\LMKPM}(\cdot, Y)$. $Y$ is part of the oracle and unknown to the adversary.\label{fig:snakeattack}\label{fig:snakeencode1}\label{fig:snakedecode1}} 
-\end{figure*}
+% \begin{figure*}[ht!]
+%     \centering
+%     \vspace{0pt}
+% 	\input{pseudocode/snake-code.tex}
+%     \caption{Snake attack with oracle access to the extended MKPM functionality $\calF_{\LMKPM}(\cdot, Y)$. $Y$ is part of the oracle and unknown to the adversary.\label{fig:snakeattack}\label{fig:snakeencode1}\label{fig:snakedecode1}} 
+% \end{figure*}
 
 
 One can avoid using arbitrarily long records by exploiting the fact that record lengths are preserved in the protocol leakage.
