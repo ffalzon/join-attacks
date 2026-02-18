@@ -2,7 +2,7 @@
 \heading{Notation.} For $n \in \NN$, we define $[n] := \{1, \dots, n\}$.  For
 any $\ell, n\in \NN$ such that $\ell \geq \lfloor \log_2 (n+1)\rfloor$,
 $\Bin{\ell}(n) \in \{0,1\}^\ell$ denotes the $\ell$-bit binary representation of
-$n$.
+$N$.
 
 For sets $X,Y$ and any function $f:X\to Y$, we denote the image of $X$ under $f$
 as $f(X) := \{f(x) | x \in X\} \subseteq Y$.  Moreover, $\Funcs[X, Y]$ denotes
@@ -47,7 +47,7 @@ resolved into a one-to-one correspondence, along with the resulting output
 
 \heading{Security guarantee.} The original work~\cite{MKPMC} sketches a proof
 for semi-honest security. However, we note that the specified functionality
-leaks more information than the intended ouput. We therefore distinguish the
+leaks more information than the intended output. We therefore distinguish the
 intended functionality, which computes the set of UIDs and the mapping of UIDs
 to records ($\calF_{\MKPM{}}$), from the real functionality
 ($\calF_{\LMKPM{}}$), which reveals additional information. Returning to our
@@ -59,62 +59,63 @@ to that comprising the green and red edges in Figure~\ref{fig:match-input}.
 \subsubsection{Functionality}
 \label{sec:mkpmc_functionality}
 We now present a formal description of the functionality $\calF_{\MKPM{}}$. Let
-$\Ispace$ denote the universe of record values and let $n_i, m_k $ denote the
-record length in set $X$ and $Y$, respectively, for all $i \in [n]$ and all
-$k \in [m]$.
+$\Ispace$ denote the universe of record values
 
 Party $P_1$ holds
 \[
   X:= \{\bx_i = (x_{i,1}, \ldots, x_{i,j}, \ldots, x_{i, n_i}) \mid j \in
-  [n_i]\},
+  [n_i]\}
 \]
+of size $n$,
 and party $P_2$ holds
 \[
   Y := \{\by_k = (y_{k,1}, \ldots, y_{k,\ell}, \ldots, y_{k, m_k}) \mid \ell \in
-  [m_k]\},
-\]
-where all values $x_{i,j}$ and $y_{k,\ell}$ are in $\Ispace$.
+  [m_k]\}
+\] of size $m$. Here, we slightly abuse notation, using $n_i, m_k $ to denote
+the lengths of records $\bx_i$ and $\by_k$, respectively, for all $i \in [n]$
+and all $k \in [m]$; all values $x_{i,j}$ and $y_{k,\ell}$ lie in $\Ispace$.
 
-The functionality takes $X$ and $Y$ as inputs and then applies a random
-permutation. The records of $X$ are permuted while preserving the order of
-identifiers within each record, whereas in $Y$ both the records and the
-identifiers within each record are permuted. We denote the resulting collections
+%% Since the positional leakage is not entirely eliminated, we augment the
+%% functionality explicitly specifies operation performed and the leakage profile.
+
+To suppress leakage arising from positional information in the matching
+protocol, the original work \cite{MKPMC} introduces random
+permutations. Specifically, the records in $X$ are permuted while preserving the
+order of indexed values within each record, whereas in $Y$ both the records and
+the values within each record are permuted. We denote the resulting collections
 by $X'$ and $Y'$, respectively.\footnote{Although sets are unordered, the
   implementation~\cite{PIDRepo} treats inputs as ordered lists of records; we
   follow the authors of~\cite{MKPMC} in adopting this terminology.}
 
-The core of the protocol is the record-matching procedure $\match$ (see
-Appendix~\ref{ap:mkpc} for detailed pseudocode), which takes shuffled inputs
-$X'$ and $Y'$. Each record in $X'$ (resp. $Y'$) is matched with at most one
-record in $Y'$ (resp. $X'$). For each identifier position $j$ in $X'$
-\tianxin{Update this.}, $\match$ scans all $\by_k \in y'$ and matches $\by_k$ to
-the first $\bx_i \in X'$ whose $j$-th value appears in $\by_k$ i.e., for which
-there exists $\ell$ such that
+The core of the protocol is the $\match$ procedure (see Appendix~\ref{ap:mkpc}
+for detailed pseudocode), which outputs a one-to-one correspondence between the
+two sets. It takes as input the shuffled inputs $X'$ and $Y'$. Each record in
+$X'$ (resp. $Y'$) is matched with at most one record in $Y'$ (resp. $X'$). Both
+parties receive a common set of universal identifiers, along with a mapping from
+each UID to their local records or $\bot$ for unmatched records.
+
+The intuition behind $\match$ is to process indexed values in an order chosen by
+Party $P_1$, allowing it to prioritize values that are less likely to
+change. For example, matching on a social security number typically yields
+higher-quality results than matching on a phone number, which is more likely to
+change.
+
+More formally, for each identifier position $j$ in $X'$, the $\match$ procedure
+scans all $\by_k \in y'$ and matches $\by_k$ to the first $\bx_i \in X'$ whose
+$j$-th value appears in $\by_k$, that is, for which there exists an $\ell$ such
+that
 \[
   \by_k[\ell] = \bx_i[j],
 \]
-where $i$ is minimal. By processing identifiers in this order, Party $P_1$ can
-prioritize matching on indexed values that are less likely to change. For
-example, matching on a social security number yields higher-quality results than
-matching on a phone number, which is more likely to change.
+where $i$ is minimal.
 
-The matching logic assigns a unique identifier from a space $\Uspace$ to every
-pair of matched records, as well as to each unmatched record in $X$ and $Y$; we
-denote the resulting set of identifiers by $\UID$. The procedure also constructs
-two maps, $M_X: \UID \to X\cup \{\bot\}$ and $M_Y: \UID \to Y \cup \{\bot\}$,
-which link each UID to its corresponding record in $X$ or $Y$, or to $\bot$ if
-it corresponds to an unmatched record of the other party. Party $P_1$ receives
-$\UID$ and $M_X$, while $P_2$ receives $\UID$ and $M_Y$. Both parties obtain a
-common set of universal identifiers along with a mapping from each UID to their
-local records or $\bot$ for unmatched records.
-
-The detailed description of $\calF_{\MKPM}$ can be found in
-Figure~\ref{fig:MKPM}.
+A detailed description of $\calF_{\MKPM}$ is provided in Figure~\ref{fig:MKPM}.
 
 \begin{figure}
   \fbox{%
     \begin{minipage}[t]{0.98\columnwidth}
-      \textbf{Parameters:} Two parties, $P_1$ and $P_2$, set sizes $n, m\in \NN$ and
+      \textbf{Parameters:} Two parties, $P_1$ and $P_2$, set sizes $n, m\in \NN$
+      and
       record lengths $n_i, m_k \in \NN$ for $i\in[n]$ and $k\in[m]$.\\
       \textbf{Functionality} $\calF_{\MKPM}(X; Y)$ \dbox{$\calF_{\LMKPM}(X; Y)$}~: 
       %%% 
@@ -158,9 +159,7 @@ Figure~\ref{fig:MKPM}.
   }
   \caption{The Multi-Key Private Matching functionality $\calF_{\MKPM}(X;
     Y)$. The additional steps of the leakage-aware functionality
-    $\calF_{\LMKPM}(X; Y)$ are shown in \protect\dbox{dashed boxes}. The
-    record-matching procedure \match{} is defined in
-    Figure~\ref{fig:match_logic} in Appendix~\ref{ap:mkpc}.}
+    $\calF_{\LMKPM}(X; Y)$ are shown in \protect\dbox{dashed boxes}.}
   \label{fig:MKPM}
 \end{figure}
 
@@ -199,35 +198,40 @@ Figure~\ref{fig:MKPM}.
     \label{fig:matching-logic-example}}
 \end{figure*}
 
-
 \subsubsection{Leakage.}
-In favor of higher efficiency, MK-PrivateID leaks additional information which
-we capture with an extended ``leaky'' functionality $\calF_{\LMKPM{}}$.  We
-distinguish between the leakage observed by $P_1$ and that observed by $P_2$.
+\label{sec:leakage}
+In favour of higher efficiency, MK-PrivateID leaks additional information. We
+capture this leakage using an extended ``leaky'' functionality, denoted by
+$\calF_{\LMKPM{}}$. The leakage differs for $P_1$ and $P_2$, and we describe
+each separately.
 
-The leakage to party $P_1$ consists of a renamed copy of the shuffled sets $X'$
-and $Y'$. Concretely, we sample an injective random function
-$f_1:\Ispace\to\Uspace$, referred to as a hiding function, and apply it to each
-identifier in $X'$ and $Y'$. Party $P_1$ observes the resulting hidden sets.
+To model this leakage, we introduce a \emph{hiding function}, which is an
+injective random function from the value space to the UID space,
+$f_1:\Ispace\to\Uspace$. This function assigns UIDs to values and allows us to
+formalize the relationships between records that can be inferred from the output
+UIDs. By applying the hiding function to the shuffled sets $X'$ and $Y'$, we
+obtain \emph{hidden copies} of these sets, which are available to party $P_1$.
 
-Equivalently, the leakage to $P_1$ can be viewed as a bipartite graph
-$G = (V_X \cup V_Y, E)$, where $V_X$ corresponds to the records in $X'$ and
-$V_Y$ corresponds to the records in $Y'$. An edge $(\bx_i', \by_k') \in E$
-exists if and only if the records $\bx_i' \in X'$ and $\by_k' \in Y'$ share at
-least one identifier. Further note that, because the identifier order within
-records of $X'$ is preserved, the matching process induces a priority ordering
-over edges, determined by the position of shared identifiers within records of
+This leakage can alternatively be interpreted as a \emph{bipartite graph}
+$G = (V_{X'} \cup V_{Y'}, E)$, where $V_{X'}, V_{Y'}$ correspond to the records
+in $X'$ and $Y'$, respectively. An edge $(\bx_i', \by_k') \in E$ exists if and
+only if the records $\bx_i' \in X'$ and $\by_k' \in Y'$ share at least one
+indexed value.
+
+Note that because the order of indexed values within each record of $X'$ is
+preserved, the matching process induces a priority ordering over edges. This
+ordering is determined by the position of shared values within the records of
 $X'$.
 
-Although the procedure $\match$ computes only a partial matching in $G$, such
-that each vertex is matched to at most one vertex in the other vertex set, party
-$P_1$ still learns the full graph $G$.
+Although $\match$ computes only a partial matching in $G$, such that each vertex
+is matched to at most one vertex in the other vertex set, party $P_1$ still
+learns the entire graph $G$.
 
-The leakage observed by $P_2$ consists only of a hidden copy of $X$. The records
-of $X$ with fresh randomness, yielding a set $X''$. Then, a new hiding function
-$f_2 : \Ispace \to \Uspace$ is sampled and used to hide the identifiers in
-$X''$. $P_2$ observes the hidden and re-shuffled set $X''$.
+The leakage observed by $P_2$ is more limited. Party $P_2$ learns only a hidden
+and re-shuffled copy of $X$. Specifically, the records of $X$ are re-shuffled
+using fresh randomness, yielding a set $X''$. A new hiding function
+$f_2 : \Ispace \to \Uspace$ is then sampled and applied to all values in $X''$,
+and the resulting hidden set is available to $P_2$.
 
-The pseudocode can be found in Figure~\ref{fig:MKPM} with the additional leakage
-contained in a dashed boxed.
-
+The pseudocode can be found in Figure~\ref{fig:MKPM}, where the additional
+leakage is shown dashed boxes.
