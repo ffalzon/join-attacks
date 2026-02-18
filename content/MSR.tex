@@ -115,7 +115,6 @@ An example of a target set and its augmented input is shown in Figure~\ref{subfi
 
 The pseudocode of $\recenumattack$ is given in Figure~\ref{fig:rec_enum_attack}.
 
-
 \begin{theorem}\label{thm:recenumattack:correctness}
 	Let $T$ be the adversary's target set and $Y$ be the victim's input.
     $\recenumattack^{\calF_\LMKPM(\cdot, Y)}(T)$ (Figure~\ref{fig:rec_enum_attack}) achieves maximum set reconstruction of $Y$ with respect to $T$ (Def.~\ref{def:max_recons}).
@@ -129,6 +128,9 @@ Assuming that the binary encoding can be computed in time $\bigO{\log n}$, then 
 Identifying $\hbx_0$ also incurs time $\bigO{n \log n}$. Constructing the dictionary $\Dict$ takes time $\bigO{n(\log n + \ell_{rec})}$, while computing $R_Y$ using $\Dict$ and $\hYone$ requires time $\bigO{\ell_{\rec} m}$.
 
 Overall, the attack runs in time \bigO{n \log n + \ell_{\rec}(n+m)} and requires only a single query.
+
+\subsubsection{Generalizing to base-$k$.} We note that while our attack uses as base-2 (binary) encoding, one could also generalize this approach to base-$k$ for any integer $k\geq 2$. This would naturally reduce the length of the encoding needed at the expense of more complex encoding/decoding procedure. Care must be taken to avoid encodings that cannot be uniquely recovered e.g., avoiding use of the $(v_i,\dots, v_i)$ for $i>0$. We leave the details for future work.
+
 
 % \textbf{Discussion.}
 % Compared to the baseline attack, the records are now much shorter and are of uniform length.
