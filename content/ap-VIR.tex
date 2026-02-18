@@ -3,66 +3,69 @@
 \subsection{Proof of Prop.~\ref{prop:mkpsi_equiv}}\label{proof:mkpsi_equiv}
 
 \begin{proof}
-	Since the identifier hiding function $f$ is injective, 
-	we have that for any identifier $\id \in \Ispace{X}$ and $\id' \in \Ispace{Y}$
-	$\id = \id'$ if and only if $f(\id) = f(\id')$.
-	In other words, two identifiers in $X$ and $Y$ are equal if and only if their corresponding hidden values in $\leakX{}$ and $\leakY$ match.
-	Since the order of identifiers in records of $X$ remains unchanged, 
-	matched identifiers remain in the same column. 
-	The numbers of matched identifiers in the columns of $X$ and $\leakX{}$ are therefore equal.
+	Since the value hiding function $f$ is injective, 
+	we have that for any value $v \in \Ispace[X]$ and $v' \in \Ispace[Y]$,
+	$v = v'$ if and only if $f(v) = f(v')$.
+	In other words, two values in $X$ and $Y$ are equal if and only if their corresponding hidden values in $\leakX{}$ and $\leakY$ match.
+	Since the order of values in records of $X$ remains unchanged, 
+	matched values remain in the same column. 
+	The numbers of matched values in the columns of $X$ and $\leakX{}$ are therefore equal.
 \end{proof}
 
 
 \subsection{Proof of Prop.~\ref{prop:mkpsi_inference}}\label{proof:mkpsi_inference}
 
+
 \begin{proof}
-	The set $\posSet$ is updated only by adding identifiers from some column $i \in [\lambda]$ of a node set $X \subseteq T$ if
-	\[
-	    \colCA(\leakX{}, \leakY)[i] = |X|.
-	\]
-	By Prop.~\ref{prop:mkpsi_equiv}, this is equivalent to $\colCA(X, Y)[i] = |X|$.
-	By the definition of $\colCA$, all identifiers added to $\posSet$ in this case occur in $Y$.
-	Hence $\posSet \subseteq \Ispace{T} \cap \Ispace{Y}$, i.e., $\posSet$ contains no false positives.
+	Let $\bc = \colCA(\leakX{}, \leakY)$ and fix any $i \in [0,\ell_{\rec}-1]$. We write $\bc[i]$ to denote the $i$-th entry in the vector $\colCA(\leakX{}, \leakY)$. 
+	By Prop.~\ref{prop:mkpsi_equiv}, we have must also $\bc = \colCA(X, Y)$.
 
-	An analogous argument for updates to $\negSet$ shows that
-	$\negSet \subseteq \Ispace{T} \setminus \Ispace{Y}$.
-
-	Next, observe that after each partitioning step (line~\ref{lin:mkpsi_split_children}), both child subsets are either processed immediately or inserted into the priority queue.
-	Since the attack terminates only when the queue is empty, every record of $T$ appears in some node that reaches the membership-inference phase (line~\ref{lin:mkpsi_mem_inference_start}).
-	Thus, every identifier in $\Ispace{T}$ is eventually added to either $\posSet$ or $\negSet$.
-	Combined with the above invariants, this implies
-	\[
-	    \posSet = \Ispace{T} \cap \Ispace{Y}
-	    \quad\text{and}\quad
-	    \negSet = \Ispace{T} \setminus \Ispace{Y}. 
-	\]
-    Thus, the contains $\Ispace{T} \cap \Ispace{Y}$ and identifier intersection recovery (Def.~\ref{def:IRR_goal}) is achieved.
-\end{proof}
-
-
-\subsection{Proof of Theorem~\ref{thm:IRR-attack-correctness}}\label{proof:IRR-attack-correctness}
-\begin{proof}
-	Let $\bc = \colCA(\leakX{}, \leakY)$ and let $i \in [0,\lambda-1]$; we write $\bc[i]$ to denote the $i$-th sum in $\colCA(\leakX{}, \leakY)$. 
-	By Prop.~\ref{prop:mkpsi_equiv}, we have $\bc = \colCA(X, Y)$, i.e., for all $i\in[0,\lambda-1]$, the $i$-th identifier of exactly $\bc[i]$ records in $X$ occur in $Y$.
-
-	Similarly, for $\bc_1 := \colCA(\leakX{1}, \leakY)$, we have $\bc_1[i] = x_1$, meaning that the $i$-th identifiers of exactly $x_1$ records in $X_1$ occur in $Y$.
+	Let $\bc_1 := \colCA(\leakX{1}, \leakY)$, we have $\bc_1[i] = x_1$, meaning that the $i$-th identifiers of exactly $x_1$ records in $X_1$ occur in $Y$.
 	Since $X_1$ and $X_2$ form a partition of $X$, the remaining $x_2 = x - x_1$ records must lie in $X_2$.
 	Again by Prop.~\ref{prop:mkpsi_equiv}, for $\bc_2 := \colCA(\leakX{2}, \leakY)$ we have $\bc_2[i] = x_2$.
-	Hence, for all $i\in[0,\lambda-1]$ we have
+	Hence, for all $i\in[0,\ell_{\rec}-1]$ we have
 	\[
 	    \bc[i] = x = x_1 + x_2 = \bc_1[i] + \bc_2[i],
 	\]
 	and the proposition follows.
 \end{proof}
 
+
+
+\subsection{Proof of Theorem~\ref{thm:VIR-attack-correctness}}\label{proof:VIR-attack-correctness}
+
+\begin{proof}
+	The set $\posSet$ is updated only by adding identifiers from some column $i \in [\ell_{\rec}]$ of a node set $X \subseteq T$ if
+	\[
+	    \colCA(\leakX{}, \leakY)[i] = |X|.
+	\]
+	By Prop.~\ref{prop:mkpsi_equiv}, this is equivalent to $\colCA(X, Y)[i] = |X|$.
+	By the definition of $\colCA$, all identifiers added to $\posSet$ in this case occur in $Y$.
+	Hence $\posSet \subseteq \Ispace[T] \cap \Ispace[Y]$, i.e., $\posSet$ contains no false positives.
+
+	An analogous argument for updates to $\negSet$ shows that
+	$\negSet \subseteq \Ispace[T] \setminus \Ispace[Y]$.
+
+	Next, observe that after each partitioning step (line~\ref{lin:mkpsi_split_children}), both child subsets are either processed immediately or inserted into the priority queue.
+	Since the attack terminates only when the queue is empty, every record of $T$ appears in some node that reaches the membership-inference phase (line~\ref{lin:mkpsi_mem_inference_start}).
+	Thus, every identifier in $\Ispace[T]$ is eventually added to either $\posSet$ or $\negSet$.
+	Combined with the above invariants, this implies
+	\[
+	    \posSet = \Ispace[T] \cap \Ispace[Y]
+	    \quad\text{and}\quad
+	    \negSet = \Ispace[Y] \setminus \Ispace[Y]. 
+	\]
+    Thus, the contains $\Ispace[Y] \cap \Ispace[Y]$ and identifier intersection recovery (Def.~\ref{def:VIR_goal}) is achieved.
+\end{proof}
+
 \subsection{Additional Heurisitics for \mkpsiattack{}}\label{ap:IRR:heuristics}
 
 We propose two additional heuristics for determining which path in the search tree to prioritize exploring: $p_{MK}^-$, which prioritizes the reconstruction of the set difference $\Ispace{T} \setminus \Ispace{Y}$ and $p_{MK}^*$, whose aim is to maximize the total (positive and negative) membership information we can infer.
 \begin{equation}
-    p_{MK}^-(\bc, X) := \frac{\sum_{x \in \bc} |X| - x}{\lambda|X|} 
+    p_{MK}^-(\bc, X) := \frac{\sum_{x \in \bc} |X| - x}{\ell_{\rec}|X|} 
 \end{equation}
 \begin{equation}
-    p_{MK}^*(\bc, X) := \frac{\sum_{x \in \bc} \max(x, |X| - x)}{\lambda|X|} 
+    p_{MK}^*(\bc, X) := \frac{\sum_{x \in \bc} \max(x, |X| - x)}{\ell_{\rec}|X|} 
 \end{equation}
 
 \subsection{Pseudocode for \mkpsiattack{}}
@@ -96,7 +99,7 @@ The pseudocode of \mkpsiattack{} is given in Figure~\ref{fig:MKPSIattack}.
 		\t	\t	\t	\cmmnt{Proceed with left child} \\
 		\t	\t	\t	Q.\push(p_R, (\bc_R, v_R)) \\
 		\t	\t	\t	v \gets v_L; \; \bc \gets \bc_L \\
-		\t	\pcfor i = 1, \dots, \lambda \pcdo \label{lin:mkpsi_mem_inference_start}\\
+		\t	\pcfor i = 1, \dots, \ell_{\rec} \pcdo \label{lin:mkpsi_mem_inference_start}\\
 		\t	\t	\pcif \bc[i] > 0 \pcthen \\
 		\t	\t	\t	\posSet \gets \posSet \cup \{\, \bx[i] \mid \bx \in v.\treeSet \,\} \\
 		\t	\t	\pcelse \\
