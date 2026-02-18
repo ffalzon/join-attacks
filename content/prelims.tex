@@ -36,9 +36,9 @@ join logic, and resolves one-to-many matches randomly.
 
 To enable downstream computation over the associated data, the protocol
 introduces \emph{universal identifiers (UIDs)} to label joined records. It
-outputs to each party a mapping from \emph{universal identifiers (UIDs)} to its
-records such that matched records are assigned the same UID, while unmatched
-records receive distinct UIDs.
+outputs to each party a mapping from UIDs to its records such that matched
+records are assigned the same UID, while unmatched records receive distinct
+UIDs.
 
 Figure~\ref{fig:matching-logic-example} illustrates this process. It shows an
 example input featuring a one-to-many match (Fig.~\ref{fig:match-input}) that is
@@ -59,8 +59,9 @@ to that comprising the green and red edges in Figure~\ref{fig:match-input}.
 \subsubsection{Functionality}
 \label{sec:mkpmc_functionality}
 We now present a formal description of the functionality $\calF_{\MKPM{}}$. Let
-$\Ispace$ denote the universe of record values and let $\lambda \in \NN$ be the
-maximum number of values per record. The record length,
+$\Ispace$ denote the universe of record values and let $n_i, m_k $ denote the
+record length in set $X$ and $Y$, respectively, for all $i \in [n]$ and all
+$k \in [m]$.
 
 Party $P_1$ holds
 \[
@@ -74,13 +75,13 @@ and party $P_2$ holds
 \]
 where all values $x_{i,j}$ and $y_{k,\ell}$ are in $\Ispace$.
 
-The functionality takes $X$ and $Y$ as inputs from the respective parties and
-then applies a random permutation. The records of $X$ are permuted while
-preserving the order of identifiers within each record, whereas in $Y$ both the
-records and the identifiers within each record are permuted. We denote the
-resulting collections by $X'$ and $Y'$, respectively.\footnote{Although sets are
-  unordered, the implementation~\cite{PIDRepo} treats inputs as ordered lists of
-  records; we follow the authors of~\cite{MKPMC} in adopting this terminology.}
+The functionality takes $X$ and $Y$ as inputs and then applies a random
+permutation. The records of $X$ are permuted while preserving the order of
+identifiers within each record, whereas in $Y$ both the records and the
+identifiers within each record are permuted. We denote the resulting collections
+by $X'$ and $Y'$, respectively.\footnote{Although sets are unordered, the
+  implementation~\cite{PIDRepo} treats inputs as ordered lists of records; we
+  follow the authors of~\cite{MKPMC} in adopting this terminology.}
 
 The core of the protocol is the record-matching procedure $\match$ (see
 Appendix~\ref{ap:mkpc} for detailed pseudocode), which takes shuffled inputs
@@ -118,8 +119,8 @@ Figure~\ref{fig:MKPM}.
       \textbf{Functionality} $\calF_{\MKPM}(X; Y)$ \dbox{$\calF_{\LMKPM}(X; Y)$}~: 
       %%% 
       \begin{enumerate}
-      \item Receive the input from party $P_1$: $X = \{\bx_i \setdsc i \in
-        [n]\}$
+      \item Receive the input from party $P_1$:
+        $X = \{\bx_i \setdsc i \in [n]\}$
       \item Receive the input from party $P_2$:
         $Y = \{\by_k \setdsc k \in [m]\}$
       \item Sample $\pi_X \sample \Perms[[n]]$ and $\pi_Y \sample \Perms[[m]]$
@@ -128,7 +129,7 @@ Figure~\ref{fig:MKPM}.
         \by_{\pi_Y(k)}$
       \item Shuffle the values in $\by'_k$ for all $k \in [m]$
       \item Compute set $\UID$, mappings $\MX, \MY$ $\gets \match(X', Y')$ (See
-        Figure \ref{fig:match_logic} in the Appendix~\ref{ap:mkpc}.)
+        Figure \ref{fig:match_logic} in Appendix~\ref{ap:mkpc}.)
       \end{enumerate}
       \begin{adjustbox}{minipage=0.98\textwidth,precode=\dbox}
         \begin{enumerate}
@@ -136,7 +137,7 @@ Figure~\ref{fig:MKPM}.
         \item  Sample $f_1, f_2 \sample \InjFuncs[\Ispace,\; \Uspace]$
         \item  $\hXone := \{(f_1(\bx'_i[1]), \dots, f_1(\bx'_i[n_i])) \setdsc i
           \in [n]\}$.
-        \item  $\hYone := \{(f_1(\by'_i[1]), \dots, f_k(\by'_k[m_k])) \setdsc k
+        \item  $\hYone := \{(f_1(\by'_k[1]), \dots, f_1(\by'_k[m_k])) \setdsc k
           \in [m]\}$.
         \item  $\pi \sample \Perms[[n]]$.
         \item  $X'' := \{\bx''_i \setdsc i \in [n]\}$, where $\bx''_i :=
