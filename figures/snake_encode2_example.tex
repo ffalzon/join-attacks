@@ -9,20 +9,20 @@
   	}
 	]
 	% Nodes
-	\node[block=\minwidthid,fill=trow-dark, draw=added-id] (alice0) {$\id_0$};
+	\node[block=\minwidthid,fill=trow-dark, draw=added-id] (alice0) {$v_0$};
 	\node[block=\minwidthemail,fill=trow-dark, right=\linecorr of alice0, behind path] (alice1) {alice@mail.com};
 	\node[block=\minwidthphone,fill=trow-dark, right=\linecorr of alice1] (alice2) {+41 98 765 43 21};
-	\node[block=\minwidthid,fill=trow-dark, right=\linecorr of alice2, draw=added-id] (alice3) {$\id_1$};
+	\node[block=\minwidthid,fill=trow-dark, right=\linecorr of alice2, draw=added-id] (alice3) {$v_1$};
 
-	\node[block=\minwidthid,fill=trow-light, below=\rowspace of alice0, draw=added-id] (bob0) {$\id_1$};
+	\node[block=\minwidthid,fill=trow-light, below=\rowspace of alice0, draw=added-id] (bob0) {$v_1$};
 	\node[block=\minwidthemail,fill=trow-light, right=\linecorr of bob0, behind path] (bob1) {bob@mail.com};
 	\node[block=\minwidthphone,fill=trow-light, right=\linecorr of bob1] (bob2) {+41 12 345 67 89};
-	\node[block=\minwidthid,fill=trow-light, right=\linecorr of bob2, draw=added-id] (bob3) {$\id_2$};
+	\node[block=\minwidthid,fill=trow-light, right=\linecorr of bob2, draw=added-id] (bob3) {$v_2$};
 
-	\node[block=\minwidthid,fill=trow-dark, below=\rowspace of bob0, draw=added-id] (eve0) {$\id_2$};
+	\node[block=\minwidthid,fill=trow-dark, below=\rowspace of bob0, draw=added-id] (eve0) {$v_2$};
 	\node[block=\minwidthemail,fill=trow-dark, right=\linecorr of eve0, behind path] (eve1) {alice@mail.com};
 	\node[block=\minwidthphone,fill=trow-dark, right=\linecorr of eve1] (eve2) {+41 12 345 67 89};
-	\node[block=\minwidthid,fill=trow-dark, right=\linecorr of eve2, draw=added-id] (eve3) {$\id$};
+	\node[block=\minwidthid,fill=trow-dark, right=\linecorr of eve2, draw=added-id] (eve3) {$v$};
 	% Connections
 	\draw[->] (alice3) to[out=240, in=60, looseness=.3] (bob0);
 	\draw[->] (bob3) to[out=240, in=60, looseness=.3] (eve0);

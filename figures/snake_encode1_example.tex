@@ -20,7 +20,7 @@
 
 	\node[block=\minwidthemail,fill=trow-dark, below=\rowspace of bob1] (eve1) {eve@mail.com};
 	\node[block=\minwidthphone,fill=trow-dark, right=\linecorr of eve1] (eve2) {+41 45 678 91 23};
-	\node[block=\minwidthemail,fill=trow-dark, right=\linecorr of eve2, draw=added-id] (eve3) {id};
+	\node[block=\minwidthemail,fill=trow-dark, right=\linecorr of eve2, draw=added-id] (eve3) {$v$};
 	% Connections
 	\draw[->] (alice3) to[out=225, in=60, looseness=.5] (bob1);
 	\draw[->] (bob3) to[out=225, in=60, looseness=.5] (eve1);
