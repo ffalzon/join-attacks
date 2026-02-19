@@ -17,17 +17,15 @@
 
 
 \begin{proof}
-	Let $\bc = \colCA(\leakX{}, \leakY)$ and fix any $i \in [0,\ell_{\rec}-1]$. We write $\bc[i]$ to denote the $i$-th entry in the vector $\colCA(\leakX{}, \leakY)$. 
-	By Prop.~\ref{prop:mkpsi_equiv}, we have must also $\bc = \colCA(X, Y)$.
+	Let $\bc = \colCA(\leakX{}, \leakY)$ and fix some $i \in [0,\ell_{\rec}-1]$. We write $\bc[i]$ for the $i$-th entry of this vector. By Proposition~\ref{prop:mkpsi_equiv}, we also have $\bc = \colCA(X, Y)$.
 
-	Let $\bc_1 := \colCA(\leakX{1}, \leakY)$, we have $\bc_1[i] = x_1$, meaning that the $i$-th identifiers of exactly $x_1$ records in $X_1$ occur in $Y$.
-	Since $X_1$ and $X_2$ form a partition of $X$, the remaining $x_2 = x - x_1$ records must lie in $X_2$.
-	Again by Prop.~\ref{prop:mkpsi_equiv}, for $\bc_2 := \colCA(\leakX{2}, \leakY)$ we have $\bc_2[i] = x_2$.
-	Hence, for all $i\in[0,\ell_{\rec}-1]$ we have
+	Let $\bc_1 = \colCA(\leakX{1}, \leakY)$ and $\bc_2 = \colCA(\leakX{2}, \leakY)$. Again by Proposition~\ref{prop:mkpsi_equiv}, these equal $\colCA(X_1, Y)$ and $\colCA(X_2, Y)$, respectively. Set $\bc[i] = x$ and $\bc_1[i] = x_1$. By definition of $\colCA$, exactly $x_1$ records in $X_1$ have their $i$-th value appearing in $Y$. Since $X_1$ and $X_2$ form a partition of $X$, the remaining $x_2 = x - x_1$ records must lie in $X_2$, so $\bc_2[i] = x_2$.
+
+	Thus, for all $i \in [0,\ell_{\rec}-1]$,
 	\[
-	    \bc[i] = x = x_1 + x_2 = \bc_1[i] + \bc_2[i],
+		\bc[i] = x = x_1 + x_2 = \bc_1[i] + \bc_2[i],
 	\]
-	and the proposition follows.
+	which proves the proposition.
 \end{proof}
 
 
@@ -35,27 +33,25 @@
 \subsection{Proof of Theorem~\ref{thm:VIR-attack-correctness}}\label{proof:VIR-attack-correctness}
 
 \begin{proof}
-	The set $\posSet$ is updated only by adding identifiers from some column $i \in [\ell_{\rec}]$ of a node set $X \subseteq T$ if
+	The set $\posSet$ is updated only by adding values from some column $i \in [0, \ell_{\rec}-1]$ of a node set $X \subseteq T$ if
 	\[
-	    \colCA(\leakX{}, \leakY)[i] = |X|.
+		\colCA(\leakX{}, \leakY)[i] = |X|.
 	\]
-	By Prop.~\ref{prop:mkpsi_equiv}, this is equivalent to $\colCA(X, Y)[i] = |X|$.
-	By the definition of $\colCA$, all identifiers added to $\posSet$ in this case occur in $Y$.
-	Hence $\posSet \subseteq \Ispace[T] \cap \Ispace[Y]$, i.e., $\posSet$ contains no false positives.
+	By Prop.~\ref{prop:mkpsi_equiv}, this is equivalent to
+	$\colCA(X, Y)[i] = |X|$. By the definition of $\colCA$, this means that every $i$-th value in $X$ occurs in $Y$, so all values added to $\posSet$ in this case are in $\Ispace[Y]$. Hence $\posSet \subseteq \Ispace[T] \cap \Ispace[Y]$,
+	i.e., $\posSet$ contains no false positives. An analogous argument for updates to $\negSet$ shows that $\negSet \subseteq \Ispace[T] \setminus \Ispace[Y].$
 
-	An analogous argument for updates to $\negSet$ shows that
-	$\negSet \subseteq \Ispace[T] \setminus \Ispace[Y]$.
+	Next, observe that after each partitioning step (line~\ref{lin:mkpsi_split_children}), both child subsets are either processed immediately or inserted into the priority queue. Since the attack terminates only when the queue is empty, every record in $T$ appears in some node that reaches the membership-inference phase
+	(line~\ref{lin:mkpsi_mem_inference_start}). Thus, every identifier in $\Ispace[T]$ is eventually added to either $\posSet$ or $\negSet$.
 
-	Next, observe that after each partitioning step (line~\ref{lin:mkpsi_split_children}), both child subsets are either processed immediately or inserted into the priority queue.
-	Since the attack terminates only when the queue is empty, every record of $T$ appears in some node that reaches the membership-inference phase (line~\ref{lin:mkpsi_mem_inference_start}).
-	Thus, every identifier in $\Ispace[T]$ is eventually added to either $\posSet$ or $\negSet$.
-	Combined with the above invariants, this implies
+	Combining these facts, we obtain
 	\[
-	    \posSet = \Ispace[T] \cap \Ispace[Y]
-	    \quad\text{and}\quad
-	    \negSet = \Ispace[Y] \setminus \Ispace[Y]. 
+		\posSet = \Ispace[T] \cap \Ispace[Y]
+		\quad\text{and}\quad
+		\negSet = \Ispace[T] \setminus \Ispace[Y].
 	\]
-    Thus, the contains $\Ispace[Y] \cap \Ispace[Y]$ and identifier intersection recovery (Def.~\ref{def:VIR_goal}) is achieved.
+	Therefore, $\posSet$ equals the value intersection $\Ispace[T] \cap \Ispace[Y]$,
+	and value intersection recovery (Definition~\ref{def:VIR_goal}) is achieved.
 \end{proof}
 
 \subsection{Additional Heurisitics for \mkpsiattack{}}\label{ap:IRR:heuristics}
