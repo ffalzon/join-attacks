@@ -1,8 +1,14 @@
 \section{Preliminaries Supplementary Content}
+
+\subsection{Pseudocode of Match Procedure}
+
+The pseudocode for the matching logic of $\calF_{\MKPM}$ and $\calF_{\LMKPM}$ (Figure~\ref{fig:MKPM}) is given in Figure~\ref{fig:match_logic}.
+
 \label{ap:mkpc}
 \begin{figure}[H]
   \begin{pchstack}[boxed, center]
     \procedure[linenumbering, skipfirstln]{$\match(X, Y)$}{ 
+       \rule{0pt}{2em}%
       \pclinecomment{Recall that $X = \{\bx_1, \dots, \bx_n\}, Y = \{\by_1, \dots, \by_n\}$} \\
       \text{Initialize empty maps $\MX$ and $\MY$.} \\
       \text{Initialize empty set $\UID$.} \\
