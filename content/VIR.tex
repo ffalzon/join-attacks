@@ -5,8 +5,7 @@ We now leverage the additional leakage that $\calF_{\LMKPM}$ outputs to $\tP_1$ 
 
 For this attack, we restrict the adversary to using only subsets of its target set $T$ as input: it may submit any $T' \subseteq T$ but cannot append, split, or rearrange the values within records (this contrasts with Section~\ref{sec:lmkpm-attacks}, where the adversary can modify record contents by appending or reordering values). 
 We assume all records in $T$ have equal length $\ell_{\rec} \in \NN$. 
-The goal is to compute the intersection of values $\posSet := \Ispace[T] \cap \Ispace[Y]$. %and $\negSet := \Ispace{T} \setminus \Ispace{Y}$. 
-
+The goal is to compute the intersection of values which we denote as $\posSet := \Ispace[T] \cap \Ispace[Y]$. Throughout the attack, we also construct a second set, $\negSet := \Ispace[T] \setminus \Ispace[Y]$, of values in $T$ that are not in $Y$. 
 
 % Recall that the output of $\calF_{\LMKPM}(X;Y)$ to party $\tP_1$ is
 % \[
@@ -54,7 +53,17 @@ From Prop.~\ref{prop:mkpsi_inference} we obtain $\colCA(\leakX{2}, \leakY)
   = \colCA(\leakX{}, \leakY) - \colCA(\leakX{1}, \leakY).$
 Here, $\leakX{2}$ denotes the (hypothetical) leakage that would result from a protocol run on $X_2$, which is never actually executed. This is acceptable, since we only require $\colCA(\leakX{2}, \leakY)$ for the attack, and this vector can be inferred without knowing $\leakX{2}$ explicitly.
 
-For a leaf node storing a single record, i.e., $X = \{\bx\}$, the vector $\colCA(\leakX{},\leakY)$ is binary: its $i$-th entry is $1$ if and only if the $i$-th value of $\bx$ appears in $Y$, and $0$ otherwise. More generally, once $\colCA(\leakX{}, \leakY) \in \{0, |X|\}^{\ell_{\rec}}$ for some $X$, Prop.~\ref{prop:mkpsi_equiv} implies that, for each column, either all or none of the values in that column of $X$ occur in $Y$, depending on whether the corresponding entry equals $|X|$ or $0$.
+For a leaf node containing a single record, i.e., $X = \{\bx\}$, the vector $\colCA(\leakX{},\leakY)$ is binary: its $i$-th entry is $1$ if and only if the $i$-th value of $\bx$ appears in $Y$, and $0$ otherwise.
+More generally, consider any node with record set $X$. Suppose that after querying this node we obtain
+\[
+    \bc=\colCA(\leakX{}, \leakY) \in \{0, |X|\}^{\ell_{\rec}}.
+\]
+By Prop.~\ref{prop:mkpsi_equiv}, this equals $\colCA(X,Y)$, so the $i$-th entry counts how many records in $X$ have their $i$-th value in $\Ispace[Y]$. If the $i$-th entry is $|X|$, then \emph{every} record in $X$ has its $i$-th value in $Y$; if it is $0$, then \emph{no} record in $X$ has its $i$-th value in $Y$. Thus, for such a node, each column is either entirely positive (all values occur in $Y$) or entirely negative (no value occurs in $Y$).
+Thus for each $i\in[0,\dots,\ell_{\rec}-1]$ if $\bc[i]=|X|$ we add $\{\bx[i]: \bx\in X\}$ to $\posSet$, and otherwise we add it to $\negSet$. Once we have processed all the nodes in this way, $\posSet$ must thus include all values in $\Ispace[T]\cap\Ispace[Y]$.
+
+% For a leaf node storing a single record, i.e., $X = \{\bx\}$, the vector $\colCA(\leakX{},\leakY)$ is binary: its $i$-th entry is $1$ if and only if the $i$-th value of $\bx$ appears in $Y$, and $0$ otherwise. More generally, once a node is queried and the resulting sum entry in the vector is the number of records in that set,
+
+% $\colCA(\leakX{}, \leakY) \in \{0, |X|\}^{\ell_{\rec}}$ for some $X$, Prop.~\ref{prop:mkpsi_equiv} implies that, for each column, either all or none of the values in that column of $X$ occur in $Y$, depending on whether the corresponding entry equals $|X|$ or $0$.
 
 
 The remaining component of our adapted attack is a heuristic that (i) decides which child to follow during DFS traversal and (ii) provides the priority for enqueuing the other child. For any set $X$, this heuristic must be computable from $X$ and $\colCA(\leakX{}, \leakY)$ alone, since this is all we know about the (hypothetical) leakage for that node. For $\bc = \colCA(\leakX{}, \leakY)$, we define
