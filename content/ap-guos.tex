@@ -78,7 +78,7 @@ Choosing the right way to traverse the tree at least ensures the former.
 		\end{tikzpicture}
 		\caption{
 		Binary search tree for a set $X = \{1, 2, 3, 4, 5, 6\}$, 
-		as constructed for the generic intersection recovery attack from~\cite{Guo22}.
+		as constructed for the generic intersection recovery attack from~\cite{USENIX:GHLWJL22}.
 		We depict the attack behavior for a recovery set $Y = \{1, 2\}$. The PSI-CA functionality is invoked at nodes marked with {\protect\fullcirc{}}.
 		The intersection cardinality for nodes marked with {\protect\ocirc{}} is inferred from their sibling and parent node's intersection sizes.
 		Early DFS path terminations occur at $X_{2,1}$ and $X_{1,2}$. 
@@ -89,7 +89,7 @@ Choosing the right way to traverse the tree at least ensures the former.
 \end{figure}
 
 We now combine the two observations to obtain the full intersection-recovery attack.
-The full pseudocode is depicted in \ref{fig:PSICA_attack}.
+%The full pseudocode is depicted in \ref{fig:PSICA_attack}.
 The attack starts by initializing an empty set $S$, 
 to which elements of the intersection are added over the course of the attack.
 Next, $|X \cap Y|$ is determined by evaluating $\PSICA(X, Y)$.
