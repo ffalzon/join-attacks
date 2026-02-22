@@ -1,26 +1,21 @@
 
 \section{Introduction}
 \label{sec:introduction}
-% \tianxin{Main message: Understand the connections between these primitives,
-% and the security implications using cryptanalysis.}
+Functionality leakage is an inherent characteristic of many systems that allow two or more parties to compute over private inputs. Such systems include secure multi-party computation (MPC) and zero-knowledge (ZK) proofs~\cite{STOC:GolMicRac85}. These primitives are no longer purely theoretical: MPC and ZK functionalities have been deployed in practice, for example in Google’s Private Join and Compute protocol for private ad-conversion measurement~\cite{googlePJC} and in Zcash, which uses ZK proofs to enable private transactions without revealing the sender, receiver, or transaction amount~\cite{zCash}.
 
-%% \ff{incorporate this somewhere in the introduction, potentially}
+It is well understood that, given a known function and access to input–output pairs, an adversary can infer information about the inputs. The deployment of these systems, however, makes it pressing to understand \emph{what} information can be inferred by parties participating in such protocols, and under which usage patterns and threat models this leakage becomes practically significant.
 
-Recent focus of cryptographic research has shifted from conventional
-all-or-nothing security to allowing secure computation on private data. This
-change is reflected by a plethora of work on secure two-party computation (2PC)
-and multi-party computation (MPC). In particular, multiple functionalities have
-been introduced and deployed in the real world \cite{}. These include basic set
-operations, such as private set intersection (PSI) and private set union (PSU).
 
-PSI has been studied extensively in the literature, both on the constructive
-side and analysis (more so in the related section) \cite{}. Our work instead
-focuses to private set union (PSU), where two or more parties, each holding a
-set to jointly compute the union of their sets without revealing anything beyond
-the result~\cite{USENIX:DZBC25,USENIX:TBZCC25,USENIX:JSZG24,
-  USENIX:ZCLZL23,USENIX:JSZDG22,CCS:GNBT25,CCS:ZCLPHW24,
-  CCS:TCLZ23,ASIACCS:CSSW25,ASIACCS:BlaAgu12,AC:LiuGao23,AC:KRTW19,PoPETS:GaoNguTri24,
-  ACNS:Frikken07,C:KisSon05}.
+Among the most widely studied and deployed MPC protocols are set-operation functionalities, such as private set intersection (PSI), which enable parties to compute an intersection of their datasets without leaking the . PSI has been extensively explored in the literature, both from a protocol-design and an attack-analysis perspective (see Section~\ref{sec:related-work}). In this work, we instead focus on private set union (PSU), where two or more parties, each holding a set, jointly compute the union of their sets without revealing anything beyond the result~\cite{USENIX:DZBC25,USENIX:TBZCC25,USENIX:JSZG24,USENIX:ZCLZL23,USENIX:JSZDG22,CCS:GNBT25,CCS:ZCLPHW24,CCS:TCLZ23,ASIACCS:CSSW25,ASIACCS:BlaAgu12,AC:LiuGao23,AC:KRTW19,PoPETS:GaoNguTri24,ACNS:Frikken07,C:KisSon05}.
+
+
+% Recent focus of cryptographic research has shifted from conventional
+% all-or-nothing security to allowing secure computation on private data. This
+% change is reflected by a plethora of work on secure two-party computation (2PC)
+% and multi-party computation (MPC). In particular, multiple functionalities have
+% been introduced and deployed in the real world \cite{}. These include basic set
+% operations, such as private set intersection (PSI) and private set union (PSU).
+
 
 PSU has been proposed for use in numerous use cases, including the private
 aggregation of IP block lists~\cite{USENIX:JSZDG22,AC:KRTW19}, hospital
