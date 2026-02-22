@@ -13,16 +13,16 @@
 		
 		% Top Figure
 		% Nodes
-		\node[block=\minwidthid,fill=trow-dark] (alice1) {$\id_1$};
-		\node[block=\minwidthid,fill=trow-dark, right=\linecorr of alice1] (alice2) {$\id_2$};
+		\node[block=\minwidthid,fill=trow-dark] (alice1) {$v_1$};
+		\node[block=\minwidthid,fill=trow-dark, right=\linecorr of alice1] (alice2) {$v_2$};
 
-		\node[block=\minwidthid,fill=trow-light, below=\rowspace of alice1] (bob1) {$\id_3$};
-		\node[block=\minwidthid,fill=trow-light, right=\linecorr of bob1] (bob2) {$\id_4$};
+		\node[block=\minwidthid,fill=trow-light, below=\rowspace of alice1] (bob1) {$v_3$};
+		\node[block=\minwidthid,fill=trow-light, right=\linecorr of bob1] (bob2) {$v_4$};
 
 		\coordinate (mid) at ($(alice2)!0.5!(bob2)$);
 
-		\node[block=\minwidthid,fill=trow-dark, right=\colspace of mid] (vic1) {$\id_3$};
-		\node[block=\minwidthid,fill=trow-dark, right=\linecorr of vic1] (vic2) {$\id_2$};
+		\node[block=\minwidthid,fill=trow-dark, right=\colspace of mid] (vic1) {$v_3$};
+		\node[block=\minwidthid,fill=trow-dark, right=\linecorr of vic1] (vic2) {$v_2$};
 
 
 		% Connections
@@ -40,15 +40,15 @@
 		% Adjust vertical placement by node distance and below distance
 		\coordinate (bottom_start) at ($(bob1.south) + (0,-\setspace)$);
 
-		\node[block=\minwidthid,fill=trow-dark, below=\setvertspace of bottom_start] (alicesub1) {$\id_1$};
-		\node[block=\minwidthid,fill=trow-dark, right=\linecorr of alicesub1] (alicesub2) {$\id_2$};
-		\node[block=\minwidthid,fill=trow-dark, right=\colspace of alicesub2] (vicsub1) {$\id_3$};
-		\node[block=\minwidthid,fill=trow-dark, right=\linecorr of vicsub1] (vicsub2) {$\id_2$};
+		\node[block=\minwidthid,fill=trow-dark, below=\setvertspace of bottom_start] (alicesub1) {$v_1$};
+		\node[block=\minwidthid,fill=trow-dark, right=\linecorr of alicesub1] (alicesub2) {$v_2$};
+		\node[block=\minwidthid,fill=trow-dark, right=\colspace of alicesub2] (vicsub1) {$v_3$};
+		\node[block=\minwidthid,fill=trow-dark, right=\linecorr of vicsub1] (vicsub2) {$v_2$};
 
-		\node[block=\minwidthid,fill=trow-dark, below=\setvertspace of alicesub1] (bobsub1) {$\id_3$};
-		\node[block=\minwidthid,fill=trow-dark, right=\linecorr of bobsub1] (bobsub2) {$\id_4$};
-		\node[block=\minwidthid,fill=trow-dark, right=\colspace of bobsub2] (vicsub3) {$\id_3$};
-		\node[block=\minwidthid,fill=trow-dark, right=\linecorr of vicsub3] (vicsub4) {$\id_2$};
+		\node[block=\minwidthid,fill=trow-dark, below=\setvertspace of alicesub1] (bobsub1) {$v_3$};
+		\node[block=\minwidthid,fill=trow-dark, right=\linecorr of bobsub1] (bobsub2) {$v_4$};
+		\node[block=\minwidthid,fill=trow-dark, right=\colspace of bobsub2] (vicsub3) {$v_3$};
+		\node[block=\minwidthid,fill=trow-dark, right=\linecorr of vicsub3] (vicsub4) {$v_2$};
 
 		% Connections
 		\draw (alicesub2) to (vicsub1);

@@ -42,7 +42,7 @@
 	i.e., $\posSet$ contains no false positives. An analogous argument for updates to $\negSet$ shows that $\negSet \subseteq \Ispace[T] \setminus \Ispace[Y].$
 
 	Next, observe that after each partitioning step (line~\ref{lin:mkpsi_split_children}), both child subsets are either processed immediately or inserted into the priority queue. Since the attack terminates only when the queue is empty, every record in $T$ appears in some node that reaches the membership-inference phase
-	(line~\ref{lin:mkpsi_mem_inference_start}). Thus, every identifier in $\Ispace[T]$ is eventually added to either $\posSet$ or $\negSet$.
+	(line~\ref{lin:mkpsi_mem_inference_start}). Thus, every value in $\Ispace[T]$ is eventually added to either $\posSet$ or $\negSet$.
 
 	Combining these facts, we obtain
 	\[
@@ -56,7 +56,7 @@
 
 \subsection{Additional Heurisitics for \mkpsiattack{}}\label{ap:IRR:heuristics}
 
-We propose two additional heuristics for determining which path in the search tree to prioritize exploring: $p_{MK}^-$, which prioritizes the reconstruction of the set difference $\Ispace{T} \setminus \Ispace{Y}$ and $p_{MK}^*$, whose aim is to maximize the total (positive and negative) membership information we can infer.
+We propose two additional heuristics for determining which path in the search tree to prioritize exploring: $p_{MK}^-$, which prioritizes the reconstruction of the set difference $\Ispace[T] \setminus \Ispace[Y]$ and $p_{MK}^*$, whose aim is to maximize the total (positive and negative) membership information we can infer.
 \begin{equation}
     p_{MK}^-(\bc, X) := \frac{\sum_{x \in \bc} |X| - x}{\ell_{\rec}|X|} 
 \end{equation}
@@ -71,7 +71,7 @@ The pseudocode of \mkpsiattack{} is given in Figure~\ref{fig:MKPSIattack}.
 \begin{figure}[t]
 	\centering
 	\begin{pcvstack}[boxed, center]
-	\procedure[linenumbering]{$\mkpsiattack^{\calF_{LMKPM}(\cdot, Y)}(T)$}{
+	\procedure[linenumbering]{$\mkpsiattack^{\calF_{\LMKPM}(\cdot, Y)}(T)$}{
             \rule{0pt}{2em}%
 		\text{Initialize empty sets $\posSet$, $\negSet$} \\
 		\text{Initialize empty max-priority queue $Q$} \\

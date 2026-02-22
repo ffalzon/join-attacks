@@ -8,11 +8,11 @@ We will show two adaptations of this attack later in this work,
 which is why we briefly introduce it here.
 
 The authors of \cite{USENIX:GHLWJL22} assume an input-malicious party $A$ with a target set $X$, 
-which may evaluate $\PSUCA(X', Y) = |X' \cap Y|$ for arbitrarily many $X'$ and a static victim set $Y$. 
+which may evaluate $\PSUCA(X', Y) = |X' \cap Y|$ for arbitrarily many $X'$ and a static recovery set $Y$. 
 The goal of $A$ is to determine $X \cap Y$.
 They present two search tree-based attacks against PSI-CA: 
-(1) a generic attack assuming no prior knowledge about the victim set and 
-(2) a feature-aware attack, where the membership in the victim set is correlated with a set of features that are known to the adversary.
+(1) a generic attack assuming no prior knowledge about the recovery set and 
+(2) a feature-aware attack, where the membership in the recovery set is correlated with a set of features that are known to the adversary.
 The two attacks differ only in their approach to building the search tree.
 We focus on the former.
 
@@ -79,7 +79,7 @@ Choosing the right way to traverse the tree at least ensures the former.
 		\caption{
 		Binary search tree for a set $X = \{1, 2, 3, 4, 5, 6\}$, 
 		as constructed for the generic intersection recovery attack from~\cite{Guo22}.
-		We depict the attack behavior for a victim set $Y = \{1, 2\}$. The PSI-CA functionality is invoked at nodes marked with {\protect\fullcirc{}}.
+		We depict the attack behavior for a recovery set $Y = \{1, 2\}$. The PSI-CA functionality is invoked at nodes marked with {\protect\fullcirc{}}.
 		The intersection cardinality for nodes marked with {\protect\ocirc{}} is inferred from their sibling and parent node's intersection sizes.
 		Early DFS path terminations occur at $X_{2,1}$ and $X_{1,2}$. 
 		The inferred membership information is highlighted in {\color{positive} green} for elements in $X\cap Y$
@@ -106,7 +106,7 @@ To decide with which child to continue the path traversal,
 we compute the heuristic $p_{\PSICA}(|Z \cap Y|, |Z|) := |Z\cap Y| / |Z|$ 
 for both child sets $Z \in \{L.\treeSet, R.\treeSet\}$ 
 and continue with the child that has the larger value.
-This prioritizes subsets with a larger ratio of matched identifiers.
+This prioritizes subsets with a larger ratio of matched values.
 As elaborated below, this aids in the early termination of DFS path traversals. 
 The other node is entered into a priority queue that is sorted by the same heuristic for later treatment.
 Continuing the example mentioned above, Figure~\ref{fig:guo_basline_tree} contains markers that indicate at which nodes
@@ -179,6 +179,6 @@ due to the aforementioned early termination of path traversals.
 % 			\pcreturn T
 % 		}
 % 	\end{pchstack}}
-% 	\caption{Intersection-recovery attack $\PSICAattack{}$ with oracle access to $\PSICA(\cdot, Y)$ for a fixed victim set $Y$.
+% 	\caption{Intersection-recovery attack $\PSICAattack{}$ with oracle access to $\PSICA(\cdot, Y)$ for a fixed recovery set $Y$.
 % 	Note that $Y$ is part of the oracle and unknown to the adversary. Adapted from \cite{USENIX:GHLWJL22}.}\label{fig:PSICA_attack}
 % \end{figure}

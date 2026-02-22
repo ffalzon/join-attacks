@@ -88,7 +88,7 @@ The theorem follows directly from Proposition~\ref{thm:recenum_D} and Lemma~\ref
 \begin{proposition}\label{thm:recenum_D}
 	Let $T$ and $Y$ be two sets of records and let
 	$D$ be the dictionary constructed during an execution of\newline$\recenumattack^{\calF_\LMKPM(\cdot, Y)}(T)$ (Figure~\ref{fig:rec_enum_attack}).
-	Moreover, let $f_1$ be the identifier hiding function sampled during the evaluation of $\calF_\LMKPM$ in line~\ref{lin:recenum_eval} in Figure~\ref{fig:rec_enum_attack}. 
+	Moreover, let $f_1$ be the hiding function sampled during the evaluation of $\calF_\LMKPM$ in line~\ref{lin:recenum_eval} in Figure~\ref{fig:rec_enum_attack}. 
 	We have $D[f_1(v)] = v$ for all $v \in \Ispace[T]$.
 \end{proposition}
 \begin{proof} \textbf{of Proposition~\ref{thm:recenum_D}} 
@@ -100,13 +100,13 @@ The theorem follows directly from Proposition~\ref{thm:recenum_D} and Lemma~\ref
 	We first show that $u_0 = f_1(v_0)$ for the value $u_0$ defined on line~\ref{lin:recenum_e0}.
 	Note that the transformation of an index's binary representation to a sequence of $v_0$ and $v_1$
 	in lines \ref{lin:idx_to_seq_bin_encode_start}~-~\ref{lin:idx_to_seq_bin_encode_end} of \IdxToSeq{}
-	could produce two encodings that only contain one identifier, namely, $(v_0)^\ell$ and $(v_1)^\ell$
+	could produce two encodings that only contain one value, namely, $(v_0)^\ell$ and $(v_1)^\ell$
 	for $i = 0$ and $i = 2^\ell - 1$ respectively.
 	However, the latter is prevented by the condition on line~\ref{lin:seq_to_idx_tiebreak} and therefore
-	\IdxToSeq{} only outputs one sequence where all identifiers are equal.
-	Hence, there is only one record in $X$ whose first $\ell$ identifiers all coincide,
+	\IdxToSeq{} only outputs one sequence where all values are equal.
+	Hence, there is only one record in $X$ whose first $\ell$ values all coincide,
 	namely, $\bx_0$ with encoding $(v_0)^\ell$.
-	Since $f_1$ is injective and the identifiers in records of $X$ are not shuffled, 
+	Since $f_1$ is injective and the values in records of $X$ are not shuffled, 
 	the latter also holds for $\hXone$.
 	Therefore, $\hbx_0 = (f_1(\bx_0[1]), \dots, f_1(\bx_0[\lambda + \ell]))$ (line~\ref{lin:recenum_find0}).
 	Since $\bx_0[1] = v_0$, we have $u_0 = \hbx_0[1] = f_1(\bx_0[1]) = f_1(v_0)$ (line~\ref{lin:recenum_e0}).
@@ -116,18 +116,18 @@ The theorem follows directly from Proposition~\ref{thm:recenum_D} and Lemma~\ref
 	as it's encoding is the only one containing only $v_0$. 
 	Any other encoding $\bs$ produced by \IdxToSeq{}
 	either (a) is $(v_1)^{\ell - 1} \| v_2$ or (b) only
-	contains the identifiers $v_0$ and $v_1$.
+	contains the values $v_0$ and $v_1$.
 	\begin{description}
-	\item[Case (a):] This case is only produced on input $i = 2^\ell - 1$ and the resulting vector of hidden identifiers in the 	
+	\item[Case (a):] This case is only produced on input $i = 2^\ell - 1$ and the resulting vector of hidden values in the 	
 		 leakage is $(f_1(v_1))^{\ell - 1} \| f_1(v_2)$. 
 		 This satisfies the condition on line~\ref{lin:seq_to_idx_tiebreak} of \SeqToIdx{}, 
 		 which therefore yields the correct index $2^\ell - 1$.
-	\item[Case (b):] In this case, the vector of hidden identifiers corresponding to $\bs$ in the leakage, which we denote
+	\item[Case (b):] In this case, the vector of hidden values corresponding to $\bs$ in the leakage, which we denote
 		$\hbs:=(f_1(\bs[1]),\allowbreak\dots,f_1(\bs[\ell]))$, does not satisfy the condition on line~\ref{lin:seq_to_idx_tiebreak}, 
 		since the only encoding that would do so is $(v_1)^{\ell}$. 
 		But this is never output by \IdxToSeq{}. 
 		Therefore, $\hbs$ is interpreted as a binary encoding, where every occurrence of $u_0$ 
-		is interpreted as $0$ and every other identifier as $1$.
+		is interpreted as $0$ and every other hidden value as $1$.
 		The correctness of this recovery therefore follows from the fact that $u_0 = f_1(v_0)$,
 		which we established above.
 	\end{description}
@@ -159,7 +159,7 @@ The pseudocode of $\recenumattack$ can be found in Figure~\ref{fig:snakeattack}.
 	\label{thm:snake_D}
 	Let $T$ and $Y$ be two sets of records and let $D$ be the substitution dictionary
 	constructed during an invocation of $\snakeattack^{\calF_\LMKPM(\cdot, Y)}(T)$.
-	Moreover, let $f_1$ be the identifier hiding function sampled during the invocation of $\calF_\LMKPM$
+	Moreover, let $f_1$ be the hiding function sampled during the invocation of $\calF_\LMKPM$
 	in line~\ref{lin:snake_evaluation}.
 	Then, we have $D[f_1(v)] = v$ for all $v \in \Ispace[T]$.
 \end{proposition}
@@ -168,7 +168,7 @@ The pseudocode of $\recenumattack$ can be found in Figure~\ref{fig:snakeattack}.
 	and let $k' := |\bx_i|$ for any $i\in [n]$\footnote{We assume that all records have the same length $\lambda$.
 	Thus, $k' \in \{\lambda + 1, \lambda+2\}$}.
 	We show that $D[f_1(v)] = v$ for all $v \in \Ispace[X]$.
-	Since \snakeattack{} potentially adds fresh identifiers to records of $T$, but does not remove any, 
+	Since \snakeattack{} potentially adds fresh values to records of $T$, but does not remove any, 
 	we have $\Ispace[T]\subseteq\Ispace[X]$, which implies the claim.
 	
 	Similar to the proof of Proposition~\ref{thm:recenum_D}, we show that
@@ -177,12 +177,12 @@ The pseudocode of $\recenumattack$ can be found in Figure~\ref{fig:snakeattack}.
 	In particular, we will show that the linked list we create in \IdxToSeq{} is preserved in the leakage, 
 	and that this linked list allows us to uniquely identify each record. 
 	We show this by induction on $i$. 
-	Let $j^*$ denote the index of a column whose identifiers are all unique (note that if such a column does not exist, it is created on line~\ref{lin:distinctIDs_j*}).
+	Let $j^*$ denote the index of a column whose values are all unique (note that if such a column does not exist, it is created on line~\ref{lin:distinctIDs_j*}).
 
-	For $i = 1$, observe that identifier $t_1[j^*]$ is not appended to any record in \snakeencodeUnique{}; 
+	For $i = 1$, observe that the value $t_1[j^*]$ is not appended to any record in \snakeencodeUnique{}; 
 	in other words, it is the only item in the linked list that doesn't have anything pointing to it.
-	In contrast, for all $i' > 1$, identifier $t_{i'}[j^*]$ is appended to $t_{i'+1}$.
-	$\hbx_1$ is therefore the only record in $X$ whose $j^*$-th identifier is not contained in the last column, 
+	In contrast, for all $i' > 1$, the value $t_{i'}[j^*]$ is appended to $t_{i'+1}$.
+	$\hbx_1$ is therefore the only record in $X$ whose $j^*$-th value is not contained in the last column, 
 	i.e., $\hbx_1[j^*] \not \in \{\hbx_{i'}[k'] \setdsc i'\in[n]\}$.
 	By the definition of $\calF_\LMKPM$, this property is preserved in the leakage $\hXone$.
 	That is, the corresponding record in the leakage $h = (f_1(\hbx_1[1]), \dots, f_1(\hbx_1[k']))$
@@ -195,12 +195,12 @@ The pseudocode of $\recenumattack$ can be found in Figure~\ref{fig:snakeattack}.
 	We show that there is a unique record which $\bx_i[k']$ is pointing to (that has not been traversed by the previous items in the linked list), 
 	and that, once again this property is preserved in the leakage allowing for unique identification of the record.
 	By construction in \snakeencodeUnique{}, we have $\bx_{i+1}[j^*] = \bx_i[k']$.
-	Since all identifiers in the $j^*$-th column are distinct, 
+	Since all values in the $j^*$-th column are distinct, 
 	$\bx_{i+1}$ is the only record in $X$ that satisfies this condition.
 	As before, since $f_1$ is injective, the corresponding record in the leakage 
 	$h = (f_1(\bx_{i+1}[1]), \dots, f_1(\bx_{i+1}[k']))$
 	is the only record that satisfies $h[j^*] = \hbx_i[k']$.
-	Moreover, all hidden identifiers in the $j^*$-th column of $\hXone$	are distinct. % $t'_{i+1}$ is the only record in $\setT'$
+	Moreover, all hidden values in the $j^*$-th column of $\hXone$	are distinct. % $t'_{i+1}$ is the only record in $\setT'$
 	Thus, the dictionary $\loc$ in \SeqToIdx{} contains exactly the $n$ keys $\{f_1(\bx_{i'}[j^*]) \setdsc i' \in [n]\} = \{f_1(\hbx_{i'}[j^*]) \setdsc i' \in [n]\}$,
 	which are mapped as $\loc[f_1(\bx_{i'}[j^*])] = i'$.
 	In line~\ref{lin:snake_recover_assign_t_star}, we pick $\hbx_{i+1} := h_\ind$ for $\ind = \loc[\hbx_i[k']]$, 

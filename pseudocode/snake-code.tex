@@ -38,8 +38,8 @@
  		\text{Initialize empty dictionary $\DictE$} \\
  			\pcfor i = 0, \dots, n - 2 \pcdo \\
  				\t	\bx_i \gets \bt_i \| \bt_{i+1}[j] \\
- 		\id \gets \calI \setminus \{\bt_i[j] \setdsc i \in [0,n-1]\}  \label{lin:snake_encode_last_id}\\
- 				\bx_{n-1} \gets \bt_{n-1} \| \id \\
+ 		v \sample \calI \setminus \{\bt_i[j] \setdsc i \in [0,n-1]\}  \label{lin:snake_encode_last_id}\\
+ 				\bx_{n-1} \gets \bt_{n-1} \| v \\
  		\pcreturn (\bx_{0}, \dots, \bx_{n-1})
  	}
     \end{pcvstack}
@@ -50,7 +50,7 @@
  	    \text{Initialize empty dictionary $\loc$}\\
  		\text{Fix an ordering $\hXone = (\hbx_0, \dots, \hbx_{n-1})$} \\
 		k \gets |\hbx_0|\ \ \cmmnt{$= |\hbx_1| = \dots = |\hbx_{n-1}|$} \pcskipln\\
- 		\cmmnt{Store locations of linked identifiers.}\\
+ 		\cmmnt{Store locations of linked values.}\\
  			\pcfor i = 0, \dots, n-1 \pcdo \\
 				\t	\loc[\hbx_i[j^*]] \gets i \pcskipln\\
  				\cmmnt{Find start index $\ind$ of the linked list.} \\
