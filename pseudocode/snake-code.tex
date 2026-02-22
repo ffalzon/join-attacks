@@ -6,9 +6,9 @@
         n \gets |T| \\
         \text{Fix an ordering } T = (\bt_0,\ldots,\bt_{n-1}). \\
         \pcif \text{$\not\exists j^*$ s.t. $|\{\bt_i[j^*] \setdsc \bt_i\in T\}| = n$} \pcthen \label{lin:distinctIDs_j*} \\
-        \t 	\text{Pick $n$ distinct $\id_1, \dots \id_n \gets \Ispace{}$} \\
+        \t 	\text{Pick $n$ distinct $v_0, \dots v_{n-1} \gets \Ispace{}$} \\
         \t 	\pcforeach i \in [0,n-1] \pcdo\\
-        \t \t \bt_i \gets \id_i \| \bt_i  \\
+        \t \t \bt_i \gets v_i \| \bt_i  \\
         \t \t j^* \gets 0 \\
         \pcelse \\
         \t \text{Pick $j^*\leq n-1$ s.t. $|\{\bt_i[j^*] \setdsc \bt_i\in T\}| = n$} \\
