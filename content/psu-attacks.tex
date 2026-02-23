@@ -16,22 +16,24 @@ executions and which does not rely on the adversarial input set being empty or
 disjoint from the recovery set. We then prove that PSU-CA leaks at least as much
 information as PSI-CA by constructing a reduction showing that any PSI-CA attack
 with $q$ queries can be transformed into a PSU-CA attack with $q{+}3$
-queries. Finally, in the next section, we show that our PSU-CA attack extends to Meta's $\calF_{\MKPM}$ functionality.
+queries. Finally, in the next section, we show that our PSU-CA attack extends to
+Meta's $\calF_{\MKPM}$ functionality.
 
 \subsection{Analysis of PSU}
 \label{sec:psu-attack}
-Recall that the input-malicious party $\tP_1$ knows the target set $T$ and can invoke $\calF_{\PSU}(;Y)$ on any set $X$. The adversary's goal is to recover $T \cap Y$. Our attack is based on the following equation. For any two sets $X$ and $Y$ we have 
+Recall that the corrupted party $\tP_1$ knows the target set $T$ and can invoke
+$\calF_{\PSU}(;Y)$ on any set $X$. The adversary's goal is to recover
+$T \cap Y$. Our attack is based on the following equation. For any two sets $X$
+and $Y$ we have
 \begin{equation}
   \label{eqn:PSU_basis}
   X \cap Y = (X \cup Y) \setminus (Y \setminus X) \setminus (X \setminus Y).
 \end{equation} 
 
-Both $X \cup Y$ and $Y \setminus X$ can be easily determined. The
-former is the output of evaluating $\calF_{PSU}(X;Y)$, and the latter can be
-computed as
-$(X \cup Y) \setminus X = Y \setminus X$.
-The challenge lies in determining $X \setminus Y$. To address
-this, we make two additional observations.
+Both $X \cup Y$ and $Y \setminus X$ can be easily determined. The former is the
+output of evaluating $\calF_{PSU}(X;Y)$, and the latter can be computed as
+$(X \cup Y) \setminus X = Y \setminus X$.  The challenge lies in determining
+$X \setminus Y$. To address this, we make two additional observations.
 
 \begin{proposition}\label{prop:PSU_difference_distributes}
   Let $X$ and $Y$ be sets and $X_1 \cup X_2$ be a partition of $X$. It holds that
@@ -113,7 +115,3 @@ We state our result in the following theorem:
 
 The proof is given in Appendix~\ref{proof:PSICA-to-PSUCA}.
 In Appendix~\ref{attack:PSUCA}, we concretely describe and analyze $\PSUCAattack$---an attack that uses the transformation described above to turn the PSI-CA attack from Guo et al.\cite{USENIX:GHLWJL22} (See Appendix~\ref{ap:guo_attack} for an overview) to one against PSU-CA.  
-
-
-
-

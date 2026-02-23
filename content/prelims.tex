@@ -6,13 +6,12 @@ $N$.
 
 For sets $X,Y$ and any function $f:X\to Y$, we denote the image of $X$ under $f$
 as $f(X) := \{f(x) | x \in X\} \subseteq Y$.  Moreover, $\Funcs[X, Y]$ denotes
-the space of functions $f: X \to Y$ and $\InjFuncs[X, Y] \subset \Funcs[X, Y]$
-denotes the set of injective functions $f: X \to Y$.  $\Perms[X]$ denotes the
-set of all permutations of $X$.
+the space of functions $f: X \to Y$ and $\InjFuncs[X, Y]$ denotes the set of all
+injective functions. $\Perms[X]$ denotes the set of all permutations of $X$.
 
 \subsection{Multi-key Private Matching Functionality}
 \label{sec:MKPM-functionality}
-\heading{Indexed records.} The Multi-Key PrivateID (MK-PrivateID)
+\heading{Indexed Records.} The Multi-Key PrivateID (MK-PrivateID)
 protocol~\cite{MKPMC} extends the single-key PrivateID protocol~\cite{PMC} to
 support matching on multiple keys (e.g., names or email addresses). We use terms
 \emph{identifiers} and \emph{keys} interchangeably, following the terminology of
@@ -20,7 +19,7 @@ the original paper \cite{MKPMC}. Each record contains multiple indexed values
 under different keys (See Section~\ref{sec:mkpmc_functionality} for the
 representation). The keys themselves are implicit.
 
-\heading{Matching procedure.} We refer to the functionality implemented by
+\heading{Matching Procedure.} We refer to the functionality implemented by
 MK-PrivateID as the \emph{Multi-key Private Matching (MKPM)} functionality. In
 this setting, two parties $P_1$ and $P_2$ hold sets of records $X$ and $Y$,
 respectively. MKPM first groups records that share at least one common indexed
@@ -45,7 +44,7 @@ example input featuring a one-to-many match (Fig.~\ref{fig:match-input}) that is
 resolved into a one-to-one correspondence, along with the resulting output
 (Fig.~\ref{fig:match-output}).
 
-\heading{Security guarantee.} The original work~\cite{MKPMC} sketches a proof
+\heading{Security Guarantee.} The original work~\cite{MKPMC} sketches a proof
 for semi-honest security. However, we note that the specified functionality
 leaks more information than the intended output. We therefore distinguish the
 intended functionality, which computes the set of UIDs and the mapping of UIDs

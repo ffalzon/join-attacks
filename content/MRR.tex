@@ -39,7 +39,7 @@ This constraint may exclude certain scenarios. For example, if the sets contain 
 
 The proof can be find in Appendix~\ref{sec:psu-mkpm:correctness}.
 
-\heading{Time and query complexity.}
+\heading{Time and Query Complexity.}
 The $\PSUCAattack{}$ can be applied directly to the output of $\calF_{\MKPM}$, as long as the adversary's input sets satisfy Definition~\ref{def:isolated_set}. Thus, the attack has the same worst-case time complexity and maximum number of protocol invocations as when applied to $\calF_{\PSUCA}$. Specifically, it requires $\bigO{n\log n}$ time and at most $n + 1$ protocol invocations (although typically fewer queries are needed due to the probability of early termination).
 
 \begin{figure}

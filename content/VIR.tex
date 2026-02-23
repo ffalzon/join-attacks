@@ -83,7 +83,7 @@ The pseudocode of \mkpsiattack{} is given in Figure~\ref{fig:MKPSIattack} (Appen
 
 The proof can be found in Appendix~\ref{proof:VIR-attack-correctness}.
 
-\heading{Time and query complexity.} 
+\heading{Time and Query Complexity.} 
 Let $n = |T|$, $m = |Y|$, and let $\ell_{\rec}$ be the maximum record length in $T$ and $Y$. Assume $n$ is a power of two and that priority-queue operations \push{} and \pop{} take amortized time \bigO{\log n}. Since $n$ nodes are pushed and popped in total, this contributes \bigO{n \log n} time.
 For inputs $X$ of size $a$ and $Y$ of size $b$, $\colCA(X,Y)$ can be computed in expected time \bigO{\ell_{\rec}(a+b)}. It is called once at the root and for half the nodes at each depth, yielding an expected total cost of $\bigO{\ell_{\rec} n(\log n + m)}$. The heuristic $p_{MK}$ adds only lower-order terms, so the overall expected runtime is $\bigO{\ell_{\rec} n(\log n + m)}$.
 

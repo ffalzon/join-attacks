@@ -22,7 +22,7 @@ This procedure yields a maximum set reconstruction $R_Y$ of $Y$ with respect to 
 We omit a full proof of correctness. Correctness of the attack directly follows from the fact that all values in the flattened target record are uniquely identifiable in a single invocation of $\calF_{\LMKPM}$.
 
 
-\heading{Time and query complexity.}
+\heading{Time and Query Complexity.}
 Let $\ell_{\rec}$ denote the maximum record length in $T$ and $Y$, and let $n = |T|$ and $m = |Y|$.
 The attack has an asymptotic time complexity of
 $\bigO{\ell_{\rec}(n + m)}$.
@@ -123,7 +123,7 @@ The pseudocode of $\recenumattack$ is given in Figure~\ref{fig:rec_enum_attack}.
 The proof of Theorem~\ref{thm:recenumattack:correctness} can be found in Appendix~\ref{sec:recenumattack:correctness}.
 
 
-\heading{Time and query complexity.}
+\heading{Time and Query Complexity.}
 Assuming that the binary encoding can be computed in time $\bigO{\log n}$, then computing the augmented input set takes $\bigO{n \log n}$.
 Identifying $\hbx_0$ also incurs time $\bigO{n \log n}$. Constructing the dictionary $\Dict$ takes time $\bigO{n(\log n + \ell_{rec})}$, while computing $R_Y$ using $\Dict$ and $\hYone$ requires time $\bigO{\ell_{\rec} m}$.
 
@@ -197,7 +197,7 @@ The pseudocode of $\snakeattack$ is given in Figure~\ref{fig:snakeattack}.
 
 The proof of Theorem~\ref{thm:snakeattack:correctness} can be found in Appendix~\ref{sec:snakeattack:correctness}.
 
-\heading{Time and query complexity.} 
+\heading{Time and Query Complexity.} 
 Let \(\ell_{\rec}\) denote the length of the largest record in \(T\) and \(Y\). Determining whether a column in \(T\) contains only unique identifiers can be done in $\bigO{\ell_{\rec} n}$ time.
 Constructing the (implicit) linked list has an average-case time complexity of \(\bigO{n}\), as does identifying the linked list in the leakge. 
 Constructing the dictionary involves up to \(\ell_{\rec} n\) writes. Computing $R_Y$ using $\Dict$ and $\hYone$ requires time $\bigO{\ell_{\rec} m}$. The overall average-case time complexity for \snakeattack{} is \(\bigO{\ell_{\rec} (n + m)}\). Similar to the previous attacks, it requires only one protocol invocation.
