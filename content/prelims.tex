@@ -7,7 +7,8 @@ $N$.
 For sets $X,Y$ and any function $f:X\to Y$, we denote the image of $X$ under $f$
 as $f(X) := \{f(x) | x \in X\} \subseteq Y$.  Moreover, $\Funcs[X, Y]$ denotes
 the space of functions $f: X \to Y$ and $\InjFuncs[X, Y]$ denotes the set of all
-injective functions. $\Perms[X]$ denotes the set of all permutations of $X$.
+injective functions of $\Funcs[X, Y]$. $\Perms[X]$ denotes the set of all
+permutations of $X$.
 
 \subsection{Multi-key Private Matching Functionality}
 \label{sec:MKPM-functionality}
@@ -58,7 +59,7 @@ to that comprising the green and red edges in Figure~\ref{fig:match-input}.
 \subsubsection{Functionality}
 \label{sec:mkpmc_functionality}
 We now present a formal description of the functionality $\calF_{\MKPM{}}$. Let
-$\Ispace$ denote the universe of record values
+$\Ispace$ denote the universe of record values.
 
 Party $P_1$ holds
 \[
