@@ -73,7 +73,7 @@ The attack requires only one protocol invocation and therefore establishes a tig
 \subsubsection{A First Optimization}
 The baseline attack relies on an atypical input structure---one very long record---which is both unnatural and easy to detect in practice. This motivates more refined attacks that achieve MSR without such conspicuous inputs.
 
-A first optimization avoids arbitrarily long records by exploiting that record lengths are preserved in the leakage. The values in $\Ispace[T]$ can be partitioned into multiple records, each of a \emph{unique} length. Let $X'$ denote the resulting set of records and ${\hXone}'$ the corresponding leakage. Since each record has a distinct length and the order of identifiers within records is preserved, the adversary can uniquely match each record in ${\hXone}'$ to the plaintext record of equal length in $X'$, build a dictionary as before, and again achieve MSR.
+A first optimization avoids arbitrarily long records by exploiting that record lengths are preserved in the leakage. The values in $\Ispace[T]$ can be partitioned into multiple records, each of a \emph{unique} length. Let $X'$ denote the resulting set of records and ${\hXone}'$ the corresponding leakage. Since each record has a distinct length and the order of values within records is preserved, the adversary can uniquely match each record in ${\hXone}'$ to the plaintext record of equal length in $X'$, build a dictionary as before, and again achieve MSR.
 
 \heading{Time and Query Complexity.}
 This optimized attack still uses a single protocol query and has time complexity \bigO{\ell_{\rec}(n + m)}. The maximum record length decreases from $|\Ispace[T]|$ to approximately $\sqrt{2|\Ispace[T]|}$. While less conspicuous than the single-record variant, it remains easily detectable. Our next two attacks remove this assumption.
@@ -110,7 +110,7 @@ where $\bx_i$ is the record in $X$ with index $i$. As before, this dictionary, t
 
 %%%%%%%%%%%%%
 
-The assumption that $n$ is not a power of two can be dropped. The adversary can introduce a third tie-breaking identifier $\id_2 \notin \{\id_0,\id_1\}$ and modify the encoding of the index $2^\ell - 1$ by replacing the last symbol in $(\id_1,\ldots,\id_1)$ with $\id_2$. This guarantees a unique, identifiable prefix and removes the ambiguity between the encodings of $0$ and $2^\ell - 1$. We adopt this approach in our full attack.
+The assumption that $n$ is not a power of two can be dropped. The adversary can introduce a third tie-breaking value $v_2 \notin \{v_0,v_1\}$ and modify the encoding of the index $2^\ell - 1$ by replacing the last symbol in $(v_1,\ldots,v_1)$ with $v_2$. This guarantees a unique, identifiable prefix and removes the ambiguity between the encodings of $0$ and $2^\ell - 1$. We adopt this approach in our full attack.
 An example of a target set and its augmented input is shown in Figure~\ref{subfig:recenum_example_plain}. Its resulting leakage is shown in Figure~\ref{subfig:recenum_example_leakage}. 
 
 The pseudocode of $\recenumattack$ is given in Figure~\ref{fig:rec_enum_attack}.
@@ -175,7 +175,7 @@ Overall, the attack runs in time \bigO{n \log n + \ell_{\rec}(n+m)} and requires
 
 While $\recenumattack$ improves over $\baselineattack$ in terms of detectability, it still requires inputs whose record lengths grow with the target set size. We address this limitation by imposing an order on the records without explicitly assigning a unique index to each one. Concretely, we extend each record by only two values; these values form a chain of pointers that enables the adversary to reconstruct a total order on the records.
 
-The attack starts by checking whether there exists a column (attribute) $j^*$ in $T$ such that every value in that column is unique, i.e., $|\{\bt[j^*] \setdsc \bt \in T\}| = |T|$. This is a reasonable assumption, as many identifiers (e.g., email addresses) are typically unique per user. If no such column exists, the adversary can create one by sampling $n$ distinct values in $\Ispace[]$ and prepending one value to each record in $T$ (in which case $j^* = 0$).
+The attack starts by checking whether there exists a column (attribute) $j^*$ in $T$ such that every value in that column is unique, i.e., $|\{\bt[j^*] \setdsc \bt \in T\}| = |T|$. This is a reasonable assumption, as many values (e.g., email addresses) are typically unique per user. If no such column exists, the adversary can create one by sampling $n$ distinct values in $\Ispace[]$ and prepending one value to each record in $T$ (in which case $j^* = 0$).
 
 The adversary links the records of $T$ by fixing an arbitrary ordering $(\bt_0, \dots, \bt_{n-1})$ and appending the unique value of the $(i+1)$-st record to the $i$-th record for all $i \in [n-1]$. See Figure~\ref{subfig:snake_example_unique} for a small example. This yields an input set $X = \{\bx_0, \dots, \bx_{n-1}\}$ such that $\bt_i$ corresponds to $\bx_i$ in an (implicit) linked list. Party $\tP_1$ then invokes the functionality $\calF_{\LMKPM}(\ \cdot\ ;Y)$ on $X$ to obtain the output.  
 
@@ -198,7 +198,7 @@ The pseudocode of $\snakeattack$ is given in Figure~\ref{fig:snakeattack}.
 The proof of Theorem~\ref{thm:snakeattack:correctness} can be found in Appendix~\ref{sec:snakeattack:correctness}.
 
 \heading{Time and Query Complexity.} 
-Let \(\ell_{\rec}\) denote the length of the largest record in \(T\) and \(Y\). Determining whether a column in \(T\) contains only unique identifiers can be done in $\bigO{\ell_{\rec} n}$ time.
+Let \(\ell_{\rec}\) denote the length of the largest record in \(T\) and \(Y\). Determining whether a column in \(T\) contains only unique values can be done in $\bigO{\ell_{\rec} n}$ time.
 Constructing the (implicit) linked list has an average-case time complexity of \(\bigO{n}\), as does identifying the linked list in the leakge. 
 Constructing the dictionary involves up to \(\ell_{\rec} n\) writes. Computing $R_Y$ using $\Dict$ and $\hYone$ requires time $\bigO{\ell_{\rec} m}$. The overall average-case time complexity for \snakeattack{} is \(\bigO{\ell_{\rec} (n + m)}\). Similar to the previous attacks, it requires only one protocol invocation.
 

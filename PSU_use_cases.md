@@ -42,5 +42,7 @@
    * Two applications of MPC for  cooperative cyber risk assessment:
      1. Threshold-PSU for IP blacklist aggregation (more than two parties)
      2. PSI-SUM-like functionality to aggregate vulnerability data
+3. **Private Federated Submodel Learning via Private Set Union** [IEEE Transactions on Information Theory](https://doi.org/10.1109/TIT.2023.3344717)
+   * Not entirely sure, but it seems to be a straight-forward application of two-party PSU.
 
 Other applications such as **aggregating medical data** or **anomaly detection in network monitoring** are mentioned without references to further papers or concrete pointers where this is used (specific companies, agencies, products, ...) 
