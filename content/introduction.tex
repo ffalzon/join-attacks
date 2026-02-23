@@ -1,89 +1,58 @@
-
+ 
 \section{Introduction}
 \label{sec:introduction}
-Functionality leakage is an inherent characteristic of many systems that allow two or more parties to compute over private inputs. Such systems include secure multi-party computation (MPC) and zero-knowledge (ZK) proofs~\cite{STOC:GolMicRac85}. These primitives are no longer purely theoretical: MPC and ZK functionalities have been deployed in practice, for example in Google’s Private Join and Compute protocol for private ad-conversion measurement~\cite{googlePJC} and in Zcash, which uses ZK proofs to enable private transactions without revealing the sender, receiver, or transaction amount~\cite{zCash}.
+Functionality leakage is an inherent characteristic of many systems that allow two or more parties to compute over private inputs. Such systems include secure multi-party computation (MPC) and zero-knowledge (ZK) proofs~\cite{STOC:GolMicRac85}. Until recently, these primitives were largely theoretical, and their security definitions reflected this: standard security notions for MPC, for example, focus on proving that the only information leaked during the protocol is the functionality output.
 
-It is well understood that, given a known function and access to input–output pairs, an adversary can infer information about the inputs. The deployment of these systems, however, makes it pressing to understand \emph{what} information can be inferred by parties participating in such protocols, and under which usage patterns and threat models this leakage becomes practically significant.
+These primitives, however, are now increasingly deployed in practice, for example Google’s Private Join and Compute protocol uses MPC for private ad-conversion measurement\cite{googlePJC} and Zcash uses ZK proofs to enable private transactions without revealing the sender, receiver, or transaction amount\cite{zCash}. At the same time, it is well understood that, given a known function and access to input–output pairs, an adversary can infer additional information about the inputs. This growing deployment therefore makes it increasingly important to understand \emph{what} information can be inferred by parties participating in such protocols, and under which usage patterns and threat models this leakage becomes practically significant.
 
+Among the most widely studied and deployed MPC protocols are set-operation functionalities, such as private set intersection (PSI), which enable parties to compute the intersection of their datasets while ostensibly revealing only limited information about their inputs. PSI-like functionalities have been extensively explored in the literature, both from a protocol-design and an attack-analysis perspective (see Section~\ref{sec:related-work}). However, prior cryptanalytic work is narrow in scope and has exclusively focused on PSI-like functionalities, such as PSI-Cardinality and Private Join and Compute (which computes an inner product on the values associated with keys in the intersection), leaving a broad range of other functionalities unstudied.
 
-Among the most widely studied and deployed MPC protocols are set-operation functionalities, such as private set intersection (PSI), which enable parties to compute an intersection of their datasets without leaking the . PSI has been extensively explored in the literature, both from a protocol-design and an attack-analysis perspective (see Section~\ref{sec:related-work}). In this work, we instead focus on private set union (PSU), where two or more parties, each holding a set, jointly compute the union of their sets without revealing anything beyond the result~\cite{USENIX:DZBC25,USENIX:TBZCC25,USENIX:JSZG24,USENIX:ZCLZL23,USENIX:JSZDG22,CCS:GNBT25,CCS:ZCLPHW24,CCS:TCLZ23,ASIACCS:CSSW25,ASIACCS:BlaAgu12,AC:LiuGao23,AC:KRTW19,PoPETS:GaoNguTri24,ACNS:Frikken07,C:KisSon05}.
-
-
-% Recent focus of cryptographic research has shifted from conventional
-% all-or-nothing security to allowing secure computation on private data. This
-% change is reflected by a plethora of work on secure two-party computation (2PC)
-% and multi-party computation (MPC). In particular, multiple functionalities have
-% been introduced and deployed in the real world \cite{}. These include basic set
-% operations, such as private set intersection (PSI) and private set union (PSU).
+In this work, we instead focus on private set union (PSU), where two or more parties, each holding a set, jointly compute the union of their sets without revealing anything beyond the result~\cite{USENIX:DZBC25,USENIX:TBZCC25,USENIX:JSZG24,USENIX:ZCLZL23,USENIX:JSZDG22,CCS:GNBT25,CCS:ZCLPHW24,CCS:TCLZ23,ASIACCS:CSSW25,ASIACCS:BlaAgu12,AC:LiuGao23,AC:KRTW19,PoPETS:GaoNguTri24,ACNS:Frikken07,C:KisSon05}.
+PSU has been proposed for numerous use cases, including the private aggregation of IP block lists~\cite{USENIX:JSZDG22,AC:KRTW19}, hospital data~\cite{USENIX:JSZDG22}, and network traffic data~\cite{USENIX:BSMD10}. The security goal of PSU is to enable data sharing without revealing which records appear frequently in the intersection---commonly referred to as \emph{heavy hitters}~\cite{SP:BBCGI21}.
 
 
-PSU has been proposed for use in numerous use cases, including the private
-aggregation of IP block lists~\cite{USENIX:JSZDG22,AC:KRTW19}, hospital
-data~\cite{USENIX:JSZDG22}, and network traffic data~\cite{USENIX:BSMD10}. The
-security goal of PSU is to enable data sharing without revealing which records
-appear frequently in the set intersection, commonly referred to as \emph{heavy
-  hitters} \cite{}.
+\heading{Expanding to Private Multi-Key Join.}
+To enable richer private data analytics, database operations often go beyond basic set operations. For example, a company may wish to group information about the same individual across multiple databases, where each record contains a key (e.g., name) and associated attributes (e.g., email, credit score). If a key appears in the intersection, the corresponding attributes can be unioned to complete the individual’s information. This functionality is known as a \emph{database join}, and private database joins have been studied in prior work (e.g., \cite{AC:KRTW19}).
 
-\heading{Private Multi-Key Join.} However, database operations are often more
-complex than basic set operations, to enable richer forms of private data
-analytics. For example, a company may be interested in grouping information
-about the same individual across multiple databases. Each database record
-contains a key, such as a name, together with multiple associated attributes,
-such as age and credit score. If the key appears in the intersection of the
-databases, one can then perform a union over the corresponding attributes to
-complete the individual's personal information. This functionality is commonly
-referred to as a \emph{database join}. Private database joins have been proposed
-in prior work, such as \cite{AC:KRTW19} \cite{}, along with associated
-cryptanalysis efforts \cite{}.
+In practice, more expressive operations such as multi-key joins are often required. Building on our analysis of PSU, we further study the multi-key extension of Meta’s deployed Private-ID protocol, Multi-key Private Matching for Compute (MKPM)~\cite{MKPMC}, to understand the security guarantees provided by such protocols.
 
-In real-world settings, more expressive join operations are often desired, such
-as multi-key joins rather than single-key joins. We study the work \cite{MKPMC},
-to understand the security guarantee provided by such a protocol. Since it is a
-concrete protocol rather than a generic functionality, we also identify the
-leakage that is present in the protocol itself. This analysis serves to clarify
-what information can be learned beyond the intended output, and highlights
-potential risks that should be carefully considered prior to deployment.
+%Because this is a concrete protocol rather than an abstract functionality, we also identify the leakage that arises from its specific design. This analysis clarifies what information can be learned beyond the intended output and highlights potential risks that should be carefully considered prior to deployment.
 
-% However, there is a close relationship between the cardinalities of the union
-% and the intersection of two sets, thus raising the question whether existing
-% intersection recovery attacks against PSI-CA
-% (e.g.,~\cite{USENIX:GHLWJL22,NDSS:JiaDuYan24,USENIX:FalTan25}) can be modified
-% to work against PSU-CA. \ff{maybe move this paragraph up to intro}.
+%There is an important distinction between analyzing a generic PSU functionality and analyzing a concrete multi-key join protocol. We therefore divide our analysis into two parts: one that considers only the ideal functionality, and another that considers all information available in a real protocol execution.
+%As part of our analysis of the multi-key join work~\cite{MKPMC}, we identify several subtleties that are not fully addressed by their security proof sketch, including the treatment of repeated identifiers and certain syntactic inconsistencies. Moreover, the protocol reveals additional information beyond the intended output: the computing party learns a renamed and shuffled copy of both input sets, enabling it to infer the matching pattern between them. To reason about this, we explicitly separate the intended functionality (what is supposed to be computed) from additional leakage (e.g., set sizes and structural information), and then study what an adversary can recover from the latter.
 
-\heading{Threat Models and Recovery Goals.} Because there is an inherent
-difference between analyzing generic PSU functionality and a concrete multi-key
-join protocol, we divide our analysis into two categories: one that considers
-only the generic functionality, and another that considers all information
-available in the protocol execution. In the first category, although both PSU
-and PSI aim to reveal nothing beyond the output, namely, the union or the
-intersection, the security goals are subtle. In particular, PSU is intended to
-hide which elements that lie in the intersection, whereas PSI hides the ones
-that are not in the intersection. For PSU, an adversary may query an empty set,
-which would completely reveal the other party's input set. Similarly, for PSI,
-if one inputs the universe, they would obtain the other party's input set. The
-usual justification is that thresholds or authorization mechanisms can be
-imposed on the sets to restrict such queries. In this work, we aim to
-understand, whether it is still possible to circumvent these mitigation
-mechanisms and recover the underlying set. \tianxin{Maybe more specific, and add
-  database abstraction.}
+At the functionality level, the security goals of PSI and PSU are subtly different. PSI aims to reveal which elements lie in the intersection, whereas PSU aims to hide this information and reveal only the union. In principle, both are intended to reveal ``nothing beyond the output.'' However, trivial queries already show that additional constraints are needed: in PSU, an adversary could input the empty set and learn the other party’s entire input. Frikken~\cite{ACNS:Frikken07}, The usual justification is that thresholds or authorization mechanisms restrict such pathological inputs. In this work, we ask whether it is still possible to circumvent these mitigation mechanisms and recover the underlying set.
 
-As part of our analysis on the multi-key join work~\cite{MKPMC}, we identify
-several subtleties that are not fully addressed by their security proof sketch,
-including repeated identifiers in the inputs and certain syntactic
-inconsistencies. Moreover, the protocol reveals additional information beyond
-simply the matched identifiers: party $C$ learns a renamed and shuffled copy of
-the two input sets, enabling it to infer the matching pattern between them. To
-address this, we separate the intended functionality (i.e., what we wish to
-compute) from the additional leakage (i.e., information that may also be
-inferred, such as set sizes).
+\subsection{Contributions}
 
-\tianxin{Threat models: more specific.}
+We present seven attacks revealing fundamental limitations in how existing private set union and join functionalities protect input privacy. We consider an adversary that participates in the two-party protocol, honestly executes it, and learns the output, but may maliciously craft its input to maximize information gained. The adversarial party, $\tP_1$, holds a \textbf{target set} $T$ it seeks to learn about, while the honest party, $P_2$, holds the \textbf{recovery database} $Y$.
 
 
-\heading{Experimental Evaluation.} \tianxin{Add.}
+The input structure depends on the functionality. For PSU and PSU-CA, $T=\{t_i\}_{i\in[n]}$ and $Y=\{y_k\}_{k\in[m]}$ are sets of values. For MKPMC, $T=\{\bt_i\}_{i\in[n]}$ and $Y=\{\by_i\}_{i\in[m]}$ are sets of records, where each record is a vector of values. As in prior work~\cite{USENIX:FalTan25}, we assume the recovery database is static. However, as we will see, many of our attacks do not rely on this assumption, as significant information can be recovered in just one protocol invocation.
 
 
-\subsection{Related Work}
+\heading{Attacks against PSU and PSU-CA.} 
+Our first attack targets the PSU functionality. We show that when the protocol is invoked on two disjoint subsets forming a partition of $T$ (e.g., $T = X_1 \cup X_2$), the adversary can fully recover the intersection $T \cap Y$. This result significantly constrains how PSU can be safely used, both as a standalone protocol and as a component within larger or more complex systems.
+
+Next, we consider PSU-CA. We demonstrate that although PSU-CA reveals only the cardinality of the set union, we can nevertheless recover the intersection $T \cap Y$ through a sequence of adaptively chosen queries. We establish a direct connection to PSI-CA, showing that any attack against PSI-CA (e.g.,~\cite{USENIX:GHLWJL22,NDSS:JiaDuYan24,USENIX:FalTan25}) can be transformed into an attack against PSU-CA using only three additional queries.
+
+
+\heading{Attacks against Meta's Multi-Key Private Match.} 
+We next turn our attention to Meta’s multi-key join functionality~\cite{MKPMC} and present five concrete attacks. We begin by analyzing the intended functionality (without leakage) and show that, even under the most idealized output specification, an adversary can infer which records in $T$ share attribute values with records in $Y$.
+We further establish a close relationship between PSU-CA and MKPM, demonstrating that our attack on PSU-CA can be directly leveraged to recover this information in the multi-key join setting.
+
+The remaining attacks further exploit protocol-specific leakage. In particular, one attack recovers all values shared between $T$ and $Y$, while the final three attacks produce an exact reconstruction $R_Y$ of the records in $Y$, up to the shared values. These latter attacks are able to do so using a \emph{single} query.
+Together, these results underscore the importance of providing a rigorous and comprehensive security proof---absent in the original work---as well as explicitly modeling and anlyzing leakage beyond the ideal functionality.
+
+\heading{Experimental Evaluation.} 
+To validate our findings, we implement all attacks and demonstrate their high practical efficiency. For example, our PSU attack scales to recovery sets of size $m = 10^6$ elements, with runtimes ranging from \SI{0.74}{\second} to \SI{3.13}{\second}.
+For adaptive attacks requiring multiple queries (e.g., PSU-CA and MKPM without leakage), the empirical query cost is significantly lower than the theoretical upper bound, demonstrating greater practical efficiency than theory alone suggests.
+
+\heading{Broader Impact.} 
+Finally, we discuss the broader implications of our attacks. We re-examine common mitigation strategies, such as rate limiting and input validation, and explain why these mechanisms may be insufficient against the adversaries considered in this work. 
+
+
+\subsection{Related Work}\label{sec:related-work}
 
 \input{tables/overview.tex}
 
@@ -95,32 +64,14 @@ These attack works, however, largely focus on single-key or set-based operations
 
 
 
-\subsection{Contributions}
-We present our contributions as follows.
-\begin{itemize}[leftmargin=*,label=-]
-\item We identify that PSU, when used as a building block for richer database
-  functionalities such as database join, no longer guarantees hiding of the
-  intersection. This limits how PSU can be safely used in larger and more
-  complex contexts.
-\item We demonstrate concrete attacks on a multi-key join protocol
-  \cite{MKPMC}. We analyze both the intended functionality and the leakage
-  present in the protocol. \tianxin{Add recovery results.} This highlights the
-  importance of providing a detailed security proof, which is missing in the
-  original work. In addition, we connect our analysis to follow-up work \cite{}
-  and show that the non-collusion assumption in delegable settings requires
-  special care; otherwise, the protocol would be subject to the same risks.
-\item We present the relationship of security guarantees of PSU, PSI, and
-  multi-key join by reductions between their corresponding attacks. \tianxin{Do
-    we need this?}
-\item Finally, we highlight the broader implications of our attacks and raise
-  the need to reconsider common mitigation strategies, such as imposing
-  thresholds or authorized inputs, in light of our findings that such mechanisms
-  may be insufficient when adversaries can issue carefully crafted yet seemingly
-  benign inputs.
-\end{itemize}
 
 
-
+% Recent focus of cryptographic research has shifted from conventional
+% all-or-nothing security to allowing secure computation on private data. This
+% change is reflected by a plethora of work on secure two-party computation (2PC)
+% and multi-party computation (MPC). In particular, multiple functionalities have
+% been introduced and deployed in the real world \cite{}. These include basic set
+% operations, such as private set intersection (PSI) and private set union (PSU).
 
 %\subsubsection{Attacks.}  
 
