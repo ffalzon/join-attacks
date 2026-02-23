@@ -69,9 +69,9 @@ mechanisms and recover the underlying set. \tianxin{Maybe more specific, and add
 
 As part of our analysis on the multi-key join work~\cite{MKPMC}, we identify
 several subtleties that are not fully addressed by their security proof sketch,
-including repeated identifiers in the inputs and certain syntactic
+including repeated values in the inputs and certain syntactic
 inconsistencies. Moreover, the protocol reveals additional information beyond
-simply the matched identifiers: party $C$ learns a renamed and shuffled copy of
+simply the matched values: party $P_1$ learns a renamed and shuffled copy of
 the two input sets, enabling it to infer the matching pattern between them. To
 address this, we separate the intended functionality (i.e., what we wish to
 compute) from the additional leakage (i.e., information that may also be
