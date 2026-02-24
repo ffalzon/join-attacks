@@ -1,3 +1,7 @@
 \begin{abstract}
-Abstract!
+In this work, we study inference attacks against Private Set Union (PSU) and multi-key private join protocols under a realistic adversarial model: a semi-honest participant that executes the protocol honestly but strategically chooses its inputs to maximize the information learned.
+For the ideal PSU and PSU-Cardinality (PSU-CA) functionalities, we show that such an adversary can fully recover the set intersection. We present a concrete attack on PSU that reconstructs the intersection using only two protocol invocations. Moreover, we show that any attack on PSI-Cardinality (PSI-CA), such as that of Guo et al. (USENIX 2023), lifts to PSU-CA with only three additional queries.
+
+We further analyze Meta’s Multi-key Private Matching for Compute (MKPM) protocol. We distinguish its intended matching functionality from the additional protocol-specific leakage and show that this additional leakage drastically improves the attack efficiency. For the intended functionality, we adapt exisiting search-tree attacks to identify which of the adversary’s records share values with the other party's input. We then show that exploiting MKPM’s additional leakage enables even stronger attacks, such as reconstructing the other party's records (restricted to shared identifiers) in a single protocol invocation.
+Our implementation shows that these attacks are practical, scalable, and often require fewer adaptive queries than predicted by theory.
 \end{abstract}
