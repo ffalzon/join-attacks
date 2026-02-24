@@ -1,0 +1,10 @@
+\subsection{Correctness conditions of $T$-Reconstruction}
+\label{sec:correctness-TR}
+Injectivity of $\varphi$ ensures that each $\by^* \in R_Y$ corresponds to
+exactly one $\by \in Y$. Condition~(1) enforces per-record soundness, i.e.,
+every value in a reconstructed record appears in the corresponding original
+record. Condition~(2) captures $\Ispace[T]$-restricted per-record completeness
+i.e., each reconstructed record contains all values from its original record
+that also appear in $\Ispace[T]$. Finally, Condition~(3) enforces
+$\Ispace[T]$-restricted global completeness i.e., all records containing a value
+from $\Ispace[T]$ are at least partially reconstructed.

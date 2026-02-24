@@ -3,30 +3,24 @@
 
 \subsection{Threat Model}
 \label{sec:threat-model}
-In this work, without loss of generality, similar to prior work
+In this work, without loss of generality and in line with prior work
 \cite{USENIX:GHLWJL22,NDSS:JiaDuYan24,USENIX:FalTan25}, we assume that $P_1$ is
-adversarial (denoted by $\tP_1$); $P_2$ is an honest party holding a fixed set
-$Y$ of elements, referred to as the \textbf{recovery set}, which $P_1$ aims to
-learn about. More specifically, the corrupted party $\tP_1$ follows the protocol
-specification honestly but may adaptively choose its inputs and repeatedly
-invoke the functionality. In contrast, $P_2$ behaves honestly and holds a static
-input.
+adversarial (denoted by $\tP_1$). The adversary follows the protocol
+specification honestly, but may adaptively choose its inputs and repeatedly
+invoke the functionality. Party $P_2$ is honest and holds a fixed set $Y$ of
+elements, referred to as the \textbf{recovery set}, about which $P_1$ aims to
+learn information. We note, however, that three of our attacks require only a
+single query. Therefore, these three attacks also apply when $P_2$'s recovery
+set is dynamic.
 
-The adversarial party $\tP_1$ holds a \textbf{target set} $T$ of values, and its
-objective is to determine which elements from the set $T$ are also present in
-$Y$. For example, a party may seek to gather as much information as possible
-about certain individuals in a target set.
-
-We note that our threat model is limited. Nevertheless, it captures many
-application scenarios in which data updates are infrequent. Moreover, much of
-the existing 2PC literature focuses on non-updatable data.
-
-%% The exact objective depends on the functionality as described below.
-% \tianxin{Add an outline of our recovery goals.}
+A \emph{target set} $T$ of values is also introduced, which is held by the
+adversarial party $\tP_1$. The set $T$ represents values corresponding to points
+of interest, and the adversary aims to determine which elements of $T$ also
+appear in $Y$, according to the recovery goals defined in the next section.
 
 \subsection{Recovery Goals}
 \label{sec:recovery-goals}
-Since we consider multiple set operations in this work, we specify a recovery
+Since we analyze multiple set operations in this work, we specify a recovery
 goal for each functionality to model attack scenarios. Looking ahead, we focus
 on intersection recovery in $\calF_\PSU$ and $\calF_\PSUCA$. For complex
 functionality $\calF_{\MKPM}$, we introduce tailored recovery notions that
@@ -91,9 +85,9 @@ since both records in $X$ share a value with some record in $Y$.
 % analysis of the $\mathcal F_{\MKPM}$ functionality (without leakage).
 
 \begin{definition}\label{def:matchable_records_recovery}
-	Let $T$ be the target set of records and $Y$ be the recovery set of records.
-	An adversary $\adv$
-	achieves \textbf{matchable record recovery (MRR)} if it outputs $T\sqcap Y$.
+  Let $T$ be the target set of records and $Y$ be the recovery set of records.
+  An adversary $\adv$ achieves \textbf{matchable record recovery (MRR)} if it
+  outputs $T\sqcap Y$.
 \end{definition}
 
 %% Note that MRR does not require the adversary to reconstruct values or
@@ -102,27 +96,23 @@ since both records in $X$ share a value with some record in $Y$.
 %% organization's dataset can compromise the privacy of that user.
 
 \subsubsection{Recovery Goals Against $\calF_{\LMKPM}$}\label{sec:IRR_MR_goal}
-As we metion in Section~\ref{sec:leakage}, $\calF_{\LMKPM}$ is the extended
-functionality that captures some leakage we identify in the paper, thus we aim
-to understand more attack possibility that are not mentioned in the original
-paper.
+As discussed in Section~\ref{sec:leakage}, $\calF_{\LMKPM}$ is the extended
+functionality that captures the leakage inherent to the protocol, thus we
+introduce two additional recovery goals to better understand potential attacks
+that were not considered in the original paper~\cite{MKPMC}.
 
-The first recovery goal aims to recover the set of shared values, this
-essentially captures all the atomic value the adversary would like to identify
-in the recovery set. Given record set $X$ (defined as in
-Section~\ref{sec:mkpmc_functionality}),
-
-% For any record set $X$, each record $\bx \in X$ is a vector of values from the
-% space $\Ispace{}$.
-
-We denote by $\Ispace[X]$ the set of values present in the records of $X$,
+The first recovery goal is to recover the set of shared values. This captures
+precisely the values that the adversary would like to identify in the recovery
+set. Given record set $X$ (defined as in Section~\ref{sec:mkpmc_functionality}),
+we denote by $\Ispace[X]$ the set of values present in the records of $X$,
 defined as
 \[
   \Ispace[X] \;=\; \{\, v \in \Ispace{} \mid \exists\, \bx \in X \text{ such that
-  } v \in \bx \,\}, 
+  } v \in \bx \,\}.
 \]
-where we abuse the notation to write $v \in \bx$ to denote there exists an index
-$i \in \N$, that $\bx[i] = v$.
+Here, we slightly abuse notation by writing $v \in \bx$ to denote that there
+exists an index $i \in \N$ such that $\bx[i] = v$. We present the value recovery
+goal formally as follows.
 
 \begin{definition}\label{def:VIR_goal}
   Let $T$ be the target set of records and $Y$ be the recovery set of
@@ -130,27 +120,28 @@ $i \in \N$, that $\bx[i] = v$.
     (VIR)} if it outputs $\Ispace[T] \cap \Ispace[Y]$.
 \end{definition}
 
-\tianxin{This currently sounds arbitrary, consider numeric values. We note
-  co-occurence under different keys, but sharing the same values. Preclude to
-  other attakcs?}
+The final goal is the strongest one: identifying all values shared between the
+target and recovery sets \emph{and} how these values co-occur across the records
+of $Y$. In particular, it reveals which shared values appear in the same record
+and which values are repeated across multiple records---information that is not
+captured by value intersection recovery.
 
-The final goal is also the strongest: identifying all values in the target set
-that also occur in the recovery set \emph{and} how the values are distributed
-across the records of $Y$ (i.e., determining which specific values co-occur
-under different keys in the same record). This represents the maximum amount of
-information an adversary can obtain about $Y$ regarding $T$ using only $\tP_1$’s
-output. Notably, since $\mathcal{F}_{\LMKPM}$ outputs a map $\MX$ to $\tP_1$
-that maps UIDs to matched records, the maximum plaintext inference achievable
-from this output is the recovery of the shared values and how they are
-distributed across records in $Y$. \tianxin{Key-binding?}
+This corresponds to the most informative inference about $Y$ with respect to the
+target set $T$ that an adversary can obtain from $\tP_1$’s output. We refer to
+this notion as \emph{$T$-reconstruction} of $Y$, and formalize it as
+follows. See Figure~\ref{fig:maximum-reconstruction-example} for an
+illustration.
 
-\tianxin{We introduce the definition below.}
+\iffalse Notably, since $\mathcal{F}_{\LMKPM}$ outputs a map $\MX$ to $\tP_1$
+  that maps UIDs to matched records, the strongest plaintext inference
+  achievable from this output is the recovery of the shared values and how these
+  values are distributed across records in $Y$. \fi
 
 \begin{definition}\label{def:max_recons}
   Let $T$ be the target set of records and $Y$ be the recovery set of
-  records. An adversary $\adv$ achieves \textbf{maximum set reconstruction
-    (MSR)} of $Y$ w.r.t. $T$ if it outputs a multiset $R_Y$ for which there
-  exists an injective mapping $\varphi : R_Y \to Y$ such that
+  records. An adversary $\adv$ achieves \textbf{$T$-reconstruction (TR)} of $Y$
+  if it outputs a multiset $R_Y$ for which there exists an injective mapping
+  $\varphi : R_Y \to Y$ such that
   \begin{enumerate}
   \item For all $\by^* \in R_Y$ and all $v \in \by^*$ we have $v\in
     \varphi(\by^*)$.
@@ -160,19 +151,8 @@ distributed across records in $Y$. \tianxin{Key-binding?}
     such that $v \in \Ispace[T]$, then $\by \in \varphi\left(R_Y\right)$. 
   \end{enumerate} 
 \end{definition}
-
-See Figure~\ref{fig:maximum-reconstruction-example} for an illustration.
-
-\tianxin{explanation?}
-Injectivity of $\varphi$ ensures that each $\by^* \in R_Y$ corresponds to
-exactly one $\by \in Y$. Condition~(1) enforces per-record soundness, i.e.,
-every value in a reconstructed record appears in the corresponding original
-record.  Condition~(2) captures $\Ispace[T]$-restricted per-record completeness
-i.e., each reconstructed record contains all values from its original record
-that also appear in $\Ispace[T]$.  Finally, Condition~(3) enforces
-$\Ispace[T]$-restricted global completeness i.e., all records containing a value
-from $\Ispace[T]$ are at least partially reconstructed.
-
+These three conditions formally define correctness. We defer the detailed
+discussion to Appendix~\ref{sec:correctness-TR}.
 
 \begin{figure}[t]
     \centering

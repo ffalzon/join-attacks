@@ -72,13 +72,16 @@ This is a very general attack, which only requires that $\calF_{\PSU}$ be evalua
 twice on disjoint sets while the
 recovery set $Y$ remains static. These assumptions are well within the security model of proposed PSU protocols. 
 
-
 \subsection{PSU-CA Attack}\label{sec:PSUCA_attack}
-There is a close relationship between the
-cardinalities of the union and the intersection of two sets.  In this next subsection, we give a generic technique that transforms any intersection recovery attack against PSI-CA (e.g.,~\cite{USENIX:GHLWJL22}) into one against PSU-CA. Specifically, if $T$ is the target set and $Y$ is the recovery set, then the adversarial party $\tP_1$ is able to recover $T\cap Y$.
+There is a close relationship between the cardinalities of the union and the
+intersection of two sets. In this next subsection, we give a generic technique
+that transforms any intersection recovery attack against PSI-CA
+(e.g.,~\cite{USENIX:GHLWJL22}) into one against PSU-CA. Specifically, if $T$ is
+the target set and $Y$ is the recovery set, then the adversarial party $\tP_1$
+is able to recover $T\cap Y$.
 
-Let $X$ and $Y$ be two sets. Our
-attack is based on the following relation between the set union and intersection cardinalities:
+Let $X$ and $Y$ be two sets. Our attack is based on the following relation
+between the set union and intersection cardinalities:
 
 \begin{equation}\label{eqn:union_intersect_cardinalities}
   |X \cap Y| = |X| + |Y| - |X \cup Y|
@@ -89,9 +92,11 @@ the cardinalities of the recovery set and the union.
 This enables the adversary to translate between the PSU-CA and PSI-CA
 functionalities, thus, allowing it to leverage any intersection recovery attack for PSI-CA against PSU-CA.
 
-One issue remains: the adversary does not know $|Y|$ in the general case.
-While some PSU-CA protocols may leak this information, not all do.   We therefore present
-a general method to determine $|Y|$ with three $\PSUCA$ evaluations that avoids the trivial solution of querying the empty set, ie.., $\calF_{\PSUCA}(\emptyset; Y)$.
+One issue remains: the adversary does not know $|Y|$ in the general case. While
+some PSU-CA protocols may leak this information, not all do.  We therefore
+present a general method to determine $|Y|$ with three $\PSUCA$ evaluations that
+avoids the trivial solution of querying the empty set, ie..,
+$\calF_{\PSUCA}(\emptyset; Y)$.
 
 \begin{proposition}\label{prop:PSUCA_comp_m} Let $X$ and $Y$ be two sets and let
 $X_1\cup X_2$ be a partition of $X$.  Moreover, let $z:= |X \cup Y|$, $z_1 := |X_1
