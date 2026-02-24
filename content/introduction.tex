@@ -7,7 +7,7 @@ Today, these primitives are increasingly deployed in practice. For example, Goog
 
 Among the most widely studied and deployed MPC protocols are set-operation functionalities, such as private set intersection (PSI), which allow parties to privately compute the intersection of their datasets. PSI-like functionalities have been extensively explored in both protocol design and attack analysis (see Section~\ref{sec:related-work}). However, prior cryptanalytic work is narrow in scope and focuses exclusively on PSI-like protocols, such as PSI-Cardinality and Private Join and Compute (which computes an inner product of associated values whose keys lie in the intersection). This leaves a broad range of other functionalities largely unstudied.
 
-\heading{Aanalyzing a new functionality.} 
+\heading{Analyzing a new functionality.} 
 In this work, we instead focus on \emph{private set union} (PSU), where two or more parties, each holding a set, compute the union of their sets without revealing anything beyond the union~\cite{USENIX:DZBC25,USENIX:TBZCC25,USENIX:JSZG24,USENIX:ZCLZL23,USENIX:JSZDG22,CCS:GNBT25,CCS:ZCLPHW24,CCS:TCLZ23,ASIACCS:CSSW25,ASIACCS:BlaAgu12,AC:LiuGao23,AC:KRTW19,PoPETS:GaoNguTri24,ACNS:Frikken07,C:KisSon05}.
 The goal of PSU is to enable data sharing while preventing disclosure of which records appear in the intersection. PSU has been proposed for a variety of applications, including private aggregation of IP block lists~\cite{USENIX:JSZDG22,AC:KRTW19}, hospital data~\cite{USENIX:JSZDG22}, and network traffic data~\cite{USENIX:BSMD10}. 
 
@@ -22,8 +22,13 @@ In this work, we consider a realistic adversary who executes the protocol honest
 A simple illustration of this arises in PSU, which is designed to hide the intersection of the input sets. While the intended security goal is to disclose ``nothing beyond the output,'' even trivial queries can violate this guarantee. For example, an adversary could submit the empty set and immediately learn the other party’s entire input. Prior work, such as Frikken~\cite{ACNS:Frikken07}, justifies this by assuming thresholds or authorization mechanisms prevent such pathological queries. In this work, we go further: we ask whether it is possible to circumvent these mitigation mechanisms and still recover the intersection, answering in the affirmative.
 
 Looking beyond simple, abstract functionalities like PSU and PSU-CA, analyzing concrete protocols introduces additional subtleties. For Meta’s multi-key join protocol~\cite{MKPMC}, we distinguish between the generic functionality and the actual protocol, which reveals extra information in exchange for efficiency. We explicitly separate the intended functionality (what is supposed to be computed) from additional leakage (e.g., set sizes and structural information). This distinction motivates our two-part analysis: one part considers the ideal functionality, while the other examines all information available in an actual protocol execution.
-Our analysis demonstrate how much more efficient input recovery becomes when the adversary also learn the additional leakage from the MKPM protocol and underscores the importance of understanding protocol-specific leakage before deployment.
+Our analysis demonstrates how much more efficient input recovery becomes when the adversary also learns the additional leakage from the MKPM protocol and underscores the importance of understanding protocol-specific leakage before deployment.
 
+\ar{Suggestion for last sentence to focus on dismissive treatment of additional leakage in the literature:
+Our analysis shows that input recovery becomes drastically more efficient when the adversary also learns the additional leakage.
+This highlights the importance of thoroughly understanding protocol-specific leakages, 
+which is often neglected in the literature, as was the case with MK-PrivateID.
+}
 
 % We identify several subtleties that are not fully addressed by their security proof sketch, including the treatment of repeated identifiers and certain syntactic inconsistencies. 
 % is an important distinction between analyzing a generic PSU functionality and analyzing a concrete multi-key join protocol. We therefore divide our analysis into two parts: one that considers only the ideal functionality, and another that considers all information available in a real protocol execution.
