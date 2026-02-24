@@ -26,7 +26,7 @@ on intersection recovery in $\calF_\PSU$ and $\calF_\PSUCA$. For complex
 functionality $\calF_{\MKPM}$, we introduce tailored recovery notions that
 capture the information about the target set that an adversary may aim to learn.
 
-\subsubsection{Recovery Goal Against $\calF_{\PSU}$ and $\calF_{\PSUCA}$}
+\subsubsection{Recovery Goal against $\calF_{\PSU}$ and $\calF_{\PSUCA}$}
 \label{sec:IR_goal}
 Private Set Union (PSU) aims to hide the intersection of the input
 sets~\cite{USENIX:JSZG24}. Accordingly, the natural attack objective against PSU
@@ -39,7 +39,7 @@ the target set $T$ also appear in $Y$.
   achieves \textbf{intersection recovery} if it outputs $T \cap Y$.
 \end{definition}
 
-\subsubsection{Recovery Goal Against $\calF_{\MKPM}$}
+\subsubsection{Recovery Goal against $\calF_{\MKPM}$}
 \label{sec:MRR_goal}
 Given that $\calF_{\MKPM}$ operates on sets of records, a natural recovery goal
 would be to recover the set of records that appear in both input sets. However,
@@ -95,7 +95,7 @@ since both records in $X$ share a value with some record in $Y$.
 %% recoverable, since simply knowing that a user's attribute appears in another
 %% organization's dataset can compromise the privacy of that user.
 
-\subsubsection{Recovery Goals Against $\calF_{\LMKPM}$}\label{sec:IRR_MR_goal}
+\subsubsection{Recovery Goals against $\calF_{\LMKPM}$}\label{sec:IRR_MR_goal}
 As discussed in Section~\ref{sec:leakage}, $\calF_{\LMKPM}$ is the extended
 functionality that captures the leakage inherent to the protocol, thus we
 introduce two additional recovery goals to better understand potential attacks
@@ -164,11 +164,11 @@ discussion to Appendix~\ref{sec:correctness-TR}.
     {
     \includegraphics[width=0.305\columnwidth]{figures/victim-set.pdf}} 
     \quad
-    \subfloat[\label{fig:max-recon-output} Max recon. $R_Y$ ]%
+    \subfloat[\label{fig:max-recon-output} $T$-recon $R_Y$. ]%
     {
     \includegraphics[width=0.22\columnwidth,trim={-0.1cm 0 -0.1cm 0},clip]{figures/max-recon.pdf}}
-    \caption{
-    A maximum reconstruction $R_Y$. Each matched record in $Y$ corresponds to
+  \caption{
+    $T$-reconstruction $R_Y$. Each matched record in $Y$ corresponds to
     exactly one record in $R_Y$, and all values shared between the matched
     record and the target set $T$ appear in the corresponding record $R_Y$.
     \label{fig:maximum-reconstruction-example}}

@@ -32,7 +32,7 @@ and $Y$ we have
 
 Both $X \cup Y$ and $Y \setminus X$ can be easily determined. The former is the
 output of evaluating $\calF_{PSU}(X;Y)$, and the latter can be computed as
-$(X \cup Y) \setminus X = Y \setminus X$.  The challenge lies in determining
+$(X \cup Y) \setminus X = Y \setminus X$. The challenge lies in determining
 $X \setminus Y$. To address this, we make two additional observations.
 
 \begin{proposition}\label{prop:PSU_difference_distributes}
@@ -82,15 +82,15 @@ is able to recover $T\cap Y$.
 
 Let $X$ and $Y$ be two sets. Our attack is based on the following relation
 between the set union and intersection cardinalities:
-
 \begin{equation}\label{eqn:union_intersect_cardinalities}
   |X \cap Y| = |X| + |Y| - |X \cup Y|
 \end{equation}
 
-In words, the attacker can compute the cardinality of the intersection if it knows
-the cardinalities of the recovery set and the union.
-This enables the adversary to translate between the PSU-CA and PSI-CA
-functionalities, thus, allowing it to leverage any intersection recovery attack for PSI-CA against PSU-CA.
+In words, the attacker can compute the cardinality of the intersection if it
+knows the cardinalities of the recovery set and the union.  This enables the
+adversary to translate between the PSU-CA and PSI-CA functionalities, thus,
+allowing it to leverage any intersection recovery attack for PSI-CA against
+PSU-CA.
 
 One issue remains: the adversary does not know $|Y|$ in the general case. While
 some PSU-CA protocols may leak this information, not all do.  We therefore
@@ -104,9 +104,12 @@ $X_1\cup X_2$ be a partition of $X$.  Moreover, let $z:= |X \cup Y|$, $z_1 := |X
 \end{proposition}
 
 
-We give the proof in Appendix~\ref{proof:PSUCA_comp_m}.
-Thus, with three additional $\calF_{\PSUCA}$ evaluations at the start of the attack, the adversary can simulate the $\calF_{\PSICA}$ functionality. In particular, for any PSI-CA attack, the adversary can replace each 
-query $z\gets \calF_{\PSICA}(X;Y)$ with $z'\gets \calF_{\PSUCA}(X;Y)$ and then compute $z$ as $|X|+|Y|-z'$.
+We give the proof in Appendix~\ref{proof:PSUCA_comp_m}.  Thus, with three
+additional $\calF_{\PSUCA}$ evaluations at the start of the attack, the
+adversary can simulate the $\calF_{\PSICA}$ functionality. In particular, for
+any PSI-CA attack, the adversary can replace each query
+$z\gets \calF_{\PSICA}(X;Y)$ with $z'\gets \calF_{\PSUCA}(X;Y)$ and then compute
+$z$ as $|X|+|Y|-z'$.
 
 We state our result in the following theorem:
 
@@ -118,5 +121,8 @@ We state our result in the following theorem:
   which recovers $T \cap Y$ and makes $q + 3$ $\PSUCA$ queries.
 \end{theorem}
 
-The proof is given in Appendix~\ref{proof:PSICA-to-PSUCA}.
-In Appendix~\ref{attack:PSUCA}, we concretely describe and analyze $\PSUCAattack$---an attack that uses the transformation described above to turn the PSI-CA attack from Guo et al.\cite{USENIX:GHLWJL22} (See Appendix~\ref{ap:guo_attack} for an overview) to one against PSU-CA.  
+The proof is given in Appendix~\ref{proof:PSICA-to-PSUCA}.  In
+Appendix~\ref{attack:PSUCA}, we concretely describe and analyze
+$\PSUCAattack$---an attack that uses the transformation described above to turn
+the PSI-CA attack from Guo et al.\cite{USENIX:GHLWJL22} (See
+Appendix~\ref{ap:guo_attack} for an overview) to one against PSU-CA.

@@ -19,15 +19,15 @@
 \S\ref{sec:PSUCA_attack} & PSU-CA & IR & $\bigO{n}$ &  & \checkmark \\
 \S\ref{sec:PSUCA_to_matching} & $\MKPM$ & MRR & $\bigO{n}$ &  & \checkmark \\
 \S\ref{sec:st-mkpm-attack} & \multirow{4}{*}{$\LMKPM$} & VIR & $\bigO{n}$ &  & \checkmark \\
-\S\ref{sec:baseline-attack} & & MSR & 1 & & \\
-\S\ref{sec:rec_enum_attack} & & MSR & 1 & & \\
-\S\ref{sec:snake_attack} & & MSR & 1 & & \\
+\S\ref{sec:baseline-attack} & & TR & 1 & & \\
+\S\ref{sec:rec_enum_attack} & & TR & 1 & & \\
+\S\ref{sec:snake_attack} & & TR & 1 & & \\
 \bottomrule
 \end{tabular}
 \vspace{3mm}
 \caption{An overview of our attacks and prior work. We report the recovery goal, the number of queries required, whether the attack can reconstruct the values approximately, and whether it is adaptive. 
 We abbreviate the recovery goals as follows: IR$=$intersection recovery (Def.~\ref{def:intersection-recovery}), KVR$=$key-value recovery,
-MRR$=$matchable record recovery (Def.~\ref{def:matchable_records_recovery}), VIR$=$value intersection recovery (Def.~\ref{def:VIR_goal}), and MSR$=$maximum-set reconstruction (Def.~\ref{def:max_recons}).
+MRR$=$matchable record recovery (Def.~\ref{def:matchable_records_recovery}), VIR$=$value intersection recovery (Def.~\ref{def:VIR_goal}), and TR$=$ $T$-reconstruction (Def.~\ref{def:max_recons}).
 Here $n$ denotes the size of the adversary's target set and $k$ is the size of the intersection of the target set and the recovery set. }
 \label{tab:attack_comparison}
 \vspace{-6mm}
@@ -56,9 +56,9 @@ Here $n$ denotes the size of the adversary's target set and $k$ is the size of t
 % \textbf{This work} (\S\ref{sec:PSUCA_attack}) & PSU-CA &  IR (Def.~\ref{def:intersection-recovery}) & $\bigO{n}$ &  &  \checkmark   \\
 % \textbf{This work} (\S\ref{sec:PSUCA_to_matching}) & $\MKPM$~\protect\cite{MKPMC} &  MRR (Def.~\ref{def:matchable_records_recovery}) & $\bigO{n}$ &  &  \checkmark  \\
 % \textbf{This work} (\S\ref{sec:st-mkpm-attack}) & \multirow{4}{*}{$\LMKPM$~\protect\cite{MKPMC}} &  VIR (Def.~\ref{def:VIR_goal}) & $\bigO{n}$ &  &  \checkmark  \\
-% \textbf{This work} (\S\ref{sec:baseline-attack}) &  & MSR (Def.~\ref{def:max_recons}) & 1 &  &   \\
-% \textbf{This work} (\S\ref{sec:rec_enum_attack}) &  &  MSR (Def.~\ref{def:max_recons}) & 1 &  &   \\
-% \textbf{This work} (\S\ref{sec:snake_attack}) &  &  MSR (Def.~\ref{def:max_recons}) & 1 &  &    \\
+% \textbf{This work} (\S\ref{sec:baseline-attack}) &  & TR (Def.~\ref{def:max_recons}) & 1 &  &   \\
+% \textbf{This work} (\S\ref{sec:rec_enum_attack}) &  &  TR (Def.~\ref{def:max_recons}) & 1 &  &   \\
+% \textbf{This work} (\S\ref{sec:snake_attack}) &  &  TR (Def.~\ref{def:max_recons}) & 1 &  &    \\
 % \bottomrule
 % \end{tabular}
 % \vspace{3mm}

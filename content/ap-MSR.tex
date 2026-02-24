@@ -6,22 +6,27 @@
 
 \begin{lemma}
 	\label{lem:dictinfer_MR}
-	Let $X$ and $Y$ be two sets of records and let $(\hXone, \hYone)$ be the hidden shuffled records received by $\tP_1$.
-	Moreover, let $f_1: \Ispace{} \to \Uspace$ be the hiding function sampled in $\calF_\LMKPM$ to produce $\hXone$ and $\hYone$.
-	If $D$ is a dictionary mapping $f_1(v)$ to $v$ for all $v \in \Ispace[X]$,
-	then $\dictInfer(D, \hYone)$ (Figure~\ref{fig:dict_infer}) produces a maximum reconstruction of $Y$ with respect to $X$.
+	Let $X$ and $Y$ be two sets of records and let $(\hXone, \hYone)$ be the
+        hidden shuffled records received by $\tP_1$.  Moreover, let
+        $f_1: \Ispace{} \to \Uspace$ be the hiding function sampled in
+        $\calF_\LMKPM$ to produce $\hXone$ and $\hYone$.  If $D$ is a dictionary
+        mapping $f_1(v)$ to $v$ for all $v \in \Ispace[X]$, then
+        $\dictInfer(D, \hYone)$ (Figure~\ref{fig:dict_infer}) produces an
+        $X$-reconstruction of $Y$.
 \end{lemma}
 \begin{proof}
 	Let $R$ be the multiset produced by \dictInfer.
 	% Recall from Section~\ref{sec:notation} that we consider different instantiations 
 	% of the same record in $R$ as distinct elements.
-	Note that for each $\hby \in \hYone$ exactly one reconstructed record $\br$
-	is added to $R$.
-	Let $d: R \to \hYone$ denote the function mapping these reconstructed records 
-	to the corresponding $\hby$. Clearly, $d$ is a bijection.
+	Note that for each $\hby \in \hYone$ exactly one reconstructed record
+        $\br$ is added to $R$. Let $d: R \to \hYone$ denote the function mapping
+        these reconstructed records to the corresponding $\hby$. Clearly, $d$ is
+        a bijection.
 
-	We now define an injective function $\varphi: R \to Y$ and prove that it satisfies the three conditions for Maximum Set Reconstruction (Definition \ref{def:max_recons}).
-	For any record $\br \in R$ let $(d_1, \dots, d_k)=d(\br) \in \hYone$ and let
+	We now define an injective function $\varphi: R \to Y$ and prove that it
+        satisfies the three conditions for $X$-Reconstruction (Definition
+        \ref{def:max_recons}). For any record $\br \in R$ let
+        $(d_1, \dots, d_k)=d(\br) \in \hYone$ and let
 	$$\varphi(\br) := (f_1^{-1}(d_1), \dots, f_1^{-1}(d_k))$$
 	
 	Note that $f_1^{-1}(d_j)$ exists for all $\br$ and $j$, since $d(\br) \in \hYone$ by definition.

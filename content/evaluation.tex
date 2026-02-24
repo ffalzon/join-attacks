@@ -146,13 +146,30 @@ Meanwhile, Figures~\ref{fig:st_time_psuca_n} and \ref{fig:st_time_mkpsi_n} indic
 In Appendix~\ref{ap:evaluation}, we present additional experiments conducted under limited query budgets. Our findings reveal that adversaries can reconstruct substantial information even with a reduced number of protocol invocations.
 
 \subsection{L-MKPM Attack Evaluation}
-The maximum set reconstruction attacks presented in Section~\ref{sec:lmkpm-attacks}---$\baselineattack{}$, $\recenumattack{}$, and $\snakeattack{}$---all require just a single protocol execution. 
-We thus only discuss the runtime measurements, 
-which are plotted against the match rate $\eta$ and target set size $n$ in Figure~\ref{fig:leakage_attacks_time_plot}.
+The $T$-reconstruction attacks presented in
+Section~\ref{sec:lmkpm-attacks}---$\baselineattack{}$, $\recenumattack{}$, and
+$\snakeattack{}$---all require just a single protocol execution.  We thus only
+discuss the runtime measurements, which are plotted against the match rate
+$\eta$ and target set size $n$ in Figure~\ref{fig:leakage_attacks_time_plot}.
 
-The attacks are all highly efficient. $\baselineattack{}$ is the fastest, with runtimes from \SI{38}{\milli\second} ($n = 0.5 \cdot 10^4$) to \SI{112}{\milli\second} ($n = 1.5 \cdot 10^4$). \snakeattack{} is $1.5$--$2\times$ slower, ranging from \SI{66}{\milli\second} to \SI{214}{\milli\second}, due to simpler pre-processing but costlier post-processing. \recenumattack{} is the slowest, with runtimes from \SI{266}{\milli\second} to \SI{884}{\milli\second}, because its encoding and decoding operations involve prepending and inspecting $\log_2 n$ values per record.
+The attacks are all highly efficient. $\baselineattack{}$ is the fastest, with
+runtimes from \SI{38}{\milli\second} ($n = 0.5 \cdot 10^4$) to
+\SI{112}{\milli\second} ($n = 1.5 \cdot 10^4$). \snakeattack{} is
+$1.5$--$2\times$ slower, ranging from \SI{66}{\milli\second} to
+\SI{214}{\milli\second}, due to simpler pre-processing but costlier
+post-processing. \recenumattack{} is the slowest, with runtimes from
+\SI{266}{\milli\second} to \SI{884}{\milli\second}, because its encoding and
+decoding operations involve prepending and inspecting $\log_2 n$ values per
+record.
 
-Figure~\ref{fig:leakage_attacks_time_plot:left} shows that all three attack runtimes are largely independent of the match rate. This is consistent with theory since match rate affects only the reconstruction dictionary size. Figure~\ref{fig:leakage_attacks_time_plot:right} shows that $\baselineattack{}$ and $\snakeattack{}$ runtimes increase linearly with target set size, matching their theoretical time complexity. We also see that \recenumattack{} incurs the longest runtimes and steepest growth as $n$ increases.
+Figure~\ref{fig:leakage_attacks_time_plot:left} shows that all three attack
+runtimes are largely independent of the match rate. This is consistent with
+theory since match rate affects only the reconstruction dictionary
+size. Figure~\ref{fig:leakage_attacks_time_plot:right} shows that
+$\baselineattack{}$ and $\snakeattack{}$ runtimes increase linearly with target
+set size, matching their theoretical time complexity. We also see that
+\recenumattack{} incurs the longest runtimes and steepest growth as $n$
+increases.
 
 
 
