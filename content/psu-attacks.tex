@@ -21,46 +21,52 @@ Meta's $\calF_{\MKPM}$ functionality.
 
 \subsection{Analysis of PSU}
 \label{sec:psu-attack}
-Recall that the corrupted party $\tP_1$ knows the target set $T$ and can invoke
-$\calF_{\PSU}(;Y)$ on any set $X$. The adversary's goal is to recover
-$T \cap Y$. Our attack is based on the following equation. For any two sets $X$
-and $Y$ we have
+Recall that the corrupted party $\tP_1$ holds the target set $T$ and can invoke
+$\calF_{\PSU}(X; Y)$ for arbitrary set $X$ with a fixed $Y$. Its goal is to
+recover $T \cap Y$. Our attack relies on the following identity,
 \begin{equation}
   \label{eqn:PSU_basis}
   X \cap Y = (X \cup Y) \setminus (Y \setminus X) \setminus (X \setminus Y).
 \end{equation} 
 
-Both $X \cup Y$ and $Y \setminus X$ can be easily determined. The former is the
-output of evaluating $\calF_{PSU}(X;Y)$, and the latter can be computed as
-$(X \cup Y) \setminus X = Y \setminus X$. The challenge lies in determining
-$X \setminus Y$. To address this, we make two additional observations.
+From a $\PSU$ query, the adversary directly obtains $X \cup Y$ and can compute
+$Y \setminus X = (X \cup Y) \setminus X$. The remaining challenge is to
+determine $X \setminus Y$. To address this, we use two additional observations.
 
 \begin{proposition}\label{prop:PSU_difference_distributes}
-  Let $X$ and $Y$ be sets and $X_1 \cup X_2$ be a partition of $X$. It holds that
-  $X \setminus Y = (X_1 \setminus Y) \cup (X_2 \setminus Y).$
+  Let $X$ and $Y$ be sets and $X_1 \cup X_2$ be a partition of $X$. It holds
+  that $X \setminus Y = (X_1 \setminus Y) \cup (X_2 \setminus Y).$
 \end{proposition}
 
 \begin{proposition}
   \label{prop:PSU_comp_partial_difference}
   Let $X$ and $Y$ be sets and let $X_1\cup X_2$ be a partition of $X$.
-  Furthermore, let $Z_1 := X_1 \cup Y$ and $Z_2 := X_2 \cup Y$.  Then,
+  Furthermore, let $Z_1 := X_1 \cup Y$ and $Z_2 := X_2 \cup Y$. Then,
   $X_1 \setminus Y = X_1 \setminus Z_2$ and
   $X_2 \setminus Y = X_2 \setminus Z_1$.
 \end{proposition}
 
-The proofs can be found in Appendix~\ref{proof:PSU_difference_distributes} and~\ref{proof:PSU_comp_partial_difference}, respectively.
+The corresponding proofs can be found in
+Appendix~\ref{proof:PSU_difference_distributes}
+and~\ref{proof:PSU_comp_partial_difference}, respectively.
 
 We could combine Propositions~\ref{prop:PSU_difference_distributes} and
-\ref{prop:PSU_comp_partial_difference} with to obtain $X \cap Y$ with three
-evaluations of $\PSU$. However, since
-$X \cup Y = (X_1 \cup Y) \cup (X_2 \cup Y)$, the adversary can compute the full
-union from the two partial unions, thus, saving one evaluation.  
+\ref{prop:PSU_comp_partial_difference} with three evluations of $\PSU$ to obtain
+$X \cap Y$. However, since $X \cup Y = (X_1 \cup Y) \cup (X_2 \cup Y)$, the
+adversary can compute the full union from the two partial unions, thus, saving
+one evaluation.
 
-Thus, by querying $\calF_{\PSU}(;Y)$ on two disjoint sets $X_1\cup X_2=T$ that form a partition of the target set, $\tP_1$ can recover the intersection. The pseudocode for the
-attack \PSUattack{} is given in Figure~\ref{fig:PSU_attack} (Appendix~\ref{ap:psu-attack-pseudocode}).
+Given two disjoint sets $X_1$ and $X_2$ that form a partition of the target set
+$T$, i.e., $X_1 \cap X_2 = \emptyset$ and $X_1 \cup X_2 = T$, $\tP_1$ can
+recover the intersection by querying $\calF_{\PSU}(X_1;Y)$ and
+$\calF_{\PSU}(X_2;Y)$. The pseudocode for the attack \PSUattack{} is given in
+Figure~\ref{fig:PSU_attack}
+(Appendix~\ref{ap:psu-attack-pseudocode}). \tianxin{Naming the attack?}
 
 \begin{theorem}
-  Let $T$ be the target set and $Y$ be the recovery set. The attack $\PSUattack^{\calF_{PSU}(\cdot; Y)}(T)$ (Figure~\ref{fig:PSU_attack}) achieves intersection recovery (Def.~\ref{def:intersection-recovery}).
+  Let $T$ be the target set and $Y$ be the recovery set. The attack
+  $\PSUattack^{\calF_{PSU}(\cdot; Y)}(T)$ (Figure~\ref{fig:PSU_attack}) achieves
+  intersection recovery (Def.~\ref{def:intersection-recovery}).
 \end{theorem}
 \begin{proof}
   The theorem follows from
@@ -121,7 +127,7 @@ We state our result in the following theorem:
   which recovers $T \cap Y$ and makes $q + 3$ $\PSUCA$ queries.
 \end{theorem}
 
-The proof is given in Appendix~\ref{proof:PSICA-to-PSUCA}.  In
+The proof is given in Appendix~\ref{proof:PSICA-to-PSUCA}. In
 Appendix~\ref{attack:PSUCA}, we concretely describe and analyze
 $\PSUCAattack$---an attack that uses the transformation described above to turn
 the PSI-CA attack from Guo et al.\cite{USENIX:GHLWJL22} (See
