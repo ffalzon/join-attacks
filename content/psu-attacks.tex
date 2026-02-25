@@ -99,16 +99,16 @@ allowing it to leverage any intersection recovery attack for PSI-CA against
 PSU-CA.
 
 One issue remains: the adversary does not know $|Y|$ in the general case. While
-some PSU-CA protocols may leak this information, not all do.  We therefore
+some PSU-CA protocols may leak this information, not all do. We therefore
 present a general method to determine $|Y|$ with three $\PSUCA$ evaluations that
-avoids the trivial solution of querying the empty set, ie..,
+avoids the trivial solution of querying the empty set, i.e.,
 $\calF_{\PSUCA}(\emptyset; Y)$.
 
 \begin{proposition}\label{prop:PSUCA_comp_m} Let $X$ and $Y$ be two sets and let
-$X_1\cup X_2$ be a partition of $X$.  Moreover, let $z:= |X \cup Y|$, $z_1 := |X_1
-\cup Y|$ and $z_2 := |X_2 \cup Y|$. Then, we have $|Y| = z_2 - (z - z_1)$.
+  $X_1\cup X_2$ be a partition of $X$.  Moreover, let $z:= |X \cup Y|$,
+  $z_1 := |X_1 \cup Y|$ and $z_2 := |X_2 \cup Y|$. Then, we have
+  $|Y| = z_2 - (z - z_1)$.
 \end{proposition}
-
 
 We give the proof in Appendix~\ref{proof:PSUCA_comp_m}.  Thus, with three
 additional $\calF_{\PSUCA}$ evaluations at the start of the attack, the
