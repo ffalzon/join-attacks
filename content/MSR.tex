@@ -112,14 +112,8 @@ lengths.
 
 We refer to this attack as the \emph{Record Enumeration Attack}. It relies only
 on two properties of the functionality $\calF_{\LMKPM}$: (i) the order of values
-within each record of $\tP_1$'s input is preserved in the corresponding hidden
-records in the leakage, and (ii) values are hidden deterministically, so that
-repeated occurrences of the same value yield the same hidden value within a
-single protocol execution. The attack proceeds by enumerating the records in $T$
-and prepending to each record an encoding of its index using known values. If
-this enumeration can be recovered from the leakage, then the adversary can
-compute a dictionary $\Dict$ from hidden to plaintext values and subsequently
-use $\Dict$ to output a $T$-reconstruction of the recovery set $Y$.
+within each record of $\tP_1$'s input is preserved in the leakage, and (ii) values are hidden deterministically, so that
+repeated occurrences of the same value yield the same hidden value within a single protocol execution. The attack proceeds by enumerating the records in $T$ and prepending to each record an encoding of its index using known values. If this enumeration can be recovered from the leakage, then the adversary can compute a dictionary $\Dict$ from hidden to plaintext values and subsequently use $\Dict$ to output a $T$-reconstruction of the recovery set $Y$.
 
 Without loss of generality, assume that $|T|$ is not a power of two, and let
 $v_0, v_1 \in \Ispace[]$ be two distinct values. Fix an ordering
@@ -127,18 +121,19 @@ $(\bt_0,\ldots,\bt_{n-1})$ of the records in $T$, where $\bt_i$ denotes the
 $i$-th record. Each index $i \in [0,n-1]$ is encoded as a binary string of
 length $\lenc := \lceil \log_2 n\rceil$, where bits $0$ and $1$ are represented
 by $v_0$ and $v_1$, respectively. This binary encoding is prepended to $\bt_i$,
-and we denote by $X$ the resulting set of extended records. For example, if
+and we denote by $X$ the resulting set of records. 
+For example, if
 $n = 5$, then $\lceil \log_2 5 \rceil = 3$, and the first record $\bt_0$ is
 augmented as $v_0 \| v_0 \| v_0 \| \bt_0$ and added to $X$.
 
 % See Figure~\ref{subfig:recenum_example_plain} for a small example. The encoding procedure \IdxToSeq{} is given in Figure~\ref{fig:idx_to_seq}.
 
 We now analyze the output to $\tP_1$ when $\calF_{\LMKPM}(\ \cdot\ ; Y)$ is
-invoked on the augmented set of records $X$. Recall that $\calF_{\LMKPM}$ hides
+invoked on $X$. Recall that $\calF_{\LMKPM}$ hides
 values via an injective random function $f_X$ while preserving the order of
 values within each record of $X$. Consequently, for any $\hbx \in \hXone$, the
 first $\lenc$ hidden values correspond to the encoded prefix and therefore
-comprise only two hidden values i.e., $e$ and $e'$. Moreover, we must have
+comprise only two hidden values i.e., $e$ and $e'$. Moreover, we have
 either $e = f_X(v_0)$ and $e' = f_X(v_1)$, or $e = f_X(v_1)$ and
 $e' = f_X(v_0)$.
 
@@ -227,21 +222,19 @@ future work.
 	\def\linecorr{-.4pt}
 	\def\blockminheight{1.3em}
 	\definecolor{added-id}{HTML}{15b01a}
-    \subfloat[\label{subfig:snake_example_unique}]{
         \resizebox{0.75\columnwidth}{!}{%
         \input{figures/snake_encode1_example.tex}
         }
     }
-    \quad
-	\subfloat[\label{subfig:snake_example_general}]{
-        \resizebox{0.75\columnwidth}{!}{%
-        \input{figures/snake_encode2_example.tex}
-        }
-    }
-	}
-	\caption{Results of preprocessing a set of records \textbf{(\ref{subfig:snake_example_unique})} if there is a column that only contains unique values 
-	and \textbf{(\ref{subfig:snake_example_general})} if an artificial unique column needs to be added.
-	The original records have black borders. Added values are highlighted in green. Arrows indicate the (implicit) linked list.}\label{fig:snake_exmp}
+    %\quad
+	% \subfloat[\label{subfig:snake_example_general}]{
+    %     \resizebox{0.75\columnwidth}{!}{%
+    %     \input{figures/snake_encode2_example.tex}
+    %     }
+    % }
+	%}
+	\caption{Result of preprocessing a set of records in $\snakeattack$. Observe that the first attribute is unique across all records.
+	The original records have black borders. Added values are outlined in green. Arrows indicate the (implicit) linked list.}\label{fig:snake_exmp}
 \end{figure}
 
 
@@ -263,11 +256,11 @@ $j^* = 0$).
 
 The adversary links the records of $T$ by fixing an arbitrary ordering
 $(\bt_0, \dots, \bt_{n-1})$ and appending the unique value of the $(i+1)$-st
-record to the $i$-th record for all $i \in [n-1]$. See
-Figure~\ref{subfig:snake_example_unique} for a small example. This yields an
+record to the $i$-th record for all $i \in [n-1]$. This yields an
 input set $X = \{\bx_0, \dots, \bx_{n-1}\}$ such that $\bt_i$ corresponds to
 $\bx_i$ in an (implicit) linked list. Party $\tP_1$ then invokes the
-functionality $\calF_{\LMKPM}(\ \cdot\ ;Y)$ on $X$ to obtain the output.
+functionality $\calF_{\LMKPM}(\ \cdot\ ;Y)$ on $X$ to obtain the output. See
+Figure~\ref{fig:snake_exmp} for a small example of the adversary's input.
 
 Since the hiding function $f_X$ used in $\calF_\LMKPM$ is injective and
 deterministic, the pointers in $X$ are preserved in the corresponding leakage
