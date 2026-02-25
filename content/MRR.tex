@@ -2,14 +2,14 @@
 In this section, we show how the $\PSUCAattack{}$ attack can be applied to the
 $\calF_{\MKPM}$ functionality with some additional assumptions to achieve
 \emph{matchable record recovery}
-(Definition~\ref{def:matchable_records_recovery}).  In
+(Definition~\ref{def:matchable_records_recovery}). In
 Appendix~\ref{sec:psuca-privateID-attack} we further explain how the attack can
 be applied to the single key private matching functionality $\calF_{\SKPM}$
 realized by PrivateID~\cite{PMC}.
 
 The adversary is given a target set of records $T \subseteq \Ispace{}^n$, and
-can evaluate $\calF_{\MKPM}(X, Y)$ for arbitrarily many inputs $X$. Its goal is
-to determine the set of matchable records, $T \sqcap Y$.  The functionality
+can evaluate $\calF_{\MKPM}(X; Y)$ for arbitrarily many inputs $X$. Its goal is
+to determine the set of matchable records, $T \sqcap Y$. The functionality
 $\mathcal F_{\MKPM}$ outputs the set universal identifiers, $\UID$, to both
 parties. Rather than assigning a common UID to two identical records, it applies
 a matching logic (see Figure~\ref{fig:match_logic}) which assigns a common UID
@@ -18,16 +18,14 @@ $T$ and $Y$. Thus, using $|\UID|$ as the cardinality for carrying out the
 $\PSUCAattack{}$ appears to be a natural approach for identifying matching
 records in $T$.
 
-Recall that the $\PSUCAattack{}$ attack (Section~\ref{sec:psu-psuca}) relies on
-the fact that $|X \cup Y| = |X_1 \cup Y| + |X_2 \cup Y| - |Y|$
+Recall that the $\PSUCAattack{}$ attack (Section~\ref{sec:PSUCA_attack}) relies
+on the fact that $|X \cup Y| = |X_1 \cup Y| + |X_2 \cup Y| - |Y|$
 (Eq.~\ref{eqn:union_intersect_cardinalities}), where $X$ and $Y$ are arbitrary
-sets and $X_1\cup X_2$ form a partition of $X$.
-
-We now translate this to the multi-key setting. Let $X, Y$ be sets of records,
-and let $X_1\cup X_2$ be a partition of $X$. Moreover, let $\UID$, $\UID_1$, and
-$\UID_2$ be the UIDs output when evaluating $\calF_{\MKPM}(X, Y)$ and
-$\calF_{\MKPM}(X_i, Y)$ for $i \in \{1, 2\}$ respectively. Then we require the
-following relation to hold:
+sets and $X_1\cup X_2$ form a partition of $X$. We now translate this to the
+multi-key setting. Let $\UID$, $\UID_1$, and $\UID_2$ be the UIDs output when
+evaluating $\calF_{\MKPM}(X; Y)$ and $\calF_{\MKPM}(X_i; Y)$ for
+$i \in \{1, 2\}$ respectively. \tianxin{Add.} Then we require the following
+relation to hold:
 \begin{equation}
   \label{eqn:MKPM_PSUCA_condition}
   |\UID| = |\UID_1| + |\UID_2| - |Y|.
@@ -40,7 +38,8 @@ inconsistent record matches across different protocol runs, even with the same
 input sets. Thus, different evaluations of $\calF_\MKPM$ on identical inputs can
 yield $\UID$ sets with varying cardinalities.
 
-We give an example of such a matching in Figure~\ref{fig:MPMK_PSUCA_counterexample}. 
+We give an example of such a matching in
+Figure~\ref{fig:MPMK_PSUCA_counterexample}.
 
 To avoid such cases, we define a restriction on the input sets that, if
 satisfied, ensures that Eq.~\ref{eqn:MKPM_PSUCA_condition} holds, thus allowing
@@ -49,10 +48,11 @@ Eq.~\ref{eqn:MKPM_PSUCA_condition}. It therefore suffices to exclude many-to-one
 relations.
 
 \begin{definition}\label{def:isolated_set}
-	Let $X, Y$ be sets of records.
-	We say $X$ is \textbf{$Y$-isolated}, 
-	if for all $\by\in Y$ we have 
-	$$|\{\bx \in X \setdsc \exists i, j \text{ s.t. } \bx[i] = \by[j]\}| \leq 1.$$
+  Let $X, Y$ be sets of records.
+  We say $X$ is \textbf{$Y$-isolated}, 
+  if for all $\by\in Y$ we have 
+  $$|\{\bx \in X \setdsc \exists i, j \text{ s.t. } \bx[i] = \by[j]\}|
+  \leq 1.$$
 \end{definition}
 
 This constraint may exclude certain scenarios. For example, if the sets contain
@@ -64,10 +64,10 @@ addresses from a particular domain.
 
 \begin{theorem}\label{thm:psu-mkpm:correctness}
   Let $T,V\subseteq \Ispace{}^n$ be sets of records. If $T$ is $Y$-isolated,
-  then $\PSUCAattack^{\calF_{\MKPM}(\cdot, Y)}(T)$ recovers $T \sqcap Y$.
+  then $\PSUCAattack^{\calF_{\MKPM}(\cdot; Y)}(T)$ recovers $T \sqcap Y$.
 \end{theorem}
 
-The proof can be find in Appendix~\ref{sec:psu-mkpm:correctness}.
+The proof can be found in Appendix~\ref{sec:psu-mkpm:correctness}.
 
 \heading{Time and Query Complexity.} The $\PSUCAattack{}$ can be applied
 directly to the output of $\calF_{\MKPM}$, as long as the adversary's input sets
@@ -82,10 +82,9 @@ needed due to the probability of early termination).
   \input{figures/example-psu-mkpm-attack.tex}
   \caption{Example of a target set $T$ and a recovery set $Y$, such that
     $\PSUCAattack{}$ cannot be applied to the output of
-    $\calF_{\MKPM}(T;Y)$.  Lines between records indicate potential
-    matches based on matching values.  Solid lines denote the matched
-    records chosen by the matching logic.  We see that
-    $|\UID| \neq |\UID_1| + |\UID_2| - |Y|$ and, as such, $T$ is not
-    $Y$-isolated.}
+    $\calF_{\MKPM}(T;Y)$. Lines between records indicate potential matches based
+    on matching values. Solid lines denote the matched records chosen by the
+    matching logic. We see that $|\UID| \neq |\UID_1| + |\UID_2| - |Y|$ and, as
+    such, $T$ is not $Y$-isolated.}
   \label{fig:MPMK_PSUCA_counterexample}
 \end{figure}
