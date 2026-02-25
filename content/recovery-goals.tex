@@ -155,21 +155,23 @@ These three conditions formally define correctness. We defer the detailed
 discussion to Appendix~\ref{sec:correctness-TR}.
 
 \begin{figure}[t]
+  \vspace{-3mm}
     \centering
-    \subfloat[\label{fig:target-set-example}Target set $T$.]%
+    \subfloat[\label{fig:target-set-example}]%
     {
-    \includegraphics[width=0.3\columnwidth]{figures/target-set.pdf}} 
-    \quad
-	\subfloat[\label{fig:victim-set-example}Recovery set $Y$.]%
+    \includegraphics[width=0.2\columnwidth]{figures/target-set.pdf}} 
+    \quad  \quad
+	\subfloat[\label{fig:victim-set-example}]%
     {
-    \includegraphics[width=0.305\columnwidth]{figures/victim-set.pdf}} 
-    \quad
-    \subfloat[\label{fig:max-recon-output} $T$-recon $R_Y$. ]%
+    \includegraphics[width=0.204\columnwidth]{figures/victim-set.pdf}} 
+    \quad  \quad
+    \subfloat[\label{fig:max-recon-output} ]%
     {
-    \includegraphics[width=0.22\columnwidth,trim={-0.1cm 0 -0.1cm 0},clip]{figures/max-recon.pdf}}
+    \includegraphics[width=0.149\columnwidth,trim={-0.1cm 0 -0.1cm 0},clip]{figures/max-recon.pdf}}
   \caption{
-    $T$-reconstruction $R_Y$. Each matched record in $Y$ corresponds to
+    Given a (a) target set $T$ and a (b) recovery set $Y$, we depict a (c) possible $T$-reconstruction $R_Y$. Each matched record in $Y$ corresponds to
     exactly one record in $R_Y$, and all values shared between the matched
     record and the target set $T$ appear in the corresponding record $R_Y$.
     \label{fig:maximum-reconstruction-example}}
+    \vspace{-2mm}
 \end{figure}
