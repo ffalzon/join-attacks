@@ -43,9 +43,10 @@ In our experiments with $\calF_{\MKPM}$ and $\calF_{\LMKPM}$, the recovery set c
     \input{plots/PSU_1M/time_n.tex}
     }
 	\caption{Runtime of $\PSUattack{}$ for a recovery set of size $|Y| = 10^6$. 
-	(a) Runtimes vs.\ intersection ratio $\rho$ for target set sizes \ref{legend:PSU_timeTlow} $0.5 \cdot 10^6$, \ref{legend:PSU_timeTmid} $10^6$, and \ref{legend:PSU_timeThigh} $1.5 \cdot 10^6$.
-	(b) Runtimes vs.\ target set size $|T|$ for intersection ratios \ref{legend:psu_time2} $40\%$, \ref{legend:psu_time6} $60\%$, and \ref{legend:psu_time10} $80\%$.}
+	(a) Runtimes vs.\ intersection ratio $\rho$ for target set sizes \ref{legend:PSU_timeTlow} $0.5 \cdot 10^6$, \ref{legend:PSU_timeTmid} $10^6$, \ref{legend:PSU_timeThigh} $1.5 \cdot 10^6$.
+	(b) Runtimes vs.\ target set size $|T|$ for $\rho$ values \ref{legend:psu_time2} $40\%$, \ref{legend:psu_time6} $60\%$, \ref{legend:psu_time10} $80\%$.}
 	\label{fig:plot_PSU_large_time}
+    \vspace{-4mm}
 \end{figure}
 
 
@@ -148,7 +149,7 @@ In Appendix~\ref{ap:evaluation}, we present additional experiments conducted und
 \subsection{L-MKPM Attack Evaluation}
 The $T$-reconstruction attacks presented in
 Section~\ref{sec:lmkpm-attacks}---$\baselineattack{}$, $\recenumattack{}$, and
-$\snakeattack{}$---all require just a single protocol execution.  We thus only
+$\snakeattack{}$---all require one protocol execution.  We thus only
 discuss the runtime measurements, which are plotted against the match rate
 $\eta$ and target set size $n$ in Figure~\ref{fig:leakage_attacks_time_plot}.
 

@@ -103,11 +103,7 @@ change.
 More formally, for each identifier position $j$ in $X'$, the $\match$ procedure
 scans all $\by_k \in y'$ and matches $\by_k$ to the first $\bx_i \in X'$ whose
 $j$-th value appears in $\by_k$, that is, for which there exists an $\ell$ such
-that
-\[
-  \by_k[\ell] = \bx_i[j],
-\]
-where $i$ is minimal.
+that $\by_k[\ell] = \bx_i[j]$, where $i$ is minimal.
 
 A detailed description of $\calF_{\MKPM}$ is provided in Figure~\ref{fig:MKPM}.
 
