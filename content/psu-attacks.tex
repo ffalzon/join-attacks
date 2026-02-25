@@ -78,38 +78,31 @@ Appendix~\ref{ap:psu-attack-pseudocode}.
 %% protocols.
 
 \subsection{PSU-CA Attack}\label{sec:PSUCA_attack}
-There is a close relationship between the cardinalities of the union and the
-intersection of two sets. In this next subsection, we give a generic technique
-that transforms any intersection recovery attack against PSI-CA
-(e.g.,~\cite{USENIX:GHLWJL22}) into one against PSU-CA. Specifically, if $T$ is
-the target set and $Y$ is the recovery set, then the adversarial party $\tP_1$
-is able to recover $T\cap Y$.
+The cardinalities of the union and intersection of two sets are closely
+related. We present a generic transformation that converts any intersection
+recovery attack against PSI-CA (e.g.,~\cite{USENIX:GHLWJL22}) into one against
+PSU-CA to recover the intersection.
 
-Let $X$ and $Y$ be two sets. Our attack is based on the following relation
-between the set union and intersection cardinalities:
+Let $X$ and $Y$ be two sets. Our attack relies on the following relation,
 \begin{equation}\label{eqn:union_intersect_cardinalities}
   |X \cap Y| = |X| + |Y| - |X \cup Y|
 \end{equation}
 
-In words, the attacker can compute the cardinality of the intersection if it
-knows the cardinalities of the recovery set and the union.  This enables the
-adversary to translate between the PSU-CA and PSI-CA functionalities, thus,
-allowing it to leverage any intersection recovery attack for PSI-CA against
-PSU-CA.
+This enables a translation from PSU-CA to PSI-CA, and thus allows lifting any
+PSI-CA intersection recovery attack to the PSU-CA setting.
 
-One issue remains: the adversary does not know $|Y|$ in the general case. While
-some PSU-CA protocols may leak this information, not all do. We therefore
-present a general method to determine $|Y|$ with three $\PSUCA$ evaluations that
+A remaining challenge is that $|Y|$ is generally unknown. We therefore present
+the following method to determine $|Y|$ with three $\PSUCA$ evaluations that
 avoids the trivial solution of querying the empty set, i.e.,
 $\calF_{\PSUCA}(\emptyset; Y)$.
 
-\begin{proposition}\label{prop:PSUCA_comp_m} Let $X$ and $Y$ be two sets and let
-  $X_1\cup X_2$ be a partition of $X$.  Moreover, let $z:= |X \cup Y|$,
-  $z_1 := |X_1 \cup Y|$ and $z_2 := |X_2 \cup Y|$. Then, we have
-  $|Y| = z_2 - (z - z_1)$.
+\begin{proposition}\label{prop:PSUCA_comp_m}
+  Let $X$ and $Y$ be two sets and let $X_1\cup X_2$ be a partition of
+  $X$. Moreover, let $z:= |X \cup Y|$, $z_1 := |X_1 \cup Y|$ and
+  $z_2 := |X_2 \cup Y|$. Then, we have $|Y| = z_2 - (z - z_1)$.
 \end{proposition}
-
-We give the proof in Appendix~\ref{proof:PSUCA_comp_m}.  Thus, with three
+ 
+The proof is provided in Appendix~\ref{proof:PSUCA_comp_m}. Thus, with three
 additional $\calF_{\PSUCA}$ evaluations at the start of the attack, the
 adversary can simulate the $\calF_{\PSICA}$ functionality. In particular, for
 any PSI-CA attack, the adversary can replace each query
@@ -117,13 +110,12 @@ $z\gets \calF_{\PSICA}(X;Y)$ with $z'\gets \calF_{\PSUCA}(X;Y)$ and then compute
 $z$ as $|X|+|Y|-z'$.
 
 We state our result in the following theorem:
-
-\begin{theorem}\label{thm:PSICA-to-PSUCA}
-  Let $T$ be the target set and $Y$ be the recovery set. For every adversary
-  $\adv$ such that $\adv^{\calF_{\PSICA}(\cdot; Y)}(T) = T \cap Y$ which makes
-  $q$ $\PSICA$ queries, there is an efficient adversary $\bdv$ with access to
-  $\calF_{\PSUCA}(\cdot; Y)$ which recovers $T \cap Y$ and makes $q + 3$
-  $\PSUCA$ queries.
+\begin{theorem}\label{thm:PSICA-to-PSUCA} Let $T$ be the target set and $Y$ be
+the recovery set. For every adversary $\adv$ such that
+$\adv^{\calF_{\PSICA}(\cdot; Y)}(T) = T \cap Y$ which makes $q$ $\PSICA$
+queries, there is an efficient adversary $\bdv$ with access to
+$\calF_{\PSUCA}(\cdot; Y)$ which recovers $T \cap Y$ and makes $q + 3$ $\PSUCA$
+queries.
 \end{theorem}
 
 The proof is given in Appendix~\ref{proof:PSICA-to-PSUCA}. In
