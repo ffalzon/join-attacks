@@ -1,4 +1,4 @@
-.\section{Discussion}
+\section{Discussion}
 
 \heading{Re-thinking Security.}
 Standard security models in the MPC literature do not explicitly account for inference attacks arising from functionality outputs. Such attacks are often handled only indirectly, for example, through set-size thresholds. However, our analysis of $\calF_{\PSU}$, $\calF_{\PSUCA}$, and Meta's multi-key private matching functionality $\calF_{\LMKPM}$, together with prior work~\cite{USENIX:GHLWJL22,NDSS:JiaDuYan24,USENIX:FalTan25,USENIX:ZinCaoGre23}, underscores the need for a more systematic treatment of MPC protocol security. The functionality outputs should be explicitly incorporated into the security model. Failing to do so results in weak input privacy guarantees: in the worst case, a single query may suffice to partially or even fully recover another party's input.

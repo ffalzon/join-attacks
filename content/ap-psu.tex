@@ -31,7 +31,7 @@ The pseudocode can be found in Figure~\ref{fig:PSU_attack}.
 
 \begin{figure}
   \begin{pchstack}[boxed, center]
-    \procedure[linenumbering]{$\PSUattack^{\calF_{\PSU}(\cdot, Y)}(T)$}{
+    \procedure[linenumbering]{$\PSUattack^{\calF_{\PSU}(\cdot; Y)}(T)$}{
       \rule{0pt}{2em}%
       \text{Partition $T$ into $X_1, X_2$} \\
       Z_1 \gets \PSU(X_1, Y) \\
@@ -55,7 +55,7 @@ The pseudocode can be found in Figure~\ref{fig:PSU_attack}.
 
 \begin{figure}
   \begin{pcvstack}[boxed, center]
-    \procedure[linenumbering]{$\PSUCAattack^{\PSUCA(\cdot, Y)}(X)$}{
+    \procedure[linenumbering]{$\PSUCAattack^{\PSUCA(\cdot; Y)}(X)$}{
       \rule{0pt}{2em}%
       \text{Initialize empty set $\posSet$, $\negSet$.} \\
       \text{Initialize max-priority queue $Q$.} \\
