@@ -22,7 +22,7 @@
 \settopmatter{printacmref=false,printccs=false,printfolios=true}
 
 \begin{document}
-\title{Analyzing Private Set Operations}
+\title{Beyond the Output: Inference Attacks on Private Set Union and Multi-Key Private Matching}
 
 %%%%%%%%%%%%%%%% Authors' Info %%%%%%%%%%%%%%%%%
 %%
@@ -54,6 +54,22 @@
 \input{content/MSR.tex}
 \input{content/evaluation.tex}
 \input{content/conclusion.tex}
+
+\section{Ethical Considerations}
+This work assumes intended use of the PSU, PSU-CA, and Meta’s MKPM protocols. Our analysis leverages intrinsic vulnerabilities in the functionality outputs and does not break the protocols themselves or the underlying cryptographic primitives.
+
+\heading{Use of Synthetic Data.} Our experiments were conducted using synthetic data that was generated either by (a)
+sampling numerical values from a interval of integers, or (b) using the Python Faker library~\cite{faker}. Our use of synthetic data ensured that no personally identifying information or sensitive data can be leaked by our experimental results, and that all risks of harm to individuals or groups was eliminated.
+
+\heading{Disclosure.} We reached out to the authors of the MKPM work~\cite{MKPMC} and the maintainers of Meta's PrivateID repository~\cite{} on \ff{insert date}. In our email, we notified them of our findings and shared a preprint of our work detailing our analysis.
+
+\section{Open Science}
+Upon acceptance, we will release our code base with a dedicated README file describing how to run the code and replicate our experiments. We also agree to undergo the artifact evaluation.
+
+
+\section*{Acknowledgements}
+  The authors acknowledge the use of generative AI tools solely for basic editing of the text and grammar.
+
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{cryptobib/abbrev3,cryptobib/crypto,references}
