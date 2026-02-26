@@ -25,6 +25,8 @@ goal for each functionality to model attack scenarios. Looking ahead, we focus
 on intersection recovery in $\calF_\PSU$ and $\calF_\PSUCA$. For complex
 functionality $\calF_{\MKPM}$, we introduce tailored recovery notions that
 capture the information about the target set that an adversary may aim to learn.
+In the following discussion, we let $T$ be the target set and $Y$ be the
+recovery set.
 
 \subsubsection{Recovery Goal against $\calF_{\PSU}$ and $\calF_{\PSUCA}$}
 \label{sec:IR_goal}
@@ -35,8 +37,8 @@ the target set $T$ also appear in $Y$.
 
 \begin{definition}
   \label{def:intersection-recovery}
-  Let $T$ be the target set and $Y$ be the recovery set. An adversary $\adv$
-  achieves \textbf{intersection recovery} if it outputs $T \cap Y$.
+  An adversary $\adv$ achieves \textbf{intersection recovery} if it outputs
+  $T \cap Y$.
 \end{definition}
 
 \subsubsection{Recovery Goal against $\calF_{\MKPM}$}
@@ -85,7 +87,6 @@ since both records in $X$ share a value with some record in $Y$.
 % analysis of the $\mathcal F_{\MKPM}$ functionality (without leakage).
 
 \begin{definition}\label{def:matchable_records_recovery}
-  Let $T$ be the target set of records and $Y$ be the recovery set of records.
   An adversary $\adv$ achieves \textbf{matchable record recovery (MRR)} if it
   outputs $T\sqcap Y$.
 \end{definition}
@@ -115,9 +116,8 @@ exists an index $i \in \N$ such that $\bx[i] = v$. We present the value recovery
 goal formally as follows.
 
 \begin{definition}\label{def:VIR_goal}
-  Let $T$ be the target set of records and $Y$ be the recovery set of
-  records. An adversary $\adv$ achieves \textbf{value intersection recovery
-    (VIR)} if it outputs $\Ispace[T] \cap \Ispace[Y]$.
+  An adversary $\adv$ achieves \textbf{value intersection recovery (VIR)} if it
+  outputs $\Ispace[T] \cap \Ispace[Y]$.
 \end{definition}
 
 The final goal is the strongest one: identifying all values shared between the
@@ -138,9 +138,8 @@ illustration.
   values are distributed across records in $Y$. \fi
 
 \begin{definition}\label{def:max_recons}
-  Let $T$ be the target set of records and $Y$ be the recovery set of
-  records. An adversary $\adv$ achieves \textbf{$T$-reconstruction (TR)} of $Y$
-  if it outputs a multiset $R_Y$ for which there exists an injective mapping
+  An adversary $\adv$ achieves \textbf{$T$-reconstruction (TR)} of $Y$ if it
+  outputs a multiset $R_Y$ for which there exists an injective mapping
   $\varphi : R_Y \to Y$ such that
   \begin{enumerate}
   \item For all $\by^* \in R_Y$ and all $v \in \by^*$ we have $v\in

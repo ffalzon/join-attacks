@@ -9,16 +9,19 @@ See Figure~\ref{fig:SKPM_definition} for the formal definition.
 
 \begin{figure}[H]
 	\fbox{%
-    \begin{minipage}[t]{0.98\columnwidth}
-		\textbf{Parameters:} Two parties, $P_1$ and $P_2$.\\
-		\noindent\textbf{Functionality:} $\calF_{\SKPM}(X, Y)$: 
-        \hfill \begin{enumerate}
-			\item Receive the input from party $P_1$: $X = \{x_i \setdsc i \in [n]\}$
-			\item Receive the input from party $P_2$: $Y = \{y_i \setdsc i \in [m]\}$
-			\item Compute $Z := X \cup Y$.
-			\item Sample $f \sample \InjFuncs[\Ispace, \calG]$.
-			\item Compute dictionaries
-            $\MX : \calG \to X \cup \{\bot\}$ and $\MY : \calG \to Y \cup \{\bot\}$ s.t. for all $z \in Z$:
+          \begin{minipage}[t]{0.98\columnwidth}
+            \textbf{Parameters:} Two parties, $P_1$ and $P_2$.\\
+            \noindent\textbf{Functionality:} $\calF_{\SKPM}(X; Y)$:
+            \hfill \begin{enumerate}
+            \item Receive the input from party $P_1$: $X = \{x_i
+              \setdsc i \in [n]\}$
+            \item Receive the input from party $P_2$: $Y = \{y_i \setdsc i \in
+              [m]\}$
+            \item Compute $Z := X \cup Y$.
+            \item Sample $f \sample \InjFuncs[\Ispace, \bbU]$.
+            \item Compute dictionaries
+            $\MX : \bbU \to X \cup \{\bot\}$ and $\MY : \bbU \to Y \cup
+            \{\bot\}$ s.t. for all $z \in Z$:
 			\[
 				\MX[f(z)] = \begin{cases*}
 					z & if $z \in X$ \\

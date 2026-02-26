@@ -110,12 +110,12 @@ $z\gets \calF_{\PSICA}(X;Y)$ with $z'\gets \calF_{\PSUCA}(X;Y)$ and then compute
 $z$ as $|X|+|Y|-z'$.
 
 We state our result in the following theorem:
-\begin{theorem}\label{thm:PSICA-to-PSUCA} Let $T$ be the target set and $Y$ be
-the recovery set. For every adversary $\adv$ such that
-$\adv^{\calF_{\PSICA}(\cdot; Y)}(T) = T \cap Y$ which makes $q$ $\PSICA$
-queries, there is an efficient adversary $\bdv$ with access to
-$\calF_{\PSUCA}(\cdot; Y)$ which recovers $T \cap Y$ and makes $q + 3$ $\PSUCA$
-queries.
+\begin{theorem}\label{thm:PSICA-to-PSUCA}
+  For every adversary $\adv$ such that
+  $\adv^{\calF_{\PSICA}(\cdot; Y)}(T) = T \cap Y$ which makes $q$ $\PSICA$
+  queries, there is an efficient adversary $\bdv$ with access to
+  $\calF_{\PSUCA}(\cdot; Y)$ which recovers $T \cap Y$ and makes $q + 3$
+  $\PSUCA$ queries.
 \end{theorem}
 
 The proof is given in Appendix~\ref{proof:PSICA-to-PSUCA}. In

@@ -33,11 +33,12 @@ In order to prove correctness, we must first prove the following two lemmas.:
 % \end{proof}
 
 \begin{lemma}
-	\label{lem:set_isolation_inference}
-	Let $X$ and $V\subseteq \Ispace{}^{\leq \lambda}$ be two sets of records and let $X_1$ and $X_2$
-	be a partition of $X$. 
-	Moreover, let $(\UID, \MX) \sample \MKPM(X, Y)$ and $(\UID_i, M_{X,i}) \sample \MKPM(X_i, Y)$ for $i \in \{1,2\}$.
-	If $X$ is $V$-isolated, we have $|\UID| = |\UID_1| + |\UID_2| - |V|$.
+  \label{lem:set_isolation_inference}
+  Let $X$ and $V\subseteq \Ispace{}^{\leq \lambda}$ be two sets of records and
+  let $X_1$ and $X_2$ be a partition of $X$.  Moreover, let
+  $(\UID, \MX) \sample \calF_{\MKPM(X; Y)}$ and
+  $(\UID_i, M_{X,i}) \sample \calF_{\MKPM(X_i; Y)}$ for $i \in \{1,2\}$.  If $X$
+  is $V$-isolated, we have $|\UID| = |\UID_1| + |\UID_2| - |V|$.
 \end{lemma}
 
 % \begin{proof}
