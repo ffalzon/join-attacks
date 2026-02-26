@@ -22,11 +22,13 @@ We use a fixed, deterministic rule to compute the partition (e.g., by index into
 Starting at the root, the adversary traverses $\calT$ in DFS order, selecting a node at each step and querying $\calF_{\LMKPM}(\cdot; Y)$ on that node’s associated subset of records. Let $X \gets v.\treeSet$ for a non-leaf node $v$, and $X_1 \gets v_L.\treeSet$, $X_2 \gets v_R.\treeSet$ be its children. In Guo et al.'s PSI-CA attack, querying a parent $X$ and one child $X_1$ suffices to infer the sibling’s output: from $|X \cap Y|$ and $|X_1 \cap Y|$ one immediately obtains $|X_2 \cap Y|$ without a third query.
 
 Under $\calF_{\LMKPM}$, this sibling inference is not possible: each query generates UIDs with fresh randomness, so given $(\leakX{}, \leakY)$ and $(\leakX{1}, \leakY)$, one cannot derive $(\leakX{2}, \leakY)$. Instead of inferring the sibling’s full leakage, we switch to a metric for which the sibling’s value \emph{can} be inferred without an additional query---namely, the number of matched values \emph{per column} in $\leakX{}$ and $\leakX{1}$---and use this to guide the DFS traversal. Formally, this metric is defined as:
-\begin{align*}
-    \text{Col}&\text{CA}(\leakX{}, \leakY) \\
-	&:= \left(\sum_{\bt\in\leakX{}}\mathbbm{1}\{\bt[1] \in \Ispace[\leakY]\}, \dots, \sum_{\bt\in\leakX{}}\mathbbm{1}\{\bt[\ell_{\rec}] \in \Ispace[\leakY]\}\right).
-\end{align*}
-
+\begin{equation*}
+	\text{ColCA}(\leakX{}, \leakY) := \left(\sum_{\bt\in\leakX{}}\mathbbm{1}\{\bt[i] \in \Ispace[\leakY]\}\right)_{i\in[\ell_{\rec}]}
+\end{equation*}
+% \begin{align*}
+%     \text{Col}&\text{CA}(\leakX{}, \leakY) \\
+% 	&:= \left(\sum_{\bt\in\leakX{}}\mathbbm{1}\{\bt[1] \in \Ispace[\leakY]\}, \dots, \sum_{\bt\in\leakX{}}\mathbbm{1}\{\bt[\ell_{\rec}] \in \Ispace[\leakY]\}\right).
+% \end{align*}
 
 We make the following important observations about \colCA:
 \begin{proposition}

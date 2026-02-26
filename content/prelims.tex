@@ -205,23 +205,28 @@ To model this leakage, we introduce a \emph{hiding function}, which is an
 injective random function from the value space to the UID space,
 $f_1:\Ispace\to\Uspace$. This function assigns UIDs to values and allows us to
 formalize the relationships between records that can be inferred from the output
-UIDs. By applying the hiding function to the shuffled sets $X'$ and $Y'$, we
+UIDs. By applying the hiding function to the values in the shuffled sets $X'$ and $Y'$, we
 obtain \emph{hidden copies} of these sets, which are available to party $P_1$.
+In particular, repeating values are mapped to the same UIDs consistently in the hidden copies of $X'$ and $Y'$.
+See the definition of $\hXone$ and $\hYone$ in Figure~\ref{fig:MKPM}.
+Also note that the order of indexed values within the records of $X$
+is preserved in $\hXone$. In contrast, the order within the records of $Y$ is shuffled
+to obtain $Y'$ and, thus, the same does not hold for $hYone$.
 
-This leakage can alternatively be interpreted as a \emph{bipartite graph}
-$G = (V_{X'} \cup V_{Y'}, E)$, where $V_{X'}, V_{Y'}$ correspond to the records
-in $X'$ and $Y'$, respectively. An edge $(\bx_i', \by_k') \in E$ exists if and
-only if the records $\bx_i' \in X'$ and $\by_k' \in Y'$ share at least one
-indexed value.
+% This leakage can alternatively be interpreted as a \emph{bipartite graph}
+% $G = (V_{X'} \cup V_{Y'}, E)$, where $V_{X'}, V_{Y'}$ correspond to the records
+% in $X'$ and $Y'$, respectively. An edge $(\bx_i', \by_k') \in E$ exists if and
+% only if the records $\bx_i' \in X'$ and $\by_k' \in Y'$ share at least one
+% indexed value.
 
-Note that because the order of indexed values within each record of $X'$ is
-preserved, the matching process induces a priority ordering over edges. This
-ordering is determined by the position of shared values within the records of
-$X'$.
+% Note that because the order of indexed values within each record of $X'$ is
+% preserved, the matching process induces a priority ordering over the columns ("attributes"). 
+% This ordering is determined by the position of shared values within the records of
+% $X'$.
 
-Although $\match$ computes only a partial matching in $G$, such that each vertex
-is matched to at most one vertex in the other vertex set, party $P_1$ still
-learns the entire graph $G$.
+% Although $\match$ computes only a partial matching in $G$, such that each vertex
+% is matched to at most one vertex in the other vertex set, party $P_1$ still
+% learns the entire graph $G$.
 
 The leakage observed by $P_2$ is more limited. Party $P_2$ learns only a hidden
 and re-shuffled copy of $X$. Specifically, the records of $X$ are re-shuffled
