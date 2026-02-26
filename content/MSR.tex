@@ -58,7 +58,7 @@ The attack requires only one protocol invocation and therefore establishes a tig
     \def\minwidthphone{2.5cm}
     \def\minwidthid{.6cm}
     \def\linecorr{-.4pt}
-    \def\blockminheight{1.4em}
+    \def\blockminheight{1.5em}
     \definecolor{added-id}{HTML}{15b01a}
     \definecolor{matched-light}{HTML}{DCEDC8}
     \definecolor{matched-dark}{HTML}{C4E1A3}
@@ -66,15 +66,17 @@ The attack requires only one protocol invocation and therefore establishes a tig
     \definecolor{highlight-blue}{HTML}{4A90E2} 
     % Subfigures
     \subfloat[Target set $T$ (boxed in blue) and input set $X$ (the entire table).\label{subfig:recenum_example_plain}]{
-        \resizebox{1\columnwidth}{!}{%
+        %\resizebox{1\columnwidth}{!}{%
         \input{figures/recenum_example_plain.tex}
-        }
+        %}
     }
     \quad
     \subfloat[The hidden, shuffled leakage $\hXone$.\label{subfig:recenum_example_leakage}]{
-        \resizebox{0.48\columnwidth}{!}{%
+        %\resizebox{0.48\columnwidth}{!}{%
+        \hspace{0.5cm}
         \input{figures/recenum_example_leakage.tex}
-        }
+        \hspace{0.5cm}
+        %}
     }
     \caption{
     An example of a target set transformation by \recenumattack.

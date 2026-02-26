@@ -56,6 +56,7 @@ The pseudocode can be found in Figure~\ref{fig:PSU_attack}.
 \begin{figure}
   \begin{pcvstack}[boxed, center]
     \procedure[linenumbering]{$\PSUCAattack^{\PSUCA(\cdot, Y)}(X)$}{
+      \rule{0pt}{2em}%
       \text{Initialize empty set $\posSet$, $\negSet$.} \\
       \text{Initialize max-priority queue $Q$.} \\
       T \gets \mathsf{buildTree}(X) \\
@@ -99,7 +100,11 @@ The pseudocode can be found in Figure~\ref{fig:PSU_attack}.
     }
     % \pchspace
     \procedure[linenumbering]{$\mathsf{buildTree}(\setT)$}{
-      \text{Initialize a tree $T$ with a single}\pcskipln \\
+      \rule{0pt}{2em}%
+      \parbox[t]{6cm}{ Initialize a tree $T$ with a single node $\treeRoot$, which stores \setT.
+      Build a balanced binary search tree by recursively dividing the set stored at a node 
+      into two disjoint subsets of roughly equal size.}\\%
+      %\text{Initialize a tree $T$ with a single}\pcskipln \\
       %% TODO: Add \pcparbox latex command
       % \pcparbox{node $\treeRoot$, which stores \setT.
       % Build a balanced binary search tree by recursively dividing the set stored at a node 
@@ -154,11 +159,39 @@ The pseudocode can be found in Figure~\ref{fig:PSU_attack}.
   $\bdv{}$ has a similar runtime to $\adv{}$.
 \end{proof}
 
+\begin{figure}
+	\centering
+	\begin{pchstack}[boxed, center]
+		\procedure[linenumbering]{$\bdv_\adv^{\PSUCA(\cdot, Y)}(T)$}{
+      \rule{0pt}{2em}%
+            \parbox[t]{3cm}{ Partition $T$ into two disjoint subsets $T_1, T_2$. }\\%
+			% \text{Partition $T$ into two disjoint } \pcskipln\\
+			% \pcparbox{subsets $T_1, T_2$.} \\
+			z \gets \PSUCA(T, Y) \label{lin:PSUCA_generic_1}\\
+			z_1 \gets \PSUCA(T_1, Y) \\
+			z_2 \gets \PSUCA(T_2, Y) \label{lin:PSUCA_generic_3}\\
+			m \gets z_2 - (z - z_1) \pccomment{Prop.~\ref{prop:PSUCA_comp_m}} \\
+			Z \gets \adv^{\PSICA\text{-}\textsf{Sim}}(T) \\
+			\pcreturn Z
+		}
+		\pchspace
+		\procedure[linenumbering]{$\PSICA\text{-}\textsf{Sim}(X)$}{
+			\rule{0pt}{2em}%
+      z \gets \PSUCA(X, Y) \\
+			k \gets |X| + m - z \pccomment{Eqn.~\ref{eqn:union_intersect_cardinalities}} \\
+			\pcreturn k
+		}
+	\end{pchstack}
+	\caption{Generic construction of an intersection recovery attack \bdv{} against PSU-CA given an intersection recovery attack \adv{} against PSI-CA. 
+	Note that $Y$ is part of the oracle and unknown to either attack.}
+	\label{fig:PSUCA_generic}
+\end{figure}
+
 \subsection{Instantiating the PSI-CA Attack}\label{attack:PSUCA}
 
 We now integrate the generic construction from \ref{fig:PSUCA_generic} into
 the $\mathsf{PSI\text{-}CA\text{-}Search}\allowbreak\mathsf{Tree}$ attack,
-which we introduced in \ref{ch:PSICA_attack}.  
+which we introduced in Appendix~\ref{ap:guo_attack}.  
 
 Recall that the attack starts
 by building a binary tree $\calT$ such that the root $\calT.\treeRoot$ holds the
@@ -184,7 +217,7 @@ the PSI-CA attack, translating union to intersection cardinalities using
 $\posSet$ and $\negSet$, where $\posSet$ contains all elements of $X$ that
 belong to the intersection and $\negSet$ all elements that do not occur in
 $Y$.  This allows us to evaluate the performance of the attack in more detail
-under limited query budgets, see \ref{ch:experiments}.  We state the
+under limited query budgets, see Appendix~\ref{ap:evaluation}.  We state the
 correctness in the following theorem:
 
 \begin{theorem}
@@ -196,7 +229,7 @@ correctness in the following theorem:
   \ref{prop:PSUCA_comp_m} and \ref{eqn:union_intersect_cardinalities}.
 \end{proof}
 
-For our experimental evaluation in \ref{ch:experiments}, we additionally propose
+For our experimental evaluation in Appendix~\ref{ap:evaluation}, we additionally propose
 two further heuristics: $p_{\PSICA}^-$, which prioritizes the reconstruction of
 the set difference $X \setminus Y$ over that of the intersection, and
 $p_{\PSICA}^*$, whose aim is to maximize the total (positive and negative)
@@ -223,8 +256,8 @@ two direct children).  As mentioned above, there are $2n - 1$ nodes in $T$.  The
 attack therefore evaluates \PSUCA{} at most $(2n - 4) / 2 + 3 = n + 1$ times.
 
 As is the case of \PSICAattack{}, we can expect this number to be lower due to
-the early termination of DFS path traversals. See \ref{ch:experiments} for an
-empirical evaluation.
+the early termination of DFS path traversals. 
+See Section~\ref{sec:st-queries} for an empirical evaluation.
 
 
 
