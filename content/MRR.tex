@@ -24,7 +24,7 @@ on the fact that $|X \cup Y| = |X_1 \cup Y| + |X_2 \cup Y| - |Y|$
 sets and $X_1\cup X_2$ form a partition of $X$. We now translate this to the
 multi-key setting. Let $\UID$, $\UID_1$, and $\UID_2$ be the UIDs output when
 evaluating $\calF_{\MKPM}(X; Y)$ and $\calF_{\MKPM}(X_i; Y)$ for
-$i \in \{1, 2\}$ respectively. \tianxin{Add.} Then we require the following
+$i \in \{1, 2\}$ respectively. For the attack to apply, we require the following
 relation to hold:
 \begin{equation}
   \label{eqn:MKPM_PSUCA_condition}
@@ -41,7 +41,7 @@ yield $\UID$ sets with varying cardinalities.
 We give an example of such a matching in
 Figure~\ref{fig:MPMK_PSUCA_counterexample}.
 
-To avoid such cases, we define a restriction on the input sets that, if
+To rule out such cases, we impose a restriction on the input sets that, if
 satisfied, ensures that Eq.~\ref{eqn:MKPM_PSUCA_condition} holds, thus allowing
 us to carry out the attack. Luckily, one-to-many relations do not violate
 Eq.~\ref{eqn:MKPM_PSUCA_condition}. It therefore suffices to exclude many-to-one
