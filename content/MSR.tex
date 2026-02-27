@@ -14,13 +14,12 @@ attacks that progressively relax these assumptions.
 
 \subsection{The Baseline Attack}
 \label{sec:baseline-attack}
-
-We first observe that record matching is trivial when the adversary’s input set
+Recall that while the records in the adversary's input $X$ are hidden and shuffled, the order of values \emph{within} each record is preserved.
+We first observe that matching records between $X$ and the leakage $\hXone$ is trivial when $X$
 contains one record. Exploiting this, we present \baselineattack{}, which
 flattens the target set $T$ into an input $X$ consisting of a single record that
 contains all values in $\Ispace[T]$.
 
-Recall that while the records in the input $X$ are hidden and shuffled, the order of values \emph{within} each record is preserved to support prioritized matching.
 The baseline attack constructs a dictionary $\Dict$ that maps hidden values appearing in the leakage $\hXone = \{\hbx\}$ back to their original plaintext values in the input $X = \{\bx\}$. Specifically, for all $j = 0, \dots, |\hbx|$, the adversary sets
 \[
     \Dict : \hbx[j] \mapsto \bx[j].
