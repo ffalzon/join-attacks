@@ -1,17 +1,8 @@
 \section{Threat Model and Recovery Goals}
 \label{sec:threat-model-recovery-goals}
 
-\subsection{Threat Model}
-\label{sec:threat-model}
-Without loss of generality and in line with prior work
-\cite{USENIX:GHLWJL22,NDSS:JiaDuYan24,USENIX:FalTan25}, we assume that $P_1$ is
-adversarial (denoted by $\tP_1$). The adversary follows the protocol
-specification honestly, but may adaptively choose its inputs and repeatedly
-invoke the functionality. Party $P_2$ is honest and holds a fixed set $Y$ of
-elements, referred to as the \textbf{recovery set}, about which $P_1$ aims to
-learn information. We note, however, that three of our attacks require only a
-single query. Therefore, these three attacks also apply when $P_2$'s recovery
-set is dynamic.
+\heading{Threat Model.}
+Without loss of generality, and in line with prior work~\cite{USENIX:GHLWJL22,NDSS:JiaDuYan24,USENIX:FalTan25}, we assume that $P_1$ is adversarial (denoted by $\tP_1$). The adversary follows the protocol specification but may adaptively choose its inputs and repeatedly invoke the functionality. Party $P_2$ is honest and holds a fixed set $Y$ of elements, the \textbf{recovery set}, about which $P_1$ aims to learn information. We note that three of our attacks require only a single query and therefore also apply when $P_2$’s recovery set is dynamic.
 
 A \textbf{target set} $T$ of values is also introduced, which is held by the
 adversarial party $\tP_1$. The set $T$ represents values corresponding to points
@@ -50,14 +41,7 @@ equality of the records). We thus adapt the notion of intersection recovery to
 the multi-key setting to mirror this logic, aiming instead to identify the
 records in the target set $T$ that share values with records in $Y$.
 
-The matching logic of MK-PrivateID (see Figure~\ref{fig:match_logic} for a
-definition and Figure~\ref{fig:matching-logic-example} for an example) assigns
-the same UID to matched pairs of records and distinct UIDs to unmatched
-ones. One can think of the $\match$ procedure as computing a pseudo-union of
-records, where a record in the target set and one in the recovery set are
-considered ``equal'' if they are assigned the same UID. A natural generalization
-of set intersection is to recover the records in the adversary’s target set that
-are matched with some record in the recovery set.
+The matching logic of MK-PrivateID (see Figure~\ref{fig:match_logic} for a definition and Figure~\ref{fig:matching-logic-example} for an example) assigns the same UID to matched pairs of records and distinct UIDs to unmatched ones. One can view $\match$ as computing a pseudo-union of records, where a record in the target set and one in the recovery set are considered ``equal'' if they are assigned the same UID. A natural generalization of set intersection is to recover the records in the adversary’s target set that are matched with some record in the recovery set.
 
 %% However, because $T$ and $Y$ are shuffled prior to matching, identical inputs
 %% across different executions are not consistently paired, and even the number
