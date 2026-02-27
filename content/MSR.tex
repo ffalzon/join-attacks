@@ -172,14 +172,13 @@ leakage is shown in Figure~\ref{subfig:recenum_example_leakage}.
 The pseudocode of $\recenumattack$ is given in Figure~\ref{fig:rec_enum_attack}.
 
 \begin{theorem}\label{thm:recenumattack:correctness}
-  Let $T$ be the adversary's target set and $Y$ be the victim's input.
   $\recenumattack^{\calF_\LMKPM(\cdot, Y)}(T)$
-  (Figure~\ref{fig:rec_enum_attack}) achieves maximum set reconstruction of $Y$
-  with respect to $T$ (Def.~\ref{def:max_recons}).
+  (Figure~\ref{fig:rec_enum_attack}) achieves $T$-reconstruction of $Y$
+  (Def.~\ref{def:max_recons}).
 \end{theorem}
 
-The proof of Theorem~\ref{thm:recenumattack:correctness} can be found in Appendix~\ref{sec:recenumattack:correctness}.
-
+The proof of Theorem~\ref{thm:recenumattack:correctness} can be found in
+Appendix~\ref{sec:recenumattack:correctness}.
 
 \heading{Time and Query Complexity.}  Assuming that the binary encoding can be
 computed in time $\bigO{\log n}$, then computing the augmented input set takes
@@ -286,11 +285,9 @@ dictionary to $\hYone$ to recover a $T$-reconstruction of $Y$.
 The pseudocode of $\snakeattack$ is given in Figure~\ref{fig:snakeattack}.
 
 \begin{theorem}\label{thm:snakeattack:correctness}
-  Let $T$ be the adversary's target set and $Y$ be the victim's input.
   $\snakeattack^{\calF_\LMKPM(\cdot, Y)}(T)$ (Figure~\ref{fig:rec_enum_attack})
   achieves $T$-reconstruction of $Y$ (Def.~\ref{def:max_recons}).
 \end{theorem}
-
 The proof of Theorem~\ref{thm:snakeattack:correctness} can be found in
 Appendix~\ref{sec:snakeattack:correctness}.
 

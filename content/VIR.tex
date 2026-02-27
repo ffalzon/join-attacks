@@ -91,17 +91,24 @@ The pseudocode of \mkpsiattack{} is given in Figure~\ref{fig:MKPSIattack} (Appen
 %The attack is similar to the original PSI-CA attack, with the difference that we maintain two sets $\posSet$ and $\negSet$ to keep track of the inferred positive and negative membership information.
 
 \begin{theorem}\label{thm:VIR-attack-correctness}
-	Let $T$ be a target set of records and $Y$ be the recovery set of records. 
-    Then $\mkpsiattack^{\calF_{\LMKPM}(\cdot;Y)}(T)$~(Figure~~\ref{fig:MKPSIattack}) achieves value intersection recovery (Def.~\ref{def:VIR_goal}).
+  $\mkpsiattack^{\calF_{\LMKPM}(\cdot;Y)}(T)$ (Figure~\ref{fig:MKPSIattack})
+  achieves value intersection recovery (Def.~\ref{def:VIR_goal}).
 \end{theorem}
-
 The proof can be found in Appendix~\ref{proof:VIR-attack-correctness}.
 
-\heading{Time and Query Complexity.} 
-Let $n = |T|$, $m = |Y|$, and let $\ell_{\rec}$ be the maximum record length in $T$ and $Y$. Assume $n$ is a power of two and that priority-queue operations \push{} and \pop{} take amortized time \bigO{\log n}. Since $n$ nodes are pushed and popped in total, this contributes \bigO{n \log n} time.
-For inputs $X$ of size $a$ and $Y$ of size $b$, $\colCA(X,Y)$ can be computed in expected time \bigO{\ell_{\rec}(a+b)}. It is called once at the root and for half the nodes at each depth, yielding an expected total cost of $\bigO{\ell_{\rec} n(\log n + m)}$. The heuristic $p_{MK}$ adds only lower-order terms, so the overall expected runtime is $\bigO{\ell_{\rec} n(\log n + m)}$.
+\heading{Time and Query Complexity.}  Let $n = |T|$, $m = |Y|$, and let
+$\ell_{\rec}$ be the maximum record length in $T$ and $Y$. Assume $n$ is a power
+of two and that priority-queue operations \push{} and \pop{} take amortized time
+\bigO{\log n}. Since $n$ nodes are pushed and popped in total, this contributes
+\bigO{n \log n} time.  For inputs $X$ of size $a$ and $Y$ of size $b$,
+$\colCA(X,Y)$ can be computed in expected time \bigO{\ell_{\rec}(a+b)}. It is
+called once at the root and for half the nodes at each depth, yielding an
+expected total cost of $\bigO{\ell_{\rec} n(\log n + m)}$. The heuristic
+$p_{MK}$ adds only lower-order terms, so the overall expected runtime is
+$\bigO{\ell_{\rec} n(\log n + m)}$.
 
-Like the original PSI-CA attack, \mkpsiattack{} requires at most $n$ protocol invocations, though this bound is loose due to early termination of DFS traversals (see Section~\ref{sec:evaluation} for an empirical evaluation).
-Even when the number of protocol invocations is restricted, partial intersection recovery remains feasible (see Appendix~\ref{ap:evaluation}).
-
-
+Like the original PSI-CA attack, \mkpsiattack{} requires at most $n$ protocol
+invocations, though this bound is loose due to early termination of DFS
+traversals (see Section~\ref{sec:evaluation} for an empirical evaluation).  Even
+when the number of protocol invocations is restricted, partial intersection
+recovery remains feasible (see Appendix~\ref{ap:evaluation}).
