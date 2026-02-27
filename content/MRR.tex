@@ -1,11 +1,8 @@
 \section{Matachable Record Recovery with $\calF_{\MKPM}$}\label{sec:PSUCA_to_matching}
-In this section, we show how the $\PSUCAattack{}$ attack can be applied to the
-$\calF_{\MKPM}$ functionality with some additional assumptions to achieve
-\emph{matchable record recovery}
+In this section, we show how the $\PSUCAattack{}$ attack can be applied to $\calF_{\MKPM}$ with some additional assumptions to achieve \emph{matchable record recovery}
 (Definition~\ref{def:matchable_records_recovery}). In
-Appendix~\ref{sec:psuca-privateID-attack} we further explain how the attack can
-be applied to the single key private matching functionality $\calF_{\SKPM}$
-realized by PrivateID~\cite{PMC}.
+Appendix~\ref{sec:psuca-privateID-attack} we explain how the attack can
+be applied to the single key private matching functionality $\calF_{\SKPM}$ realized by PrivateID~\cite{PMC}.
 
 The adversary is given a target set of records $T \subseteq \Ispace{}^n$, and
 can evaluate $\calF_{\MKPM}(X; Y)$ for arbitrarily many inputs $X$. Its goal is
@@ -71,8 +68,7 @@ The proof can be found in Appendix~\ref{sec:psu-mkpm:correctness}.
 
 \heading{Time and Query Complexity.} The $\PSUCAattack{}$ can be applied
 directly to the output of $\calF_{\MKPM}$, as long as the adversary's input sets
-satisfy Definition~\ref{def:isolated_set}. Thus, the attack has the same
-worst-case time complexity and maximum number of protocol invocations as when
+satisfy Definition~\ref{def:isolated_set}. The attack thus has the same worst-case time complexity and maximum number of protocol invocations as when
 applied to $\calF_{\PSUCA}$. Specifically, it requires $\bigO{n\log n}$ time and
 at most $n + 1$ protocol invocations (although typically fewer queries are
 needed due to the probability of early termination).
@@ -87,4 +83,5 @@ needed due to the probability of early termination).
     $|\UID| \neq |\UID_1| + |\UID_2| - |Y|$ and, as such, $T$ is not
     $Y$-isolated.}
   \label{fig:MPMK_PSUCA_counterexample}
+  \vspace{-4mm}
 \end{figure}
