@@ -54,21 +54,16 @@ record in the recovery set. This captures scenarios in which indexed values,
 such as social security numbers or email addresses, uniquely identify an
 individual. Notably, the original paper~\cite{MKPMC} explicitly emphasizes
 precautions against leaking this information in the protocol design. We refer to
-records could \emph{potentially} be matched by the protocol logic as
+records that could \emph{potentially} be matched by the protocol logic as
 \textbf{matchable records}. We formalize this as follows:
 \[
   T \sqcap Y := \{\bt \in T \setdsc \exists \by \in Y,\ \exists j, \ell \in \NN
   \text{ s.t. } \bt[j] = \by[\ell]\}.
 \]
 
-For an example, consider the input sets depicted in
-Figure~\ref{fig:matching-logic-example}. Here $X\sqcap Y = \{\bx_0, \bx_1\}$
-since both records in $X$ share a value with some record in $Y$.
-
-% Unlike standard set intersection, $T \sqcap Y$ is not commutative. In
-% particular, $T \sqcap Y$ is a subset of $T$, but not necessarily a subset of
-% $Y$. We adopt the recovery of the matchable records as the attack goal in our
-% analysis of the $\mathcal F_{\MKPM}$ functionality (without leakage).
+% For an example, consider the input sets depicted in
+% Figure~\ref{fig:matching-logic-example}. Here $X\sqcap Y = \{\bx_0, \bx_1\}$
+% since both records in $X$ share a value with some record in $Y$.
 
 \begin{definition}\label{def:matchable_records_recovery}
   An adversary $\adv$ achieves \textbf{matchable record recovery (MRR)} if it
@@ -81,13 +76,12 @@ since both records in $X$ share a value with some record in $Y$.
 %% organization's dataset can compromise the privacy of that user.
 
 \subsubsection{Recovery Goals against $\calF_{\LMKPM}$}\label{sec:IRR_MR_goal}
-As discussed in Section~\ref{sec:leakage}, $\calF_{\LMKPM}$ is the extended
+As discussed in Sec.~\ref{sec:leakage}, $\calF_{\LMKPM}$ is the extended
 functionality that captures the leakage inherent to the protocol, thus we
 introduce two additional recovery goals to better understand potential attacks
 that were not considered in the original paper~\cite{MKPMC}.
 
-The first recovery goal is to recover the set of shared values. This captures
-precisely the values that the adversary would like to identify in the recovery
+The first recovery goal is to recover the set of shared values. This precisely captures the values that the adversary would like to identify in the recovery
 set. Given record set $X$ (defined as in Section~\ref{sec:mkpmc_functionality}),
 we denote by $\Ispace[X]$ the set of values present in the records of $X$,
 defined as
@@ -96,8 +90,8 @@ defined as
   } v \in \bx \,\}.
 \]
 Here, we slightly abuse notation by writing $v \in \bx$ to denote that there
-exists an index $i \in \N$ such that $\bx[i] = v$. We present the value recovery
-goal formally as follows.
+exists an index $i \in \N$ such that $\bx[i] = v$. The value recovery
+goal is formally defined as follows.
 
 \begin{definition}\label{def:VIR_goal}
   An adversary $\adv$ achieves \textbf{value intersection recovery (VIR)} if it
@@ -106,9 +100,9 @@ goal formally as follows.
 
 The final goal is the strongest one: identifying all values shared between the
 target and recovery sets \emph{and} how these values co-occur across the records
-of $Y$. In particular, it reveals which shared values appear in the same record
+of $Y$. It reveals which shared values appear in the same record
 and which values are repeated across multiple records---information that is not
-captured by value intersection recovery.
+captured by VIR.
 
 This corresponds to the most informative inference about $Y$ with respect to the
 target set $T$ that an adversary can obtain from $\tP_1$’s output. We refer to
