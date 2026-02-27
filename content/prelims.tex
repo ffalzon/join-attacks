@@ -10,7 +10,13 @@ the space of functions $f: X \to Y$ and $\InjFuncs[X, Y]$ denotes the set of all
 injective functions of $\Funcs[X, Y]$. $\Perms[X]$ denotes the set of all
 permutations of $X$.
 
-\subsection{Multi-key Private Matching Functionality}
+\subsection{The PSU and PSU-CA Functionalities}
+
+In its most basic form, the \emph{PSU functionality} is a two-party protocol in which parties $P_1$ and $P_2$ hold sets $X$ and $Y$, respectively. At the end of the protocol, both parties learn the union of their sets, $X \cup Y$.
+
+The \emph{PSU-Cardinality (PSU-CA) functionality} is a variant in which $P_1$ and $P_2$, holding sets $X$ and $Y$ as above, learn only the cardinality of the union, i.e., $|X \cup Y|$.
+
+\subsection{The Multi-key Private Matching Functionality}
 \label{sec:MKPM-functionality}
 \heading{Indexed Records.} The Multi-Key PrivateID (MK-PrivateID)
 protocol~\cite{MKPMC} extends the single-key PrivateID protocol~\cite{PMC} to
