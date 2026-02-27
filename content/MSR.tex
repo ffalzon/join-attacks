@@ -43,7 +43,7 @@ Let $\ell_{\rec}$ denote the maximum record length in $T$ and $Y$. Let $n = |T|$
 The attack has an asymptotic time complexity of
 $\bigO{\ell_{\rec}(n + m)}$.
 %The membership check can be reduced to constant time by maintaining an auxiliary set of already added identifiers, as set membership can be tested in constant time.
-The attack requires only one query and therefore establishes a tight lower bound on the number of queries needed to achieve MSR (Definition~\ref{def:max_recons}).
+The attack requires only one query and therefore establishes a tight lower bound on the number of queries needed to achieve TR (Definition~\ref{def:max_recons}).
 
 % \begin{figure*}
 % 	\input{pseudocode/recenum-code.tex}
@@ -89,9 +89,9 @@ The attack requires only one query and therefore establishes a tight lower bound
 \end{figure}
 
 \subsubsection{A First Optimization}
-The baseline attack relies on an atypical input structure---one very long record---which is both unnatural and easy to detect in practice. This motivates more refined attacks that achieve MSR without such conspicuous inputs.
+The baseline attack relies on an atypical input structure---one very long record---which is both unnatural and easy to detect in practice. This motivates more refined attacks that achieve TR without such conspicuous inputs.
 
-A first optimization avoids arbitrarily long records by exploiting that record lengths are preserved in the leakage. The values in $\Ispace[T]$ can be partitioned into multiple records, each of a \emph{unique} length. Let $X'$ denote the resulting set of records and ${\hXone}'$ the corresponding leakage. Since each record has a distinct length and the order of values within records is preserved, the adversary can uniquely match each record in ${\hXone}'$ to the plaintext record of equal length in $X'$, build a dictionary as before, and again achieve MSR.
+A first optimization avoids arbitrarily long records by exploiting that record lengths are preserved in the leakage. The values in $\Ispace[T]$ can be partitioned into multiple records, each of a \emph{unique} length. Let $X'$ denote the resulting set of records and ${\hXonePrime}$ the corresponding leakage. Since each record has a distinct length and the order of values within records is preserved, the adversary can uniquely match each record in ${\hXonePrime}$ to the plaintext record of equal length in $X'$, build a dictionary as before, and again achieve TR.
 
 \heading{Time and Query Complexity.}
 This optimized attack still uses one query and has time complexity \bigO{\ell_{\rec}(n + m)}. The maximum record length decreases from $|\Ispace[T]|$ to approximately $\sqrt{2|\Ispace[T]|}$. While less conspicuous than the single-record variant, it remains easily detectable. %Our next two attacks remove this assumption.
@@ -133,7 +133,7 @@ invoked on $X$. Recall that $\calF_{\LMKPM}$ hides
 values via an injective random function $f_X$ while preserving the order of
 values within each record of $X$. Consequently, for any $\hbx \in \hXone$, the
 first $\lenc$ hidden values correspond to the encoded prefix and therefore
-comprise only two hidden values i.e., $e$ and $e'$. Moreover, we have
+comprise only two hidden values, i.e., $e$ and $e'$. Moreover, we have
 either $e = f_X(v_0)$ and $e' = f_X(v_1)$, or $e = f_X(v_1)$ and
 $e' = f_X(v_0)$.
 

@@ -104,7 +104,7 @@ of two and that priority-queue operations \push{} and \pop{} take amortized time
 $\colCA(X,Y)$ can be computed in expected time \bigO{\ell_{\rec}(a+b)}. It is
 called once at the root and for half the nodes at each depth, yielding an
 expected total cost of $\bigO{\ell_{\rec} n(\log n + m)}$. The heuristic
-$p_{MK}$ adds only lower-order terms, so the overall expected runtime is
+$p_{MK}^+$ adds only lower-order terms, so the overall expected runtime is
 $\bigO{\ell_{\rec} n(\log n + m)}$.
 
 Like the original PSI-CA attack, \mkpsiattack{} requires at most $n$ protocol

@@ -13,7 +13,7 @@ appear in $Y$, according to the recovery goals defined in the next section.
 \label{sec:recovery-goals}
 Since we analyze multiple set operations in this work, we specify a recovery
 goal for each functionality to model attack scenarios. Looking ahead, we focus
-on intersection recovery in $\calF_\PSU$ and $\calF_\PSUCA$. For complex
+on intersection recovery in $\calF_\PSU$ and $\calF_\PSUCA$. For the complex
 functionality $\calF_{\MKPM}$, we introduce tailored recovery notions that
 capture the information about the target set that an adversary may aim to learn.
 In the following discussion, we let $T$ be the target set and $Y$ be the
@@ -77,12 +77,12 @@ records that could \emph{potentially} be matched by the protocol logic as
 
 \subsubsection{Recovery Goals against $\calF_{\LMKPM}$}\label{sec:IRR_MR_goal}
 As discussed in Sec.~\ref{sec:leakage}, $\calF_{\LMKPM}$ is the extended
-functionality that captures the leakage inherent to the protocol, thus we
+functionality that captures the leakage inherent to the protocol. Thus we
 introduce two additional recovery goals to better understand potential attacks
 that were not considered in the original paper~\cite{MKPMC}.
 
 The first recovery goal is to recover the set of shared values. This precisely captures the values that the adversary would like to identify in the recovery
-set. Given record set $X$ (defined as in Section~\ref{sec:mkpmc_functionality}),
+set. Given a record set $X$ (defined as in Section~\ref{sec:mkpmc_functionality}),
 we denote by $\Ispace[X]$ the set of values present in the records of $X$,
 defined as
 \[
@@ -148,7 +148,7 @@ discussion to Appendix~\ref{sec:correctness-TR}.
   \caption{
     Given a (a) target set $T$ and a (b) recovery set $Y$, we depict a (c) possible $T$-reconstruction $R_Y$. Each matched record in $Y$ corresponds to
     exactly one record in $R_Y$, and all values shared between the matched
-    record and the target set $T$ appear in the corresponding record $R_Y$.
+    record and the target set $T$ appear in the corresponding record in $R_Y$.
     \label{fig:maximum-reconstruction-example}}
     \vspace{-2mm}
 \end{figure}

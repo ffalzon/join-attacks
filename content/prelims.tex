@@ -2,7 +2,7 @@
 \heading{Notation.} For $n \in \NN$, we define $[n] := \{1, \dots, n\}$.  For
 any $\ell, n\in \NN$ such that $\ell \geq \lfloor \log_2 (n+1)\rfloor$,
 $\Bin_{\ell}(n) \in \{0,1\}^\ell$ denotes the $\ell$-bit binary representation of
-$N$.
+$n$.
 
 For sets $X,Y$ and any function $f:X\to Y$, we denote the image of $X$ under $f$
 as $f(X) := \{f(x) | x \in X\} \subseteq Y$.  Moreover, $\Funcs[X, Y]$ denotes
@@ -107,7 +107,7 @@ higher-quality results than matching on a phone number, which is more likely to
 change.
 
 More formally, for each identifier position $j$ in $X'$, the $\match$ procedure
-scans all $\by_k \in y'$ and matches $\by_k$ to the first $\bx_i \in X'$ whose
+scans all $\by_k \in Y'$ and matches $\by_k$ to the first $\bx_i \in X'$ whose
 $j$-th value appears in $\by_k$, that is, for which there exists an $\ell$ such
 that $\by_k[\ell] = \bx_i[j]$, where $i$ is minimal.
 
@@ -218,7 +218,7 @@ In particular, repeating values are mapped to the same UIDs consistently in the 
 See the definition of $\hXone$ and $\hYone$ in Figure~\ref{fig:MKPM}.
 Also note that the order of indexed values within the records of $X$
 is preserved in $\hXone$. In contrast, the order within the records of $Y$ is shuffled
-to obtain $Y'$ and, thus, the same does not hold for $hYone$.
+to obtain $Y'$ and, thus, the same does not hold for $\hYone$.
 
 % This leakage can alternatively be interpreted as a \emph{bipartite graph}
 % $G = (V_{X'} \cup V_{Y'}, E)$, where $V_{X'}, V_{Y'}$ correspond to the records

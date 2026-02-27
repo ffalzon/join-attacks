@@ -11,11 +11,11 @@ $\mathcal F_{\MKPM}$ outputs the set universal identifiers, $\UID$, to both
 parties. Rather than assigning a common UID to two identical records, it applies
 a matching logic (see Figure~\ref{fig:match_logic}) which assigns a common UID
 to each pair of matched records, and a distinct UID to every unmatched record in
-$T$ and $Y$. Thus, using $|\UID|$ as the cardinality for carrying out the
+$T$ and $Y$. Thus, using $|\UID|$ as the cardinality for carrying out
 $\PSUCAattack{}$ appears to be a natural approach for identifying matching
 records in $T$.
 
-Recall that the $\PSUCAattack{}$ attack (Section~\ref{sec:PSUCA_attack}) relies
+The $\PSUCAattack{}$ attack (Section~\ref{sec:PSUCA_attack}) relies
 on the fact that $|X \cup Y| = |X_1 \cup Y| + |X_2 \cup Y| - |Y|$
 (Eq.~\ref{eqn:union_intersect_cardinalities}), where $X$ and $Y$ are arbitrary
 sets and $X_1\cup X_2$ form a partition of $X$. We now translate this to the
