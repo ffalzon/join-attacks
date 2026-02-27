@@ -23,7 +23,7 @@ To generate $T$, we sampled $n$ elements without replacement from the interval $
 
 
 \heading{MKPM and L-MKPM.} 
-The $\calF_{\MKPM}$ and $\calF_{\LMKPM}$ functionalities take as input sets of records. Each record in our datasets consist of an email address, a phone number, an IP address, and an advertising ID (AAID).\footnote{This set of values follows Meta's Developer Reference: \url{https://developers.facebook.com/docs/private-computation/reference/}} The first three values were generated using the \texttt{Faker} Python package, while the AAID was a randomly sampled string of 32 hexadecimal digits.
+The $\calF_{\MKPM}$ and $\calF_{\LMKPM}$ functionalities take as input sets of records. Each record in our datasets consist of an email address, a phone number, an IP address, and an advertising ID (AAID).\footnote{This set of values follows Meta's Developer Reference: \url{https://developers.facebook.com/docs/private-computation/reference/}} The first three values were generated using the \texttt{Faker} Python package~\cite{faker}, while the AAID was a randomly sampled string of 32 hexadecimal digits.
 
 For a given pair of target and recovery sets $T$ and $Y$, we define the match rate $\eta$ as the fraction of all values in $T$ that also appear in $Y$, including multiple occurrences of the same value. Specifically, for $N := \sum_{\bt \in T} |\bt|$, we have:
 \[
