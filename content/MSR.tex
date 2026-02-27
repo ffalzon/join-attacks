@@ -97,13 +97,6 @@ This optimized attack still uses one query and has time complexity \bigO{\ell_{\
 
 
 
-% \begin{figure*}[ht!]
-%     \centering
-%     \vspace{0pt}
-% 	\input{pseudocode/snake-code.tex}
-%     \caption{Snake attack with oracle access to the extended MKPM functionality $\calF_{\LMKPM}(\cdot, Y)$. $Y$ is part of the oracle and unknown to the adversary.\label{fig:snakeattack}\label{fig:snakeencode1}\label{fig:snakedecode1}} 
-% \end{figure*}
-
 
 \subsection{Record Enumeration Attack}\label{sec:rec_enum_attack}
 We now present an attack whose input set consists of equal-length records. For
@@ -258,7 +251,7 @@ record to the $i$-th record for all $i \in [n-1]$. This yields an
 input set $X = \{\bx_0, \dots, \bx_{n-1}\}$ such that $\bt_i$ corresponds to
 $\bx_i$ in an (implicit) linked list. Party $\tP_1$ then invokes the
 functionality $\calF_{\LMKPM}(\ \cdot\ ;Y)$ on $X$ to obtain the output. See
-Figure~\ref{fig:snake_exmp} for a small example of the adversary's input.
+Figure~\ref{fig:snake_exmp} for a small example.
 
 Since the hiding function $f_X$ used in $\calF_\LMKPM$ is injective and
 deterministic, the pointers in $X$ are preserved in the corresponding leakage

@@ -7,10 +7,10 @@ We simulated the protocol on the same node on which we executed the attacks. Our
 
 \subsection{Data Generation} 
 
-Our attacks are largely data-independent. Thus, for ethical reasons, we evaluated the attacks using synthetic data, which also allowed precise control over the test data parameters. We note that Falzon and Tang~\cite{USENIX:FalTan25} also used synthetic datasets in their evaluation.
+Our attacks are largely data-independent. For ethical reasons, we evaluated the attacks using synthetic data, which also allowed precise control over the test data parameters. We note that Falzon and Tang~\cite{USENIX:FalTan25} also used synthetic datasets in their evaluation.
 
 
-\heading{PSU and PSU-CA.} $\calF_{\PSU}$ and $\calF_{\PSUCA}$ operate on sets of elements. Given the high efficiency of our $\PSUattack$ attack, we tested it with a recovery set of size $m = 10^6$. For the $\calF_{\PSUCA}$ attack, we used $m = 10^4$.
+\heading{PSU and PSU-CA.} Given the high efficiency of our $\PSUattack$ attack, we tested it with a recovery set of size $m = 10^6$. For the $\calF_{\PSUCA}$ attack, we used $m = 10^4$.
 The target set size $n$ ranged from $50\%$ to $150\%$ of $m$ in $10\%$ increments.
 
 We varied the intersection size as a fraction of $T$,
@@ -46,7 +46,6 @@ In our experiments with $\calF_{\MKPM}$ and $\calF_{\LMKPM}$, the recovery set c
 	(a) Runtimes vs.\ intersection ratio $\rho$ for target set sizes \ref{legend:PSU_timeTlow} $0.5 \cdot 10^6$, \ref{legend:PSU_timeTmid} $10^6$, \ref{legend:PSU_timeThigh} $1.5 \cdot 10^6$.
 	(b) Runtimes vs.\ target set size $|T|$ for $\rho$ values \ref{legend:psu_time2} $40\%$, \ref{legend:psu_time6} $60\%$, \ref{legend:psu_time10} $80\%$.}
 	\label{fig:plot_PSU_large_time}
-    \vspace{-4mm}
 \end{figure}
 
 
@@ -85,7 +84,6 @@ Specifically, for any $\varepsilon$, measurements for experiments with $\rho, \e
 	\caption{The number of queries required by the (a) $\PSUCAattack${} and (b) $\mkpsiattack$ plotted against the target set size 
 	for intersection ratios $\rho$ and match rates $\eta$: \ref{legend:PSUCA_qn_n_0}~$0\%$, \ref{legend:PSUCA_qn_n_1}~$10\%$, \ref{legend:PSUCA_qn_n_2}~$20\%$, \ref{legend:PSUCA_qn_n_3}~$30\%$, \ref{legend:PSUCA_qn_n_4}~$40\%$ and \ref{legend:PSUCA_qn_n_5}~$50\%$.
 	The experiment was run with $|Y| = 10^4$.}\label{fig:plot_ST_queries_over_n}
-    \vspace{-5mm}
 \end{figure}
 
 
