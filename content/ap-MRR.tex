@@ -5,32 +5,47 @@
 
 In order to prove correctness, we must first prove the following two lemmas.:
 
-% \begin{lemma}
-% 	\label{lem:set_isolation_determinism}
-% 	Let $\setX, \setY \subseteq \Ispace{}^{\leq \lambda}$ be two sets of records. 
-% 	If \setX{} is \setY-isolated, 
-% 	the cardinality of $\UID$ output by $\MKPM(\setX, \setY)$ (\cref{fig:MKPM}) is consistent across multiple evaluations.
-% \end{lemma}
-% \begin{proof}
-% 	For any $x \in \setX$, let $\setY_x$ denote the records of \setY{} that share at least one identifier with $x$,
-% 	i.e., $\setY_x := \{y \in \setY \setdsc \exists i, j \in \N : x[i] = y[j]\}$.
-% 	If \setX{} is $\setY$-isolated, we have that $\setY_x \cap \setY_{x'} = \emptyset$ for all $x, x' \in \setX$ with $x \neq x'$. 
-% 	Therefore, there exist no two records in \setX{} that could be matched with the same record in \setY{}.
+\begin{lemma}
+	\label{lem:set_isolation_determinism}
+	Let $X, Y \subseteq \Ispace{}^{\leq \lambda}$ be two sets of records. 
+	If $X$ is $Y$-isolated, 
+	the cardinality of $\UID$ output by $\calF_\MKPM(X; Y)$ (Figure~\ref{fig:MKPM}) 
+  is consistent across multiple evaluations.
+\end{lemma}
+
+\begin{proof}
+	For any $\bx \in X$, let $Y_\bx\subseteq Y$ denote the set of records in $Y$
+  that share at least one identifier with $\bx$,
+	i.e., 
+  \[
+    Y_\bx := \{\by \in Y \setdsc \exists i, j \in \NN \text{ s.t. } \bx[i] = \by[j]\}.
+  \]
+	If $X$ is $Y$-isolated, then by definition, we have that $Y_\bx \cap Y_{\bx'} = \emptyset$ 
+  for any $\bx, \bx' \in X$ such that $\bx \neq \bx'$. 
+	Therefore, there exist no two records in $X$ that could be 
+  matched with the same record in $Y$.
 	
-% 	We first consider sets $\setY_x$ that are not empty.
-% 	Since $x$ can only be matched with some $y \in \setY_x$ and all $y \in \setY_x$ can only be matched with $x$,
-% 	\match{} (\cref{fig:match_logic}) will match $x$ with exactly one $y_x \in \setY_x$,
-% 	which are assigned the same uid (line~\ref{lin:match_common_uid}).
-% 	All other $y \in \setY_x$, i.e., $y \neq y_x$, will remain unmatched and are assigned their own uid (line~\ref{lin:match_unmatched_P_uid}).
-% 	Furthermore, all $y \in \setY$ which do not belong to any $\setY_{x'}$ for any $x' \in \setX$ will also remain unmatched and are assigned their own uid (also line~\ref{lin:match_unmatched_P_uid}).
-% 	Lastly, all $x\in\setX$ for which $\setY_x = \emptyset$ will remain unmatched and receive their own uid (line~\ref{lin:match_unmatched_C_uid}). 
+	We first consider sets $Y_\bx$ that are not empty.
+	Since $\bx$ can only be matched with some $y \in Y_\bx$ and all $y \in Y_\bx$ 
+  can only be matched with $\bx$,
+	$\match$ (Figure~\ref{fig:match_logic}) will match $\bx$ with exactly one 
+  $\by_\bx \in Y_\bx$, which are assigned the same UID 
+  (line~\ref{lin:match_common_uid}).
+	All other $\by \in Y_\bx\setminus\{\by_\bx\}$ will remain unmatched 
+  and are assigned a unique UID (line~\ref{lin:match_unmatched_P_uid}).
+  Furthermore, all $\by \in Y$ which do not belong to any $Y_{\bx'}$ 
+  for some $\bx' \in X$ will also remain unmatched and are 
+  assigned a unique UID (also line~\ref{lin:match_unmatched_P_uid}).
+	Lastly, all $\bx\in X$ for which $Y_\bx = \emptyset$ will remain 
+  unmatched and receive a distinct UID (line~\ref{lin:match_unmatched_C_uid}). 
 	
-% 	Thus, \UID{} contains one uid for each $y\in \setY$ and one uid for each unmatched $x\in \setX$, i.e.,
-% 	$|\UID| = |\setY| + |\{x \in \setX \setdsc \setY_x = \emptyset\}|$.
-% 	This is independent of the order of the records in \setX{} and \setY{} and
-% 	thus also independent of the shuffling done before the matching step in \MKPM{}.
-% 	Since \MKPM{} only uses randomness to shuffle the inputs, we have proven the lemma.
-% \end{proof}
+	Thus, $\UID$ contains one UID for each $\by\in Y$ and one UID for 
+  each unmatched $\bx\in X$, i.e.,
+	$|\UID| = |Y| + |\{\bx \in X \setdsc Y_\bx = \emptyset\}|$.
+	This is independent of the order of the records in $X$ and $Y$ and
+	also independent of the shuffling done before the matching step in $\MKPM$.
+	Since $\MKPM$ only uses randomness to shuffle the inputs, the lemma follows.
+\end{proof}
 
 \begin{lemma}
   \label{lem:set_isolation_inference}
