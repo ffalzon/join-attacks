@@ -1,7 +1,7 @@
 \pchspace
 	\begin{pchstack}[boxed, center]
 	\begin{pcvstack}
-	\procedure[linenumbering]{$\recenumattack^{\calF_{\LMKPM}(\cdot, Y)}(T)$}{
+	\procedure[linenumbering,codesize=\scriptsize]{$\recenumattack^{\calF_{\LMKPM}(\cdot, Y)}(T)$}{
     \rule{0pt}{2em}%
         \text{Choose three distinct values } v_0, v_1, v_2 \gets \Ispace \\
         \text{Fix an ordering } T = (\bt_0,\ldots,\bt_{n-1}). \\
@@ -28,7 +28,7 @@
 	\end{pcvstack}
 	\pchspace
 	\begin{pcvstack}
-	\procedure[linenumbering, lnstart=18]{$\IdxToSeq(i, \ell, v_0, v_1, v_2)$}{
+	\procedure[linenumbering, codesize=\scriptsize, lnstart=18]{$\IdxToSeq(i, \ell, v_0, v_1, v_2)$}{
     \rule{0pt}{2em}%
 		\pcif i = 2^\ell - 1 \pcthen \\
 		\t	\pcreturn (v)^{\ell - 1} \| v_2 \\
@@ -41,6 +41,9 @@
         \t  \t  \bs \gets \bs \| v_1 \label{lin:idx_to_seq_bin_encode_end} \\
 		\pcreturn \bs
 	}
+	\end{pcvstack}
+	\pchspace
+	\begin{pcvstack}
 	\procedure[linenumbering, lnstart=28]{$\SeqToIdx(\hbx, \ell, u_0)$}{
     \rule{0pt}{2em}%
 		\pcif \text{for all } j \in [\ell],\ \hbx[j] \neq u_0 \pcthen \label{lin:seq_to_idx_tiebreak} \pcskipln\\
@@ -53,17 +56,17 @@
 		\pcreturn i
 	}
 	\end{pcvstack}
-    \begin{pcvstack}
-    \procedure[linenumbering]{$\dictInfer(\hYone, \Dict)$}{
-    \rule{0pt}{2em}%
-		\text{Initialize $R\gets \emptyset$} \\
-		\pcfor \hby \in \hYone \pcdo \\
-		\t	\br \gets () \\
-		\t	\pcfor i = 0, \dots, |\hby|-1 \pcdo \\
-		\t	\t	\pcif \hby[i] \in \Dict \pcthen \label{lin:substitute_membership_check} \\
-		\t	\t	\t	\br \gets \br \| \Dict[\hby[i]] \label{lin:substitute_add_id} \\
-		\t	R \gets R \cup \{\br\} \label{lin:substitute_add_record}\\
-		\pcreturn R
-    }
-    \end{pcvstack}
+    % \begin{pcvstack}
+    % \procedure[linenumbering]{$\dictInfer(\hYone, \Dict)$}{
+    % \rule{0pt}{2em}%
+	% 	\text{Initialize $R\gets \emptyset$} \\
+	% 	\pcfor \hby \in \hYone \pcdo \\
+	% 	\t	\br \gets () \\
+	% 	\t	\pcfor i = 0, \dots, |\hby|-1 \pcdo \\
+	% 	\t	\t	\pcif \hby[i] \in \Dict \pcthen \label{lin:substitute_membership_check} \\
+	% 	\t	\t	\t	\br \gets \br \| \Dict[\hby[i]] \label{lin:substitute_add_id} \\
+	% 	\t	R \gets R \cup \{\br\} \label{lin:substitute_add_record}\\
+	% 	\pcreturn R
+    % }
+    % \end{pcvstack}
 	\end{pchstack}

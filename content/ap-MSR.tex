@@ -16,8 +16,6 @@
 \end{lemma}
 \begin{proof}
 	Let $R$ be the multiset produced by \dictInfer.
-	% Recall from Section~\ref{sec:notation} that we consider different instantiations 
-	% of the same record in $R$ as distinct elements.
 	Note that for each $\hby \in \hYone$ exactly one reconstructed record
         $\br$ is added to $R$. Let $d: R \to \hYone$ denote the function mapping
         these reconstructed records to the corresponding $\hby$. Clearly, $d$ is
@@ -63,6 +61,7 @@ The lemma thus follows.
 % 	$\toyattack^{\LMKPM(\cdot, \setV)}(\setT)$ from \cref{fig:toy_attack}
 % 	produces a maximum reconstruction of \setV{} with respect to \setT{}.
 % \end{lemma}
+
 % \begin{proof}
 % 	It is easy to see that the record $r$ constructed in lines \ref{lin:baseline_r_start}~-~\ref{lin:baseline_r_end} contains all identifiers from 
 % 	$\Ispace{\setT}$ and therefore $\Ispace{\setT} = \Ispace{\setT'}$. 
