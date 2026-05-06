@@ -147,11 +147,10 @@ The pseudocode can be found in Figure~\ref{fig:PSU_attack}.
 
 
 \begin{proof}
-  We provide a concrete construction of \bdv{} for any \adv{} in
-  \ref{fig:PSUCA_generic}.
+  We provide a concrete construction of \bdv{} for any \adv{} in Fig.~\ref{fig:PSUCA_generic}.
   Correctness of \bdv{} follows directly from
-  \ref{eqn:union_intersect_cardinalities} and \ref{prop:PSUCA_comp_m}.
-  Clearly, \bdv{} makes three PSU-CA evaluations on
+  Eq.~\ref{eqn:union_intersect_cardinalities} and Prop.~\ref{prop:PSUCA_comp_m}.
+  \bdv{} makes three PSU-CA evaluations on
   lines~\ref{lin:PSUCA_generic_1}~-~\ref{lin:PSUCA_generic_3} and one for every
   \PSICA{} query made by \adv{}.
   Since determining $m$ and translating union cardinalities to intersection
@@ -222,11 +221,10 @@ correctness in the following theorem:
 
 \begin{theorem}
   Let $X$ and $Y$ be two arbitrary sets. \\
-  $\PSUCAattack^{\PSUCA(\cdot, Y)}(X)$ outputs $X \cap Y$.
+  $\PSUCAattack^{\calF_{\PSUCA}(\cdot; Y)}(X)$ outputs $X \cap Y$.
 \end{theorem}
 \begin{proof}
-  Follows directly from the correctness of $\PSICAattack$ and
-  \ref{prop:PSUCA_comp_m} and \ref{eqn:union_intersect_cardinalities}.
+  The theorem follows directly from the correctness of $\PSICAattack$ and Prop.~\ref{prop:PSUCA_comp_m} and Eq.~\ref{eqn:union_intersect_cardinalities}.
 \end{proof}
 
 For our experimental evaluation in Appendix~\ref{ap:evaluation}, we additionally propose
@@ -236,8 +234,10 @@ $p_{\PSICA}^*$, whose aim is to maximize the total (positive and negative)
 membership information we can infer.  In light of these additional definitions,
 we define the alias $p_{\PSICA}^+ := p_{\PSICA}$ to avoid confusion in the
 presentation of our experimental results.
-$$p_{\PSICA}^-(k, |X|) := \frac{|X| - k}{|X|}$$
-$$p_{\PSICA}^*(k, |X|) := \frac{\max(k, |X| - k)}{|X|}$$
+\begin{align*}
+p_{\PSICA}^-(k, |X|) &:= \frac{|X| - k}{|X|}\\
+p_{\PSICA}^*(k, |X|) &:= \frac{\max(k, |X| - k)}{|X|}\end{align*}
+
 
 
 
