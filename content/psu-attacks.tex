@@ -1,6 +1,6 @@
 \section{Analysis of PSU and PSU-CA}
 \label{sec:psu-psuca}
-While PSU and PSU-CA have received increasing attention, the information leaked by their output remains largely unstudied. It was observed by Frikken~\cite{ACNS:Frikken07} that submitting an empty set in PSU fully reveals the other party's input and proposed abort-based mitigations. Jia et al.~\cite{USENIX:JSZG24} further analyzed PSU leakage, showing that Guo et al.'s~\cite{USENIX:GHLWJL22} PSI-CA attack extends to certain PSU variants, even under early-abort conditions, and proposed an ``enhanced'' PSU functionality that delays leakage until protocol termination.
+While PSU and PSU-CA have received increasing attention, the information leaked by their output remains largely unstudied. Frikken~\cite{ACNS:Frikken07} observed that submitting an empty set in PSU fully reveals the other party's input and proposed abort-based mitigations. Jia et al.~\cite{USENIX:JSZG24} further analyzed PSU leakage, showing that Guo et al.'s~\cite{USENIX:GHLWJL22} PSI-CA attack extends to certain PSU variants, even under early-abort conditions, and proposed an ``enhanced'' PSU functionality that delays protocol leakage to the end of protocol executions.
 
 We show that such countermeasures are insufficient by introducing an intersection-recovery attack on PSU that uses only two queries and does not require the adversarial input to be empty or disjoint from the recovery set. We then prove that PSU-CA leaks at least as much information as PSI-CA by reducing any PSI-CA attack with $q$ queries to a PSU-CA attack with $q{+}3$ queries. %In the next section, we further show that our PSU-CA attack extends to Meta's $\calF_{\MKPM}$ functionality.
 
@@ -8,54 +8,69 @@ We show that such countermeasures are insufficient by introducing an intersectio
 \label{sec:psu-attack}
 Recall that the corrupted party $\tP_1$ holds the target set $T$ and can invoke
 $\calF_{\PSU}(X; Y)$ on arbitrary sets $X$ with a fixed $Y$. Its goal is to
-recover $T \cap Y$. Our attack relies on the following identity,
-\begin{equation}
-  \label{eqn:PSU_basis}
-  X \cap Y = (X \cup Y) \setminus (Y \setminus X) \setminus (X \setminus Y).
-\end{equation} 
+recover $T \cap Y$. Our attack relies on the following observation:
 
-From a $\PSU$ query, the adversary directly obtains $X \cup Y$ and can compute
-$Y \setminus X = (X \cup Y) \setminus X$. The remaining challenge is to
-determine $X \setminus Y$. To address this, we rely on two additional
-observations, with proofs deferred to
-Appendix~\ref{proof:PSU_difference_distributes}
-and~\ref{proof:PSU_comp_partial_difference}, respectively.
-
-\begin{proposition}\label{prop:PSU_difference_distributes}
-  Let $X$ and $Y$ be sets and $X_1 \cup X_2$ be a partition of $X$. It holds
-  that $X \setminus Y = (X_1 \setminus Y) \cup (X_2 \setminus Y).$
+\begin{proposition}\label{prop:PSU_recon_Y}
+  Let $T$ and $Y$ be sets and $X_1 \cup X_2$ be a partition of $T$. It holds
+  that $Y = (X_1 \cup Y) \cap (X_2 \cup Y)$.
 \end{proposition}
 
-\begin{proposition}
-  \label{prop:PSU_comp_partial_difference}
-  Let $X$ and $Y$ be sets and let $X_1\cup X_2$ be a partition of $X$.
-  Furthermore, let $Z_1 := X_1 \cup Y$ and $Z_2 := X_2 \cup Y$. Then,
-  $X_1 \setminus Y = X_1 \setminus Z_2$ and
-  $X_2 \setminus Y = X_2 \setminus Z_1$.
-\end{proposition}
+Proposition~\ref{prop:PSU_recon_Y} follows directly from the fact that $X_1$ and $X_2$ are disjoint. 
+The recovery set $Y$ can therefore be reconstructed with only two $\PSU$ queries.
+Since the adversary knows $T$, the intersection $T \cap Y$, if needed, can then be computed easily.
 
-We combine Propositions~\ref{prop:PSU_difference_distributes} and
-\ref{prop:PSU_comp_partial_difference} with the identity in
-Eq.~\ref{eqn:PSU_basis} to compute $X \cap Y$ using three evaluations of
-$\PSU$. Moreover, one evaluation can be saved: the full union can be derived
-from two partial unions, since $X \cup Y = (X_1 \cup Y) \cup (X_2 \cup Y)$.
+We refer to this generic attack as $\PSUattack$. 
+Note that it requires no special inputs such as the empty set, but works with any two inputs that are disjoint from each other. 
+Specific mitigation strategies that focus on prohibiting such special inputs are therefore ineffective.
+Allowing only one protocol execution per party is arguably not only unrealistic for many PSU deployment scenarios, but can also be easily circumvented via Sybil attacks.
 
-We refer to this generic attack as $\PSUattack$. Let $X_1$ and $X_2$ be disjoint
-sets forming a partition of the target set $T$, i.e., $X_1 \cap X_2 = \emptyset$
-and $X_1 \cup X_2 = T$. Then the adversarial party $\tP_1$ can recover the
-intersection by querying $\calF_{\PSU}(X_1;Y)$ and $\calF_{\PSU}(X_2;Y)$. We
-provide the pseudocode in Figure~\ref{fig:PSU_attack} in
-Appendix~\ref{ap:psu-attack-pseudocode}.
+% \begin{equation}
+%   \label{eqn:PSU_basis}
+%   X \cap Y = (X \cup Y) \setminus (Y \setminus X) \setminus (X \setminus Y).
+% \end{equation} 
 
-\begin{theorem}
-  Let $T$ be the target set and $Y$ be the recovery set. The attack
-  $\PSUattack^{\calF_{PSU}(\cdot; Y)}(T)$ (Figure~\ref{fig:PSU_attack}) achieves
-  intersection recovery (Def.~\ref{def:intersection-recovery}).
-\end{theorem}
-\begin{proof}
-  The theorem follows from Propositions~\ref{prop:PSU_difference_distributes}
-  and \ref{prop:PSU_comp_partial_difference}.
-\end{proof}
+% From a $\PSU$ query, the adversary directly obtains $X \cup Y$ and can compute
+% $Y \setminus X = (X \cup Y) \setminus X$. The remaining challenge is to
+% determine $X \setminus Y$. To address this, we rely on two additional
+% observations, with proofs deferred to
+% Appendix~\ref{proof:PSU_difference_distributes}
+% and~\ref{proof:PSU_comp_partial_difference}, respectively.
+
+% \begin{proposition}\label{prop:PSU_difference_distributes}
+%   Let $X$ and $Y$ be sets and $X_1 \cup X_2$ be a partition of $X$. It holds
+%   that $X \setminus Y = (X_1 \setminus Y) \cup (X_2 \setminus Y).$
+% \end{proposition}
+
+% \begin{proposition}
+%   \label{prop:PSU_comp_partial_difference}
+%   Let $X$ and $Y$ be sets and let $X_1\cup X_2$ be a partition of $X$.
+%   Furthermore, let $Z_1 := X_1 \cup Y$ and $Z_2 := X_2 \cup Y$. Then,
+%   $X_1 \setminus Y = X_1 \setminus Z_2$ and
+%   $X_2 \setminus Y = X_2 \setminus Z_1$.
+% \end{proposition}
+
+% We combine Propositions~\ref{prop:PSU_difference_distributes} and
+% \ref{prop:PSU_comp_partial_difference} with the identity in
+% Eq.~\ref{eqn:PSU_basis} to compute $X \cap Y$ using three evaluations of
+% $\PSU$. Moreover, one evaluation can be saved: the full union can be derived
+% from two partial unions, since $X \cup Y = (X_1 \cup Y) \cup (X_2 \cup Y)$.
+
+% We refer to this generic attack as $\PSUattack$. Let $X_1$ and $X_2$ be disjoint
+% sets forming a partition of the target set $T$, i.e., $X_1 \cap X_2 = \emptyset$
+% and $X_1 \cup X_2 = T$. Then the adversarial party $\tP_1$ can recover the
+% intersection by querying $\calF_{\PSU}(X_1;Y)$ and $\calF_{\PSU}(X_2;Y)$. We
+% provide the pseudocode in Figure~\ref{fig:PSU_attack} in
+% Appendix~\ref{ap:psu-attack-pseudocode}.
+
+% \begin{theorem}
+%   Let $T$ be the target set and $Y$ be the recovery set. The attack
+%   $\PSUattack^{\calF_{PSU}(\cdot; Y)}(T)$ (Figure~\ref{fig:PSU_attack}) achieves
+%   intersection recovery (Def.~\ref{def:intersection-recovery}).
+% \end{theorem}
+% \begin{proof}
+%   The theorem follows from Propositions~\ref{prop:PSU_difference_distributes}
+%   and \ref{prop:PSU_comp_partial_difference}.
+% \end{proof}
 
 \subsection{PSU-CA Attack}\label{sec:PSUCA_attack}
 The cardinalities of the union and intersection of two sets are closely
