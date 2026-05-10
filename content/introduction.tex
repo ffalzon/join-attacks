@@ -32,7 +32,8 @@ We consider an adversary that participates in the two-party protocol, honestly e
 The input structure depends on the functionality. For PSU and PSU-CA, $T=\{t_i\}_{i\in[n]}$ and $Y=\{y_k\}_{k\in[m]}$ are sets of values. For MKPM, $T=\{\bt_i\}_{i\in[n]}$ and $Y=\{\by_i\}_{i\in[m]}$ are sets of records, where each record is a vector of values. As in prior work~\cite{USENIX:FalTan25}, we assume the recovery set is static. However, as we will see, many of our attacks do not rely on this assumption, as significant information can be recovered in one protocol invocation.
 
 
-\heading{Attacks against PSU and PSU-CA.} 
+\heading{Attacks against PSU and PSU-CA.}
+\tianxin{Need to update this.}
 Our first attack targets the PSU functionality. We show that when the protocol is invoked on two disjoint subsets forming a partition of $T$ (e.g., $T = X_1 \cup X_2$), the adversary can fully recover the intersection $T \cap Y$. \emph{This result significantly constrains how PSU can be safely used, both as a standalone protocol and as a component within more complex systems.}
 
 Next, we consider PSU-CA. We demonstrate that although PSU-CA reveals only the cardinality of the set union, we can nevertheless recover the intersection $T \cap Y$ through a sequence of adaptively chosen queries. We establish a direct connection to PSI-CA, showing that any attack against PSI-CA (e.g.,~\cite{USENIX:GHLWJL22,NDSS:JiaDuYan24,USENIX:FalTan25}) can be transformed into an attack against PSU-CA using only three additional queries. \emph{This attack demonstrates how vulnerabilities in one functionality can be leveraged to attack a broader class of functionalities.}
