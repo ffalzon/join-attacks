@@ -32,11 +32,41 @@ We consider an adversary that participates in the two-party protocol, honestly e
 The input structure depends on the functionality. For PSU and PSU-CA, $T=\{t_i\}_{i\in[n]}$ and $Y=\{y_k\}_{k\in[m]}$ are sets of values. For MKPM, $T=\{\bt_i\}_{i\in[n]}$ and $Y=\{\by_i\}_{i\in[m]}$ are sets of records, where each record is a vector of values. As in prior work~\cite{USENIX:FalTan25}, we assume the recovery set is static. However, as we will see, many of our attacks do not rely on this assumption, as significant information can be recovered in one protocol invocation.
 
 
-\heading{Attacks against PSU and PSU-CA.}
-\tianxin{Need to update this.}
-Our first attack targets the PSU functionality. We show that when the protocol is invoked on two disjoint subsets forming a partition of $T$ (e.g., $T = X_1 \cup X_2$), the adversary can fully recover the intersection $T \cap Y$. \emph{This result significantly constrains how PSU can be safely used, both as a standalone protocol and as a component within more complex systems.}
+\heading{Attacks against PSU and PSU-CA.} To pave the way for the attacks
+against the more complex functionality of multi-key private matching, we first
+show a straghtforward set-based attack against PSU. The attack only requires two
+queries on disjoint sets that form a partition of the target set $T$ (e.g.,
+$T = X_1 \cup X_2$). Using these two queries, the adversary can fully recover
+the intersection $T \cap Y$ that PSU is supposed to protect. Next, we consider
+PSU-CA, which only reveals the cardinality. Even in this setting, we can still
+recover the intersection $T \cap Y$ through a sequence of adaptively chosen
+queries. We establish a direct connection to PSI-CA, showing that any attack
+against PSI-CA (e.g.,~\cite{USENIX:GHLWJL22,NDSS:JiaDuYan24,USENIX:FalTan25})
+can be transformed into an attack against PSU-CA using only three additional
+queries. Although our results on PSU are simple, they have not been noted in the
+literature, nor can they be circumvented using, for example, enforcing a
+threshold on the input set size as is commonly suggested. \emph{This further
+  raises question of whether PSU can be safely used as a standalone protocol or
+  as as a component within more complex systems. Moreover, by establishing the
+  relation between attacks on PSU-CA and PSI-CA, we demonstrate how
+  vulnerabilities in one functionality can be leveraged to attack a broader
+  class of functionalities.}
 
-Next, we consider PSU-CA. We demonstrate that although PSU-CA reveals only the cardinality of the set union, we can nevertheless recover the intersection $T \cap Y$ through a sequence of adaptively chosen queries. We establish a direct connection to PSI-CA, showing that any attack against PSI-CA (e.g.,~\cite{USENIX:GHLWJL22,NDSS:JiaDuYan24,USENIX:FalTan25}) can be transformed into an attack against PSU-CA using only three additional queries. \emph{This attack demonstrates how vulnerabilities in one functionality can be leveraged to attack a broader class of functionalities.}
+%% Our first attack targets the PSU functionality. Through show that when the
+%% protocol is invoked on two disjoint subsets forming a partition of $T$ (e.g.,
+%% $T = X_1 \cup X_2$), the adversary can fully recover the intersection $T \cap
+%% Y$. \emph{This result significantly constrains how PSU can be safely used,
+%% both as a standalone protocol and as a component within more complex
+%% systems.}
+
+%% Next, we consider PSU-CA. We demonstrate that although PSU-CA reveals only
+%% the cardinality of the set union, we can nevertheless recover the
+%% intersection $T \cap Y$ through a sequence of adaptively chosen queries. We
+%% establish a direct connection to PSI-CA, showing that any attack against
+%% PSI-CA (e.g.,~\cite{USENIX:GHLWJL22,NDSS:JiaDuYan24,USENIX:FalTan25}) can be
+%% transformed into an attack against PSU-CA using only three additional
+%% queries. \emph{This attack demonstrates how vulnerabilities in one
+%% functionality can be leveraged to attack a broader class of functionalities.}
 
 
 \heading{Attacks against Meta's Multi-Key Private Match.} 
