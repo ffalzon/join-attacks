@@ -13,55 +13,10 @@ The goal is to compute the intersection of values which we denote as $\posSet :=
 % \]
 % where $\UID$ denotes the set of all assigned UIDs, $\MX$ is the local mapping from UIDs to records in $X$, and $(\hXone, \hYone)$ are the hidden, shuffled records of $X$ and $Y$, respectively. 
 
-
-\subsection{A Primer on Guo et al.'s PSI-CA Attack}
-Before describing our attack, we briefly review Guo et al.’s~\cite{USENIX:GHLWJL22} intersection-recovery attack against the PSI-CA functionality, which outputs the intersection cardinality \(|X \cap Y|\). 
-
-In Guo et al.’s attack, the adversary has a target set \(X\) and can query the PSI-CA functionality \(\calF_{\PSICA}(\cdot ;Y)\) on adaptively chosen subsets \(X' \subseteq X\), where \(Y\) is a fixed recovery set. The goal is to recover \(X \cap Y\). The key observation is that some PSI-CA outputs immediately reveal membership information: (1) if \(|X' \cap Y| = 0\), then no element of \(X'\) lies in \(Y\) and (2) if \(|X' \cap Y| = |X'|\), then every element of \(X'\) lies in \(Y\).
-
-To exploit this, the adversary builds a balanced binary search tree over \(X\), where each node contains a subset of \(X\) and its children form a partition of that subset. The adversary traverses the tree and queries PSI-CA on selected nodes until it finds subsets whose membership can be fully determined by the two termination cases above. Since the children partition their parent, the adversary can infer one child’s intersection cardinality from the parent and sibling values, reducing the number of queries needed. Repeating this process recursively allows the adversary to label elements as either in \(X \cap Y\) or in \(X \setminus Y\), thereby recovering the intersection.
-
-We give a pictorial example of the attack in Figure~\ref{fig:guo_basline_tree} and a more detailed description of the attack in Appendix~\ref{ap:guo_attac}.
-
-\begin{figure}
-  \centering
-  {	\colorlet{positive}{LimeGreen}
-    \colorlet{negative}{BrickRed}
-    \newcommand{\pos}[1]{\raisebox{.9pt}{#1}}
-    \newcommand{\fullcirc}{\position{\tikz{\draw[line width=.5pt, color=black, fill=black] circle(1.1pt);}}}
-    \newcommand{\ocirc}{\position{\tikz[]{\draw[line width=.5pt, color=black, fill=none] circle(1.1pt);}}}
-
-    \begin{tikzpicture}
-      [
-      level 1/.style = {sibling distance = 4cm},
-      level 2/.style = {sibling distance = 2cm},
-      level 3/.style = {sibling distance = 1.5cm}
-      ]
-      {	\tiny
-        \node {\fullcirc\;$X = \{1, 2, 3, 4, 5, 6\}$}[level distance =.8cm]
-        child {node {\fullcirc\;$X_{1,1} = \{1, 2, 3\}$}
-          child {node {\fullcirc\;\color{positive}$X_{2,1} = \{1, 2\}$} {
-              child {node {\color{positive}$X_{3,1} = \{1\}$}}
-              child {node {\color{positive}$X_{3,2} = \{2\}$}}
-            }}
-          child {node {\ocirc\;\color{negative}$X_{2,2} = \{3\}$}}}
-        child {node {\ocirc\;\color{negative}$X_{1,2} = \{4, 5, 6\}$}
-          child {node {\color{negative}$X_{2,3} = \{4, 5\}$} {
-              child {node {\color{negative}$X_{3,3} = \{4\}$}}
-              child {node {\color{negative}$X_{3,4} = \{5\}$}}
-            }}
-          child {node {\color{negative}$X_{2,4} = \{6\}$}}};}
-    \end{tikzpicture}
-    \caption{
-      Binary search tree for \(X=\{1,2,3,4,5,6\}\) in the generic intersection-recovery attack of~\cite{USENIX:GHLWJL22}, shown for recovery set \(Y=\{1,2\}\). Nodes marked with $\circ$ are queried via PSI-CA, while nodes marked with $\bullet$ have their intersection cardinality inferred from their parent and sibling. DFS terminates early at \(X_{2,1}\) and \(X_{1,2}\). Inferred membership is shown in {\color{positive} green} for \(X\cap Y\) and {\color{negative} red} for \(X\setminus Y\).}
-    \label{fig:guo_basline_tree}
-  }
-\end{figure}
-
-\subsection{Leveraging the Search Tree Approach}
+% \subsection{Leveraging the Search Tree Approach}
 
 
-Our adapted attack starts by building a binary search tree $\calT$ over $T$ similar to the original attack~\cite{USENIX:GHLWJL22}. The root node corresponds to the entire target set $T$. Each node $v$ is labeled with a subset $v.\treeSet \subseteq T$. Its children $v_L \gets v.\treeLeftChild$ and $v_R \gets v.\treeRightChild$ form a disjoint partition of the parent:
+Our adapted attack starts by building a binary search tree $\calT$ over $T$ similar to Guo et al.'s attack~\cite{USENIX:GHLWJL22}. The root node corresponds to the entire target set $T$. Each node $v$ is labeled with a subset $v.\treeSet \subseteq T$. Its children $v_L \gets v.\treeLeftChild$ and $v_R \gets v.\treeRightChild$ form a disjoint partition of the parent:
 $v_L.\treeSet \cup v_R.\treeSet = v.\treeSet$ and $v_L.\treeSet \cap v_R.\treeSet = \emptyset$.
 We use a fixed, deterministic rule to compute the partition (e.g., by index into equal halves) and recurse until leaves are single records. 
 
