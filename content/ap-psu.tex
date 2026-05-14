@@ -57,7 +57,7 @@
   \begin{pcvstack}[boxed, center]
     \procedure[linenumbering]{$\PSUCAattack^{\PSUCA(\cdot; Y)}(X)$}{
       \rule{0pt}{2em}%
-      \text{Initialize empty set $\posSet$, $\negSet$.} \\
+      \text{Initialize empty sets $\posSet$, $\negSet$.} \\
       \text{Initialize max-priority queue $Q$.} \\
       T \gets \mathsf{buildTree}(X) \\
       T_L = T.\treeRoot.\treeLeftChild; \; T_R = T.\treeRoot.\treeRightChild \\
@@ -66,9 +66,9 @@
       \gamechange{$z_L \gets \PSUCA(X_L, Y)$} \label{lin:PSUCA_attack_eval2} \\
       \gamechange{$z_R \gets \PSUCA(X_R, Y)$} \label{lin:PSUCA_attack_eval3} \\
       \gamechange{$m \gets z_R - (z - z_L)$} \pccomment{\ref{prop:PSUCA_comp_m}} \\
-      \gamechange{$k \gets |X| + m - z$} \pccomment{\ref{eqn:union_intersect_cardinalities}}\\
-      \gamechange{$k_L \gets |X_L| + m - z_L$} \pccomment{\ref{eqn:union_intersect_cardinalities}}\\
-      \gamechange{$k_R \gets |X_R| + m - z_R$} \pccomment{\ref{eqn:union_intersect_cardinalities}}\\
+      \gamechange{$k \gets |X| + m - z$} \\
+      \gamechange{$k_L \gets |X_L| + m - z_L$} \\
+      \gamechange{$k_R \gets |X_R| + m - z_R$} \\
       \gamechange{$Q.\push(p_{\PSICA}(z_L, |X_L|), (T_L, k_L))$} \\
       \gamechange{$Q.\push(p_{\PSICA}(z_R, |X_R|), (T_R, k_R))$} \\
       \pcwhile Q \text{ is not empty} \pcdo \\
@@ -79,8 +79,7 @@
       \t	\t	T_L \gets T_c.\treeLeftChild; \; T_R \gets T_c.\treeRightChild \\
       \t	\t	X_L \gets T_L.\treeSet; \; X_R \gets T_R.\treeSet \\
       \t 	\t	\gamechange{$z_L \gets \PSUCA(X_L, Y)$} \\
-      \t	\t	\gamechange{$k_L \gets |X_L| + m - z_L$}
-      \pccomment{\ref{eqn:union_intersect_cardinalities}} \\
+      \t	\t	\gamechange{$k_L \gets |X_L| + m - z_L$} \\
       \t	\t	k_R \gets k_c - k_L \\
       \t	\t	p_L \gets p_{\PSICA}(k_L, |X_L|) \\
       \t 	\t	p_R \gets p_{\PSICA}(k_R, |X_R|) \\
@@ -179,7 +178,7 @@
 		\procedure[linenumbering]{$\PSICA\text{-}\textsf{Sim}(X)$}{
 			\rule{0pt}{2em}%
       z \gets \PSUCA(X, Y) \\
-			k \gets |X| + m - z \pccomment{Eqn.~\ref{eqn:union_intersect_cardinalities}} \\
+			k \gets |X| + m - z \\
 			\pcreturn k
 		}
 	\end{pchstack}
@@ -212,8 +211,7 @@ nodes,
 
 with the difference that we require an additional evaluation of \PSUCA to
 determine $|X_2 \cap Y|$.  After that, the attacker can carry out the rest of
-the PSI-CA attack, translating union to intersection cardinalities using
-\ref{eqn:union_intersect_cardinalities}. The attack is shown in
+the PSI-CA attack, translating union to intersection cardinalities. The attack is shown in
 \ref{fig:PSUCA_attack}.  Note that in contrast to \PSICA, we maintain two sets
 $\posSet$ and $\negSet$, where $\posSet$ contains all elements of $X$ that
 belong to the intersection and $\negSet$ all elements that do not occur in
@@ -226,7 +224,7 @@ correctness in the following theorem:
   $\PSUCAattack^{\calF_{\PSUCA}(\cdot; Y)}(X)$ outputs $X \cap Y$.
 \end{theorem}
 \begin{proof}
-  The theorem follows directly from the correctness of $\PSICAattack$ and Prop.~\ref{prop:PSUCA_comp_m} and Eq.~\ref{eqn:union_intersect_cardinalities}.
+  The theorem follows directly from the correctness of $\PSICAattack$ and Prop.~\ref{prop:PSUCA_comp_m} and the identity $|X \cap Y| = |X| + |Y| - |X\cup Y|$.
 \end{proof}
 
 For our experimental evaluation in Appendix~\ref{ap:evaluation}, we additionally propose

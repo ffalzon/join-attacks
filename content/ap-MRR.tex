@@ -92,9 +92,9 @@ We can now use the above lemmas to finally prove Theorem~\ref{thm:psu-mkpm:corre
 Let the output from $\PSUCAattack^{\calF_{\MKPM}(\cdot, V)}(T)$ be the two sets \posSet{} and \negSet{}.
 Note all records of $T$ are contained in some subset $T_c\subseteq T$ that will eventually reach line~\ref{lin:PSUCA_add_condition}, since the attack only terminates once the priority queue is empty. 
 Therefore, every record of $T$ is added to either \posSet{} or \negSet{}. For any $T_c$ reaching line~\ref{lin:PSUCA_add_condition} we have that either (1) $k_c = |T_c|$ or (2) $k_c  = 0$ by the loop condition on line~\ref{lin:PSUCA_inner_while_condition}.
-Let $\UID_c$ result from evaluating $\MKPM(T_c, V)$.
+Let $\UID_c$ result from evaluating $\calF_{\MKPM}(T_c, V)$.
 
-By Eq.~\ref{eqn:union_intersect_cardinalities} and Eq.~\ref{lem:set_isolation_inference}, we have $k_c = |T_c| + |V| - |\UID_c|$.
+By Lemma~\ref{lem:set_isolation_inference} we have $k_c = |T_c| + |V| - |\UID_c|$.
 \begin{description}
   \item[Case 1:] If $k_c = |T_c|$, then we have $|\UID_c| = |V|$, i.e., all records of $T_c$ are matched. Since records are only added to \posSet{} if this case applies, we have $\posSet \subseteq T \sqcap V$.
   %%
