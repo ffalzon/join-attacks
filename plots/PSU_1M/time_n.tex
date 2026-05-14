@@ -1,6 +1,6 @@
 \begin{tikzpicture}
 	\begin{axis}[
-		width=95pt,
+		width=90pt,
 		height=60pt,
 		scale only axis,
 		title={},%{#1$|\setT| = 200$},
@@ -14,11 +14,11 @@
 		grid=major ]
 		\pgfplotsset{every mark/.append style={solid},}
 		
-		\addplot[color=red, mark=x]table[x=len_T, y expr=(\thisrow{PSU}/1000000000),col sep=semicolon]{measurements/PSU_1M/PSU_time_over_n/V1000000MR0.4.csv};%{chapters/measurements/time_mr/V200T200.csv};
+		\addplot[color=red, mark=x]table[x=len_T, y expr=(\thisrow{PSU}/1000000),col sep=semicolon]{measurements/PSU_1M/PSU_time_over_n/V1000000MR0.4.csv};%{chapters/measurements/time_mr/V200T200.csv};
 		\label{legend:psu_time2}
-		\addplot[color=blue, mark=x]table[x=len_T, y expr=(\thisrow{PSU}/1000000000),col sep=semicolon]{measurements/PSU_1M/PSU_time_over_n/V1000000MR0.6.csv};%{chapters/measurements/time_mr/V200T200.csv};
+		\addplot[color=blue, mark=x]table[x=len_T, y expr=(\thisrow{PSU}/1000000),col sep=semicolon]{measurements/PSU_1M/PSU_time_over_n/V1000000MR0.6.csv};%{chapters/measurements/time_mr/V200T200.csv};
 		\label{legend:psu_time6}
-		\addplot[color=black, mark=x]table[x=len_T, y expr=(\thisrow{PSU}/1000000000),col sep=semicolon]{measurements/PSU_1M/PSU_time_over_n/V1000000MR0.8.csv};%{chapters/measurements/time_mr/V200T200.csv};
+		\addplot[color=black, mark=x]table[x=len_T, y expr=(\thisrow{PSU}/1000000),col sep=semicolon]{measurements/PSU_1M/PSU_time_over_n/V1000000MR0.8.csv};%{chapters/measurements/time_mr/V200T200.csv};
 		\label{legend:psu_time10}
 	\end{axis}
 \end{tikzpicture}

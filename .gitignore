@@ -43,3 +43,6 @@ Thumbs.db*
 
 # VSCode
 .vscode
+
+# additional PSU measurements, not needed for the paper
+measurements/PSU_alternative_measurements

@@ -33,13 +33,13 @@ While $\eta$ describes the overall match rate of $T$, the match rates for indivi
 
 In our experiments with $\calF_{\MKPM}$ and $\calF_{\LMKPM}$, the recovery set contained $m = 10^4$ records. We varied $\eta$ from $0\%$ to $100\%$ in $10\%$ increments. When $n > m$, we measured up to the largest feasible fraction divisible by $10\%$. The target set size $n$ ranged from $50\%$ to $150\%$ of $m$, increasing in $10\%$ increments.
 
-
 \begin{figure}
 	\centering
     \subfloat[\label{fig:plot_PSU_large_time:left}]{
     \input{plots/PSU_1M/time_mr.tex}
     }
-    \hspace{1mm}\subfloat[\label{fig:plot_PSU_large_time:right}]{
+    \hspace{0.1mm}
+    \subfloat[\label{fig:plot_PSU_large_time:right}]{
     \input{plots/PSU_1M/time_n.tex}
     }
 	\caption{Runtime of $\PSUattack{}$ for a recovery set of size $|Y| = 10^6$. 
@@ -48,21 +48,21 @@ In our experiments with $\calF_{\MKPM}$ and $\calF_{\LMKPM}$, the recovery set c
 	\label{fig:plot_PSU_large_time}
 \end{figure}
 
-
-
 \subsection{PSU Attack Evaluation}
-Overall, the $\PSUattack$ attack (Figure~\ref{fig:PSU_attack}) is very efficient, as shown in Figure~\ref{fig:plot_PSU_large_time}.
-On a large recovery set with $m = 10^6$ elements, runtimes range from \SI{0.74}{\second} to \SI{3.13}{\second}, since the attack performs only set union and difference operations.
-For comparison, on the smaller recovery set with $m = 10^4$ elements (used for the other attacks), runtimes range from \SI{4}{\milli\second} to \SI{9}{\milli\second}.
+Overall, the $\PSUattack$ attack (Section~\ref{sec:psu-attack}) is very efficient, as shown in Figure~\ref{fig:plot_PSU_large_time}.
+On a large recovery set with $|Y| = 10^6$ elements, runtimes range from \SI{127}{\milli\second} to \SI{367}{\milli\second}. The measurements largely follow from Python's set-intersection implementation, which is linear in the size of the smaller operand.
 
-Figure~\ref{fig:plot_PSU_large_time:left} shows that the intersection ratio $\rho$ has a mild impact on runtime, with larger $\rho$ yielding slightly faster executions.
-This matches Python's set-difference implementation, which is linear in the size of the first operand.
-As $\rho$ increases, the number of elements shared between $T$ and $Y$ increases, resulting in a smaller $Z = T \cup Y$; this makes $Z \setminus T$ more efficient to compute (line~\ref{lin:PSUDiff_Z-X}, Figure~\ref{fig:PSU_attack}).
-Likewise, smaller $Z_1 = T_1 \cup Y$ and $Z_2 = T_2 \cup Y$ lead to a faster computation of $Z_1 \cup Z_2$.
+Figure~\ref{fig:plot_PSU_large_time:left} shows the runtimes plotted against the intersection ratio $\rho$.
+For large target sets, larger values of $\rho$ lead to a decrease in runtimes , since the increase of the shared elements between $T$ and $Y$ results in smaller sets $Z_i = X_i \cup Y$; this makes the computation of $Y = Z_1 \cap Z_2$ more efficient.
+For smaller target sets, the runtime seems to be dominated by the computation
+of the intersection $T \cap Y$, which is constant.
+The initial increase in runtimes for small values of $\rho$ 
+does not fit this explanation, but may be attributed to a smaller number of memory allocations during the computation of $T \cap Y$. Confirming this would require more extensive testing.
 
 Figure~\ref{fig:plot_PSU_large_time:right} plots runtimes against the target set size $|T|$.
-As expected, runtimes grow approximately linearly in $|T|$.
-We observe runtime spikes between $|T| = 8 \cdot 10^5$ and $9 \cdot 10^5$ for $\rho = 0.4$ and between $|T| = 10^6$ and $1.1 \cdot 10^6$ for $\rho \in \{0.6, 0.8\}$; this is likely caused by the working set exceeding the processor’s L3 cache.
+The runtime is dominated by computing the intersection $T \cap Y$,
+which grows linearly in $|T|$ as long as $|T| \leq |Y|$ and stagnates after that.
+The reason for the decreased runtimes for larger values of $\rho$ and target sets with $|T|>10^6$ is unclear, but preliminary tests suggest that the affected data sets exhibit a better cache locality.
 
 \subsection{Search Tree Attacks Evaluation}
 We now evaluate our search tree attacks: $\PSUCAattack$ (Figure~\ref{fig:PSUCA_attack}) and $\mkpsiattack$ (Figure~\ref{fig:MKPSIattack}). We used the same set sizes across experiments for both attacks.

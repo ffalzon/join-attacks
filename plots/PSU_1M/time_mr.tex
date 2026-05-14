@@ -1,6 +1,6 @@
 \begin{tikzpicture}
 	\begin{axis}[
-		width=95pt,
+		width=90pt,
 		height=60pt,
 		scale only axis,
 		title={},%{#1$|\setT| = 200$},
@@ -9,8 +9,8 @@
 		xmin={-0.05},
 		xmax={1.05},
 		label style={font=\small},
-		ylabel style={yshift=-5pt},
-		ylabel={time [s]},
+		ylabel style={yshift=-1pt},
+		ylabel={time [ms]},
 		title style={font=\small, yshift=-5pt},
 		% ymode=log,
 		% xmode=log,
@@ -19,11 +19,11 @@
 		grid=major ]
 		\pgfplotsset{every mark/.append style={solid},}
 		
-		\addplot[color=red, mark=x]table[x=max_V_match_fraction, y expr=(\thisrow{PSU}/1000000000),col sep=semicolon]{measurements/PSU_1M/PSU_time_over_MR/V1000000T500000.csv};%{chapters/measurements/time_mr/V200T200.csv};
+		\addplot[color=Mahogany, mark=x]table[x=max_V_match_fraction, y expr=(\thisrow{PSU}/1000000),col sep=semicolon]{measurements/PSU_1M/PSU_time_over_MR/V1000000T500000.csv};%{chapters/measurements/time_mr/V200T200.csv};
 		\label{legend:PSU_timeTlow}
-		\addplot[color=blue, mark=x]table[x=max_V_match_fraction, y expr=(\thisrow{PSU}/1000000000),col sep=semicolon]{measurements/PSU_1M/PSU_time_over_MR/V1000000T1000000.csv};%{chapters/measurements/time_mr/V200T200.csv};
+		\addplot[color=OliveGreen, mark=x]table[x=max_V_match_fraction, y expr=(\thisrow{PSU}/1000000),col sep=semicolon]{measurements/PSU_1M/PSU_time_over_MR/V1000000T1000000.csv};%{chapters/measurements/time_mr/V200T200.csv};
 		\label{legend:PSU_timeTmid}
-		\addplot[color=black, mark=x]table[x=max_V_match_fraction, y expr=(\thisrow{PSU}/1000000000),col sep=semicolon]{measurements/PSU_1M/PSU_time_over_MR/V1000000T1500000.csv};%{chapters/measurements/time_mr/V200T200.csv};
+		\addplot[color=MidnightBlue, mark=x]table[x=max_V_match_fraction, y expr=(\thisrow{PSU}/1000000),col sep=semicolon]{measurements/PSU_1M/PSU_time_over_MR/V1000000T1500000.csv};%{chapters/measurements/time_mr/V200T200.csv};
 		\label{legend:PSU_timeThigh}
 	\end{axis}
 \end{tikzpicture}
