@@ -46,3 +46,6 @@ Thumbs.db*
 
 # additional PSU measurements, not needed for the paper
 measurements/PSU_alternative_measurements
+
+# for latexdiff
+revision/pre_revision
