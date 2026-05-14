@@ -8,7 +8,9 @@ Today, these primitives are increasingly deployed. For example, Google’s Priva
 Among the most widely studied and deployed MPC protocols are set-operation functionalities, such as private set intersection (PSI), which allows parties to privately compute the intersection of their datasets. Set-operation functionalities have been extensively explored in both protocol design and attack analysis (see Section~\ref{sec:related-work}). However, prior cryptanalytic work that considers adversaries who honestly execute the protocol and seek to infer information from the output is narrow in scope, focusing almost exclusively on PSI-like protocols~\cite{USENIX:GHLWJL22, NDSS:JiaDuYan24, USENIX:FalTan25}. This leaves a broad range of other functionalities largely unstudied in this adversarial setting.
 
 \heading{Analyzing New Functionalities.} 
-In this work, we focus on private set operations and more complex join functionalities. Our analysis begins with \emph{private set union (PSU)}, where two or more parties, each holding a set, compute and output the union without revealing anything else~\cite{USENIX:DZBC25,USENIX:TBZCC25,USENIX:JSZG24,USENIX:ZCLZL23,USENIX:JSZDG22,CCS:GNBT25,CCS:ZCLPHW24,CCS:TCLZ23,ASIACCS:CSSW25,ASIACCS:BlaAgu12,AC:LiuGao23,AC:KRTW19,PoPETS:GaoNguTri24,ACNS:Frikken07,C:KisSon05,EC:PuJiaTri26,EC:PisTri26}. PSU aims to facilitate data sharing while preventing the disclosure of the records in the intersection. PSU has been proposed for various applications, including the private aggregation of IP block lists~\cite{USENIX:JSZDG22,AC:KRTW19}, hospital data~\cite{USENIX:JSZDG22}, and network traffic data~\cite{USENIX:BSMD10}. We also consider a PSU variant called \emph{PSU-Cardinality (PSU-CA)}, which computes and outputs the cardinality of the union, offering aggregate statistics without revealing the contents of the inputs~\cite{CCS:FMJS17, CANS:DeCGasTsu12}.
+In this work, we focus on private set operations and more complex join functionalities. Our analysis begins with \emph{private set union (PSU)}, where two or more parties, each holding a set, compute and output the union without revealing anything else~\cite{USENIX:DZBC25,USENIX:TBZCC25,USENIX:JSZG24,USENIX:ZCLZL23,USENIX:JSZDG22,CCS:GNBT25,CCS:ZCLPHW24,CCS:TCLZ23,ASIACCS:CSSW25,ASIACCS:BlaAgu12,AC:LiuGao23,AC:KRTW19,PoPETS:GaoNguTri24,ACNS:Frikken07,C:KisSon05,EC:PuJiaTri26,EC:PisTri26, USENIX:BSMD10}. 
+%PSU aims to facilitate data sharing while preventing the disclosure of the records in the intersection. PSU has been proposed for various applications, including the private aggregation of IP block lists~\cite{USENIX:JSZDG22,AC:KRTW19}, hospital data~\cite{USENIX:JSZDG22}, and network traffic data~\cite{USENIX:BSMD10}. 
+We also consider a variant called \emph{PSU-Cardinality (PSU-CA)}, which computes and outputs the cardinality of the union, offering aggregate statistics without revealing the contents of the inputs~\cite{CCS:FMJS17, CANS:DeCGasTsu12}.
 
 To enable richer private data analytics, database operations often go beyond basic set operations. For example, a company may wish to group information about the same individual across multiple databases, where each record contains a key (e.g., name) and associated attributes (e.g., email, credit score). If a key appears in the intersection, the corresponding attributes can be \emph{unioned} to complete the individual’s information. This functionality, known as a \emph{database join}, can be viewed as a rich generalization of PSI and PSU. 
 In practice, more expressive operations such as multi-key joins are often required. Building on our analysis of PSU and PSU-CA, we further study the multi-key extension of Meta’s Private-ID protocol, \emph{Multi-key Private Matching for Compute (MKPM)}~\cite{MKPMC}, to understand the security guarantees provided by such protocols.
@@ -32,10 +34,41 @@ We consider an adversary that participates in the two-party protocol, honestly e
 The input structure depends on the functionality. For PSU and PSU-CA, $T=\{t_i\}_{i\in[n]}$ and $Y=\{y_k\}_{k\in[m]}$ are sets of values. For MKPM, $T=\{\bt_i\}_{i\in[n]}$ and $Y=\{\by_i\}_{i\in[m]}$ are sets of records, where each record is a vector of values. As in prior work~\cite{USENIX:FalTan25}, we assume the recovery set is static. However, as we will see, many of our attacks do not rely on this assumption, as significant information can be recovered in one protocol invocation.
 
 
-\heading{Attacks against PSU and PSU-CA.} 
-Our first attack targets the PSU functionality. We show that when the protocol is invoked on two disjoint subsets forming a partition of $T$ (e.g., $T = X_1 \cup X_2$), the adversary can fully recover the intersection $T \cap Y$. \emph{This result significantly constrains how PSU can be safely used, both as a standalone protocol and as a component within more complex systems.}
+\heading{Attacks against PSU and PSU-CA.} To pave the way for the attacks
+against the more complex functionality of multi-key private matching, we first
+show a straghtforward set-based attack against PSU. The attack only requires two
+queries on disjoint sets that form a partition of the target set $T$ (e.g.,
+$T = X_1 \cup X_2$). Using these two queries, the adversary can fully recover
+the intersection $T \cap Y$ that PSU is supposed to protect. Next, we consider
+PSU-CA, which only reveals the cardinality. Even in this setting, we can still
+recover the intersection $T \cap Y$ through a sequence of adaptively chosen
+queries. We establish a direct connection to PSI-CA, showing that any attack
+against PSI-CA (e.g.,~\cite{USENIX:GHLWJL22,NDSS:JiaDuYan24,USENIX:FalTan25})
+can be transformed into an attack against PSU-CA using only three additional
+queries. Although our results on PSU are simple, they have not been noted in the
+literature, nor can they be circumvented using, for example, enforcing a
+threshold on the input set size as is commonly suggested. \emph{This further
+  raises question of whether PSU can be safely used as a standalone protocol or
+  as as a component within more complex systems. Moreover, by establishing the
+  relation between attacks on PSU-CA and PSI-CA, we demonstrate how
+  vulnerabilities in one functionality can be leveraged to attack a broader
+  class of functionalities.}
 
-Next, we consider PSU-CA. We demonstrate that although PSU-CA reveals only the cardinality of the set union, we can nevertheless recover the intersection $T \cap Y$ through a sequence of adaptively chosen queries. We establish a direct connection to PSI-CA, showing that any attack against PSI-CA (e.g.,~\cite{USENIX:GHLWJL22,NDSS:JiaDuYan24,USENIX:FalTan25}) can be transformed into an attack against PSU-CA using only three additional queries. \emph{This attack demonstrates how vulnerabilities in one functionality can be leveraged to attack a broader class of functionalities.}
+%% Our first attack targets the PSU functionality. Through show that when the
+%% protocol is invoked on two disjoint subsets forming a partition of $T$ (e.g.,
+%% $T = X_1 \cup X_2$), the adversary can fully recover the intersection $T \cap
+%% Y$. \emph{This result significantly constrains how PSU can be safely used,
+%% both as a standalone protocol and as a component within more complex
+%% systems.}
+
+%% Next, we consider PSU-CA. We demonstrate that although PSU-CA reveals only
+%% the cardinality of the set union, we can nevertheless recover the
+%% intersection $T \cap Y$ through a sequence of adaptively chosen queries. We
+%% establish a direct connection to PSI-CA, showing that any attack against
+%% PSI-CA (e.g.,~\cite{USENIX:GHLWJL22,NDSS:JiaDuYan24,USENIX:FalTan25}) can be
+%% transformed into an attack against PSU-CA using only three additional
+%% queries. \emph{This attack demonstrates how vulnerabilities in one
+%% functionality can be leveraged to attack a broader class of functionalities.}
 
 
 \heading{Attacks against Meta's Multi-Key Private Match.} 

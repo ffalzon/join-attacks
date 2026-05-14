@@ -4,7 +4,53 @@ In this section, we show how the $\PSUCAattack{}$ attack can be applied to $\cal
 Appendix~\ref{sec:psuca-privateID-attack} we explain how the attack can
 be applied to the single key private matching functionality $\calF_{\SKPM}$ realized by PrivateID~\cite{PMC}.
 
-The adversary is given a target set of records $T \subseteq \Ispace{}^n$, and
+\subsection{A Primer on Guo et al.'s PSI-CA Attack}
+Before describing our attack, we briefly review Guo et al.’s~\cite{USENIX:GHLWJL22} intersection-recovery attack against the PSI-CA functionality,which outputs the intersection cardinality \(|X \cap Y|\). 
+
+In Guo et al.’s attack, the adversary has a target set \(X\) and can query the PSI-CA functionality \(\calF_{\PSICA}(\cdot ;Y)\) on adaptively chosen subsets \(X' \subseteq X\), where \(Y\) is a fixed recovery set. The goal is to recover \(X \cap Y\). The key observation is that some PSI-CA outputs immediately reveal membership information: (1) if \(|X' \cap Y| = 0\), then no element of \(X'\) lies in \(Y\) and (2) if \(|X' \cap Y| = |X'|\), then every element of \(X'\) lies in \(Y\).
+
+To exploit this, the adversary builds a balanced binary search tree over \(X\), where each node contains a subset of \(X\) and its children form a partition of that subset. The adversary traverses the tree and queries PSI-CA on selected nodes until it finds subsets whose membership can be fully determined by the two termination cases above. Since the children partition their parent, the adversary can infer one child’s intersection cardinality from the parent and sibling values, reducing the number of queries needed: If $X_1 \cup X_2$ is a disjoint partition of $X$, we have $|X_2 \cap Y| = |X \cap Y| - |X_1\cap Y|$. Repeating this process recursively allows the adversary to label elements as either in \(X \cap Y\) or in \(X \setminus Y\), thereby recovering the intersection.
+
+We give a pictorial example of the attack in Figure~\ref{fig:guo_basline_tree} and a more detailed description of the attack in Appendix~\ref{ap:guo_attack}.
+
+\begin{figure}
+  \centering
+  {	\colorlet{positive}{LimeGreen}
+    \colorlet{negative}{BrickRed}
+    \newcommand{\pos}[1]{\raisebox{.9pt}{#1}}
+    \newcommand{\fullcirc}{\position{\tikz{\draw[line width=.5pt, color=black, fill=black] circle(1.1pt);}}}
+    \newcommand{\ocirc}{\position{\tikz[]{\draw[line width=.5pt, color=black, fill=none] circle(1.1pt);}}}
+
+    \begin{tikzpicture}
+      [
+      level 1/.style = {sibling distance = 4cm},
+      level 2/.style = {sibling distance = 2cm},
+      level 3/.style = {sibling distance = 1.5cm}
+      ]
+      {	\tiny
+        \node {\fullcirc\;$X = \{1, 2, 3, 4, 5, 6\}$}[level distance =.8cm]
+        child {node {\fullcirc\;$X_{1,1} = \{1, 2, 3\}$}
+          child {node {\fullcirc\;\color{positive}$X_{2,1} = \{1, 2\}$} {
+              child {node {\color{positive}$X_{3,1} = \{1\}$}}
+              child {node {\color{positive}$X_{3,2} = \{2\}$}}
+            }}
+          child {node {\ocirc\;\color{negative}$X_{2,2} = \{3\}$}}}
+        child {node {\ocirc\;\color{negative}$X_{1,2} = \{4, 5, 6\}$}
+          child {node {\color{negative}$X_{2,3} = \{4, 5\}$} {
+              child {node {\color{negative}$X_{3,3} = \{4\}$}}
+              child {node {\color{negative}$X_{3,4} = \{5\}$}}
+            }}
+          child {node {\color{negative}$X_{2,4} = \{6\}$}}};}
+    \end{tikzpicture}
+    \caption{
+      Binary search tree for \(X=\{1,2,3,4,5,6\}\) in the generic intersection-recovery attack of~\cite{USENIX:GHLWJL22}, shown for recovery set \(Y=\{1,2\}\). Nodes marked with $\circ$ are queried via PSI-CA, while nodes marked with $\bullet$ have their intersection cardinality inferred from their parent and sibling. DFS terminates early at \(X_{2,1}\) and \(X_{1,2}\). Inferred membership is shown in {\color{positive} green} for \(X\cap Y\) and {\color{negative} red} for \(X\setminus Y\).}
+    \label{fig:guo_basline_tree}
+  }
+\end{figure}
+
+\subsection{From Union to UID Cardinalities}
+In the context of MKPM,
+the adversary is given a target set of records $T \subseteq \Ispace{}^n$, and
 can evaluate $\calF_{\MKPM}(X; Y)$ for arbitrarily many inputs $X$. Its goal is
 to determine the set of matchable records, $T \sqcap Y$. The functionality
 $\mathcal F_{\MKPM}$ outputs the set universal identifiers, $\UID$, to both
@@ -17,7 +63,8 @@ records in $T$.
 
 The $\PSUCAattack{}$ attack (Section~\ref{sec:PSUCA_attack}) relies
 on the fact that $|X \cup Y| = |X_1 \cup Y| + |X_2 \cup Y| - |Y|$
-(Eq.~\ref{eqn:union_intersect_cardinalities}), where $X$ and $Y$ are arbitrary
+%(Prop.~\ref{prop:PSUCA_comp_m}), 
+where $X$ and $Y$ are arbitrary
 sets and $X_1\cup X_2$ form a partition of $X$. We now translate this to the
 multi-key setting. Let $\UID$, $\UID_1$, and $\UID_2$ be the UIDs output when
 evaluating $\calF_{\MKPM}(X; Y)$ and $\calF_{\MKPM}(X_i; Y)$ for

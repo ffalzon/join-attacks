@@ -1,56 +1,56 @@
-\section{Additional Content for PSU/PSU-CA Attacks}
+\section{Additional Content for PSU-CA Attacks}
 
-\subsection{Proof of Prop.~\ref{prop:PSU_difference_distributes}}\label{proof:PSU_difference_distributes}
+% \subsection{Proof of Prop.~\ref{prop:PSU_difference_distributes}}\label{proof:PSU_difference_distributes}
 
-\begin{proof}
-  This follows from the fact that the set difference distributes over the
-  union:
-  $X \setminus Y = (X_1 \cup X_2) \setminus Y = (X_1 \setminus Y) \cup (X_2
-  \setminus Y)$.
-\end{proof}
+% \begin{proof}
+%   This follows from the fact that the set difference distributes over the
+%   union:
+%   $X \setminus Y = (X_1 \cup X_2) \setminus Y = (X_1 \setminus Y) \cup (X_2
+%   \setminus Y)$.
+% \end{proof}
 
-\subsection{Proof of Prop.~\ref{prop:PSU_comp_partial_difference}}\label{proof:PSU_comp_partial_difference}
+% \subsection{Proof of Prop.~\ref{prop:PSU_comp_partial_difference}}\label{proof:PSU_comp_partial_difference}
 
-\begin{proof}
-  We prove $X_1 \setminus Y = X_1 \setminus Z_2$, i.e., for any $x \in X_1$ we
-  have $x \not \in Y \iff x \not \in Z_2$.  We prove the two directions separately.
-    \begin{description}
-    \item[$(\Rightarrow)$] Assume $x \in X_1$ and $x \not \in Y$.  Since $X_1
-      \cap X_2 = \emptyset$, we have $x \not \in X_2$.  Since $x \not \in Y$ by
-      assumption, we have $x \not \in (X_2 \cup Y) = Z_2$.
-    \item[$(\Leftarrow)$] To arrive at a contradiction, assume $x \in X_1, x
-      \not \in Z_2$ and $x \in Y$.  $x \not \in Z_2$ implies $x\not\in X_2$ and
-      $x\not\in Y$, the latter of which directly contradicts our assumptions.
-    \end{description}
-The proof for $X_2 \setminus Y = X_2 \setminus Z_1$ follows analogously.
-\end{proof}
+% \begin{proof}
+%   We prove $X_1 \setminus Y = X_1 \setminus Z_2$, i.e., for any $x \in X_1$ we
+%   have $x \not \in Y \iff x \not \in Z_2$.  We prove the two directions separately.
+%     \begin{description}
+%     \item[$(\Rightarrow)$] Assume $x \in X_1$ and $x \not \in Y$.  Since $X_1
+%       \cap X_2 = \emptyset$, we have $x \not \in X_2$.  Since $x \not \in Y$ by
+%       assumption, we have $x \not \in (X_2 \cup Y) = Z_2$.
+%     \item[$(\Leftarrow)$] To arrive at a contradiction, assume $x \in X_1, x
+%       \not \in Z_2$ and $x \in Y$.  $x \not \in Z_2$ implies $x\not\in X_2$ and
+%       $x\not\in Y$, the latter of which directly contradicts our assumptions.
+%     \end{description}
+% The proof for $X_2 \setminus Y = X_2 \setminus Z_1$ follows analogously.
+% \end{proof}
   
-\subsection{Pseudcode for PSU Attack}\label{ap:psu-attack-pseudocode}
+% \subsection{Pseudocode for PSU Attack}\label{ap:psu-attack-pseudocode}
 
-The pseudocode can be found in Figure~\ref{fig:PSU_attack}.
+% The pseudocode can be found in Figure~\ref{fig:PSU_attack}.
 
-\begin{figure}
-  \begin{pchstack}[boxed, center]
-    \procedure[linenumbering]{$\PSUattack^{\calF_{\PSU}(\cdot; Y)}(T)$}{
-      \rule{0pt}{2em}%
-      \text{Partition $T$ into $X_1, X_2$} \\
-      Z_1 \gets \PSU(X_1, Y) \\
-      Z_2 \gets \PSU(X_2, Y) \\
-      Z \gets Z_1 \cup Z_2 \\
-      D_Y \gets Z \setminus T\ \cmmnt{$D_Y = Y \setminus T$} \label{lin:PSUDiff_Z-X}\\
-      D_{X_1} \gets X_1 \setminus Z_2\ \cmmnt{Prop.~\ref{prop:PSU_comp_partial_difference}} \\
-      D_{X_2} \gets X_2 \setminus Z_1\ \cmmnt{Prop.~\ref{prop:PSU_comp_partial_difference}}  \\
-      D_T \gets D_{X_1} \cup D_{X_2}\
-      \cmmnt{Prop.~\ref{prop:PSU_difference_distributes}} \\
-      S \gets Z \setminus D_Y \setminus D_T \\
-      \pcreturn S
-    }
-  \end{pchstack}
-  \caption{Intersection-recovery attack with oracle access to $\calF_{\PSU}(\cdot, Y)$
-    for a fixed $Y$. Note that $Y$ is part of the oracle and unknown to the
-    adversary.}
-  \label{fig:PSU_attack}
-\end{figure}
+% \begin{figure}
+%   \begin{pchstack}[boxed, center]
+%     \procedure[linenumbering]{$\PSUattack^{\calF_{\PSU}(\cdot; Y)}(T)$}{
+%       \rule{0pt}{2em}%
+%       \text{Partition $T$ into $X_1, X_2$} \\
+%       Z_1 \gets \PSU(X_1, Y) \\
+%       Z_2 \gets \PSU(X_2, Y) \\
+%       Z \gets Z_1 \cup Z_2 \\
+%       D_Y \gets Z \setminus T\ \cmmnt{$D_Y = Y \setminus T$} \label{lin:PSUDiff_Z-X}\\
+%       D_{X_1} \gets X_1 \setminus Z_2\ \cmmnt{Prop.~\ref{prop:PSU_comp_partial_difference}} \\
+%       D_{X_2} \gets X_2 \setminus Z_1\ \cmmnt{Prop.~\ref{prop:PSU_comp_partial_difference}}  \\
+%       D_T \gets D_{X_1} \cup D_{X_2}\
+%       \cmmnt{Prop.~\ref{prop:PSU_difference_distributes}} \\
+%       S \gets Z \setminus D_Y \setminus D_T \\
+%       \pcreturn S
+%     }
+%   \end{pchstack}
+%   \caption{Intersection-recovery attack with oracle access to $\calF_{\PSU}(\cdot, Y)$
+%     for a fixed $Y$. Note that $Y$ is part of the oracle and unknown to the
+%     adversary.}
+%   \label{fig:PSU_attack}
+% \end{figure}
 
 
 \begin{figure}
@@ -149,7 +149,9 @@ The pseudocode can be found in Figure~\ref{fig:PSU_attack}.
 \begin{proof}
   We provide a concrete construction of \bdv{} for any \adv{} in Fig.~\ref{fig:PSUCA_generic}.
   Correctness of \bdv{} follows directly from
-  Eq.~\ref{eqn:union_intersect_cardinalities} and Prop.~\ref{prop:PSUCA_comp_m}.
+  %Eq.~\ref{eqn:union_intersect_cardinalities} and 
+  Prop.~\ref{prop:PSUCA_comp_m} and the fact that 
+  we have $|X\cap Y| = |X| + |Y| - |X \cup Y|$ for any sets $X$ and $Y$.
   \bdv{} makes three PSU-CA evaluations on
   lines~\ref{lin:PSUCA_generic_1}~-~\ref{lin:PSUCA_generic_3} and one for every
   \PSICA{} query made by \adv{}.
