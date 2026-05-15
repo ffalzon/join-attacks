@@ -1,7 +1,7 @@
 \PassOptionsToPackage{table,dvipsnames}{xcolor}
 %DIF LATEXDIFF DIFFERENCE FILE
-%DIF DEL pre_revision/main.tex   Thu May 14 19:43:52 2026
-%DIF ADD main.tex                Thu May 14 17:53:33 2026
+%DIF DEL revision/pre_revision/main.tex   Thu May 14 19:43:52 2026
+%DIF ADD main.tex                         Thu May 14 17:53:33 2026
 \documentclass[sigconf,anonymous,review]{acmart}
 \usepackage{popets}
 
@@ -663,7 +663,7 @@ The input structure depends on the functionality. For PSU and PSU-CA, $T=\{t_i\}
 attack targets the PSUfunctionality. We show that when the protocol is invoked on two
 disjoint subsets forming }\DIFdelend \DIFaddbegin \DIFadd{To pave the way for the attacks
 against the more complex functionality of multi-key private matching, we first
-show a straghtforward set-based attack against PSU. The attack only requires two
+describe a straghtforward set-based attack against PSU. The attack only requires two
 queries on disjoint sets that form }\DIFaddend a partition of \DIFaddbegin \DIFadd{the target set }\DIFaddend $T$ (e.g.,
 $T = X_1 \cup X_2$)\DIFaddbegin \DIFadd{. Using these two queries}\DIFaddend , the adversary can fully recover
 the intersection $T \cap Y$ \DIFdelbegin \DIFdel{. }\emph{\DIFdel{This result significantly constrains how PSU can be safely used, both as a standalone protocol and as a component within more complex systems.}}
@@ -1524,10 +1524,10 @@ be applied to the single key private matching functionality $\calF_{\SKPM}$ real
 intersection-recovery attack against the PSI-CA functionality,which outputs the intersection cardinality \(|X \cap Y|\). 
 }
 
-\DIFadd{In Guo et al.’s attack, the adversary has a target set \(X\) and can query the PSI-CA functionality \(\calF_{\PSICA}(\cdot ;Y)\) on adaptively chosen subsets \(X' \subseteq X\), where \(Y\) is a fixed recovery set. The goal is to recover \(X \cap Y\). The key observation is that some PSI-CA outputs immediately reveal membership information: (1) if \(|X' \cap Y| = 0\), then no element of \(X'\) lies in \(Y\) and (2) if \(|X' \cap Y| = |X'|\), then every element of \(X'\) lies in \(Y\).
+\DIFadd{In Guo et al.’s attack, the adversary has a target set $X$ and can query the PSI-CA functionality $\calF_{\PSICA}(\cdot ;Y)$ on adaptively chosen sets $X' \subseteq X$, where $Y$ is a fixed recovery set. The goal is to recover $X \cap Y$. The key observation is that some PSI-CA outputs immediately reveal membership information: (1) if $|X' \cap Y| = 0$, then no element of $X'$ lies in $Y$ and (2) if $|X' \cap Y| = |X'|$, then every element of $X'$ lies in $Y$.
 }
 
-\DIFadd{To exploit this, the adversary builds a balanced binary search tree over \(X\), where each node contains a subset of \(X\) and its children form a partition of that subset. The adversary traverses the tree and queries PSI-CA on selected nodes until it finds subsets whose membership can be fully determined by the two termination cases above. Since the children partition their parent, the adversary can infer one child’s intersection cardinality from the parent and sibling values, reducing the number of queries needed: If $X_1 \cup X_2$ is a disjoint partition of $X$, we have $|X_2 \cap Y| = |X \cap Y| - |X_1\cap Y|$. Repeating this process recursively allows the adversary to label elements as either in \(X \cap Y\) or in \(X \setminus Y\), thereby recovering the intersection.
+\DIFadd{To exploit this, the adversary builds a balanced binary search tree over $X$, where each node contains a subset of $X$ and its children form a partition of that subset. The adversary traverses the tree and queries PSI-CA on selected nodes until it finds subsets whose membership can be fully determined by the two termination cases above. Since the children partition their parent, the adversary can infer one child’s intersection cardinality from the parent and sibling values, reducing the number of queries needed: if $X_1 \cup X_2$ is a disjoint partition of $X$, we have $|X_2 \cap Y| = |X \cap Y| - |X_1\cap Y|$. Repeating this process recursively allows the adversary to label elements as either in $X\cap Y$ or in $X \setminus Y$, thereby recovering the intersection.
 }
 
 \DIFadd{We give a pictorial example of the attack in Figure~\ref{fig:guo_basline_tree} and a more detailed description of the attack in Appendix~\ref{ap:guo_attack}.
@@ -1563,9 +1563,9 @@ intersection-recovery attack against the PSI-CA functionality,which outputs the 
           child {node {\color{negative}$X_{2,4} = \{6\}$}}};}
     \end{tikzpicture}
     \caption{
-      \DIFaddFL{Binary search tree for \(X=\{1,2,3,4,5,6\}\) in the generic intersection-recovery attack of~\mbox{%DIFAUXCMD
+      \DIFaddFL{The binary search tree for the target set $X=\{1,2,3,4,5,6\}$ in the intersection-recovery attack of~\mbox{%DIFAUXCMD
 \cite{USENIX:GHLWJL22}}\hskip0pt%DIFAUXCMD
-, shown for recovery set \(Y=\{1,2\}\). Nodes marked with $\circ$ are queried via PSI-CA, while nodes marked with $\bullet$ have their intersection cardinality inferred from their parent and sibling. DFS terminates early at \(X_{2,1}\) and \(X_{1,2}\). Inferred membership is shown in }{\color{positive} \DIFaddFL{green}} \DIFaddFL{for \(X\cap Y\) and }{\color{negative} \DIFaddFL{red}} \DIFaddFL{for \(X\setminus Y\).}}
+, shown for recovery set \(Y=\{1,2\}\). Nodes marked with $\circ$ are queried via PSI-CA, while nodes marked with $\bullet$ have their intersection cardinality inferred from their parent and sibling. Depth first search terminates early at \(X_{2,1}\) and \(X_{1,2}\). Inferred membership is shown in }{\color{positive} \DIFaddFL{green}} \DIFaddFL{for $X\cap Y$ and }{\color{negative} \DIFaddFL{red}} \DIFaddFL{for $X\setminus Y$.}}
     \label{fig:guo_basline_tree}
   }
 \end{figure}
