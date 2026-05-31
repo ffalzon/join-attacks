@@ -1,5 +1,5 @@
 \PassOptionsToPackage{table,dvipsnames}{xcolor}
-\documentclass[sigconf,anonymous,review]{acmart}
+\documentclass[sigconf]{acmart}
 \usepackage{popets}
 
 \input{top-matter/header.tex}
@@ -20,23 +20,38 @@
 \acmISBN{}
 \acmConference{Proceedings on Privacy Enhancing Technologies}
 \settopmatter{printacmref=false,printccs=false,printfolios=true}
+\settopmatter{authorsperrow=4}
 
 \begin{document}
 \title{Beyond the Output: Inference Attacks on Private Set Union and Multi-Key Private Matching}
 
 %%%%%%%%%%%%%%%% Authors' Info %%%%%%%%%%%%%%%%%
-%%
-%% The "author" command and its associated commands are used to define
-%% the authors and their affiliations.
-% \author{Ben Trovato}
-% \orcid{1234-5678-9012}
-% \affiliation{%
-%   \institution{Institute for Clarity in Documentation}
-%   \city{Dublin}
-%   \state{Ohio}
-%   \country{USA}}
-% \email{trovato@corporation.com}
-% \renewcommand{\shortauthors}{Trovato et al.}
+\author{Andrea Raguso}
+%\orcid{1234-5678-9012}
+\affiliation{%
+  \institution{ETH Zurich}
+  \city{Zurich}
+  \country{Switzerland}}
+
+\author{Francesca Falzon}
+\affiliation{%
+  \institution{ETH Zurich}
+  \city{Zurich}
+  \country{Switzerland}}
+
+\author{Tianxin Tang}
+\affiliation{%
+  \institution{University of Glasgow}
+  \city{Glasgow}
+  \country{UK}}
+
+\author{Kenneth G. Paterson}
+\affiliation{%
+  \institution{ETH Zurich}
+  \city{Zurich}
+  \country{Switzerland}}
+
+\renewcommand{\shortauthors}{Raguso et al.}
 
 \input{content/abstract}
 
@@ -71,9 +86,12 @@ Our analysis was thus conducted on the functionality of a protocol that, at the 
 Upon acceptance, we will release our code base with documentation describing how to run the code and replicate our experiments. We also agree to participate in artifact evaluation.
 
 \section*{Acknowledgements}
+Francesca Falzon was supported by the Zurich Information Security and Privacy Center (ZISC).
+Tianxin Tang was partially supported by an NWO VIDI grant (Project No. VI.Vidi.193.066).
+The authors would also like to thank the reviewers for their helpful feedback, including their suggestion for simplifying the PSU attack.
 The authors acknowledge the use of generative AI tools solely for basic editing
-of the text and grammar. We also thank the reviewers for their helpful feedback,
-including for the simplification of the PSU attack.
+of the text and grammar. 
+
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{cryptobib/abbrev3,cryptobib/crypto,references}

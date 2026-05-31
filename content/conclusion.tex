@@ -14,12 +14,12 @@ security model. Failing to do so results in weak input privacy guarantees: in
 the worst case, a single query may suffice to partially or even fully recover
 another party's input.
 
-\heading{Modified Functionalities.} Since these functionalities inherently
+\heading{Modified ideal functionalities.} Since these ideal functionalities inherently
 reveal some information about the inputs through their outputs, the associated
 risks are unavoidable. In response, various ``mitigations'' have been proposed
 for PSI and PSU, including applying rate limiting, restricting the input domain,
 and adding noise to outputs. Since these approaches modify the original
-functionality, we refer to them collectively as modified functionalities.
+functionality, we refer to them collectively as modified ideal functionalities.
 
 We discuss the implications of each modification, but it remains unclear to what
 extent they are truly resilient to inference attacks. As a result, we need
@@ -45,13 +45,6 @@ consistent with the committed inputs across multiple executions. However, such
 restrictions do not rule out inference attacks using valid inputs, as shown
 in~\cite{USENIX:FalTan25}.
 
-% De Cristofaro and Tsudik~\cite{FC:DeCTsu10} introduced Authorized PSI in which
-% each element in the client set must be authorized (signed) by some recognized
-% and mutually trusted authority.  However, when inputs change (e.g., a user is
-% added to a database), a fresh commitment must be computed, so inputs must
-% change infrequently or remain static.  The authors highlight applications that
-% tolerate this limitation, such as Apple's CSAM detection
-% system~\cite{AppleCSAM}.
 
 Third, one may add noise to the output. For example, Differential Privacy
 (DP)~\cite{TCC:DMNS06} provides a formal framework for adding noise and
