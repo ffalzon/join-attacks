@@ -49,3 +49,7 @@ measurements/PSU_alternative_measurements
 
 # for latexdiff
 revision/pre_revision
+
+# artifacts
+__pycache__
+measurements
