@@ -1,6 +1,7 @@
 from statistics import mean
 from csv import DictReader
 from os.path import join
+import argparse
 from constants import *
 import helper
 
@@ -20,7 +21,7 @@ def FormatPSUTimingData(measurement_directory, out_directory):
 	for ((m, mr), data) in all_data.items():
 		data2 = dict_to_list(data, EXP_LEN_T, sort=True)
 		filename = f"V{m}MR{mr}.csv"
-		out_path = join(out_directory, "time_over_n")
+		out_path = join(out_directory, "PSU_time_over_n")
 		helper.dicts_to_csv(data2, out_path, filename)
 
 	# time over match rate
@@ -35,10 +36,10 @@ def FormatPSUTimingData(measurement_directory, out_directory):
 	for ((m, n), data) in all_data.items():
 		data2 = dict_to_list(data, EXP_MATCH_V_FRACTION, sort=True)
 		filename = f"V{m}T{n}.csv"
-		out_path = join(out_directory, "time_over_mr")
+		out_path = join(out_directory, "PSU_time_over_mr")
 		helper.dicts_to_csv(data2, out_path, filename)
 
-def FormatTimingData(measurement_directory, out_directory):
+def FormatReconTimingData(measurement_directory, out_directory):
 	baseline_file = join(measurement_directory, f"{BASELINE_NAME}.csv")
 	recenum_file = join(measurement_directory, f"{RECENUM_NAME}.csv")
 	snake_file = join(measurement_directory, f"{SNAKE_NAME}.csv")
@@ -57,7 +58,7 @@ def FormatTimingData(measurement_directory, out_directory):
 	for ((m, n),data) in all_data.items():
 		data = dict_to_list(data, EXP_MATCH_V_FRACTION, sort=True)
 		filename = f"V{m}T{n}.csv"
-		out_path = join(out_directory, "time_over_MR")
+		out_path = join(out_directory, "recon_time_over_MR")
 		helper.dicts_to_csv(data, out_path, filename)
 
 	all_data = {}
@@ -68,7 +69,7 @@ def FormatTimingData(measurement_directory, out_directory):
 		data = dict_to_list(data, EXP_LEN_T, sort=True)
 		
 		filename = f"V{m}MR{mr}.csv"
-		out_path = join(out_directory, "time_over_n")
+		out_path = join(out_directory, "recon_time_over_n")
 		helper.dicts_to_csv(data, out_path, filename)
 
 	del baseline_data
@@ -252,13 +253,15 @@ def get_measurement_data(filename):
 
 
 if __name__ == "__main__":
-	# data_dir = "measurements/testing3/10its"
-	# out_dir = join(data_dir, "formatted")
-	# FormatTimingData(data_dir, out_dir)
-	
-	data_dir = "measurements/PSU_1M_50its_shufT_all"
-	out_dir = join(data_dir, "formatted2")
-	FormatPSUTimingData(data_dir, out_dir)
-	# FormatTimingData(data_dir, out_dir)
-	# FormatMKPSIQueryData(data_dir, out_dir)
-	# FormatMKPSITimingData(data_dir, out_dir)
+
+	parser = argparse.ArgumentParser()
+	parser.add_argument("source_directory")
+
+	args = parser.parse_args()
+	source_dir = args.experiments_directory
+	dst_dir = join(source_dir, "formatted")
+
+	FormatPSUTimingData(source_dir, dst_dir)
+	FormatReconTimingData(source_dir, dst_dir)
+	FormatMKPSIQueryData(source_dir, dst_dir)
+	FormatMKPSITimingData(source_dir, dst_dir)

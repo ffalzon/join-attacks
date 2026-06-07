@@ -29,40 +29,19 @@ an artifact reviewer).
 
 ## Description
 
-This repository contains the artifacts accompanying the paper "Beyond the Output: Inference Attacks on Private Set Union and Multi-Key Private Matching" by Andrea Raguso, Francesca Falzon, Tianxin Tang, and Kenneth Paterson 2026.
-We analyze the information that is obtainable through interactions with the following ideal functionalities: PSU, PSU-CA, the functionality of Meta's MK-PrivateID protocol $\mathcal{F}_{\textsf{MKPM}}$, and the extended functionality of MK-PrivateID that includes additional protocol leakage $\mathcal{F}_{\textsf{L-MKPM}}$.
+This repository contains the artifacts accompanying the paper "Beyond the Output: Inference Attacks on Private Set Union and Multi-Key Private Matching" by Andrea Raguso, Francesca Falzon, Tianxin Tang, and Kenneth Paterson, published at PETs 2026.
+In the paper, we present several inference attacks, which allows an adversary that is allowed to interact with an ideal functionality to gain information about the non-adversarial inputs. We present attacks against the following functionalities: PSU, PSU-CA, the ideal functionality of Meta's multi-key PrivateID protocol (MK-PrivateID) $\mathcal{F}_{\textsf{MKPM}}$, and the extended functionality of MK-PrivateID that includes additional protocol leakage $\mathcal{F}_{\textsf{L-MKPM}}$.
 
-This artifact repository contains implementations of said attacks and the corresponding functionalities, as well as a measurement infrastructure to show the efficiency f our attacks. The measured data varies between the considered functionalities: 
+This artifact repository contains implementations of said attacks and the corresponding functionalities, as well as a measurement infrastructure to evaluate the efficiency of our attacks. 
 
-- All functionalities:
-	- Attack time over input size
-	- Attack time over intersection size / match rate
-- PSU:
-	- See "All functionalities"
-- PSU-CA / MK-PrivateID ($\mathcal{F}_{\textsf{MKPM}}$):
-	- Queries over input size
-	- Queries over intersection size / match rate
-	- Recovered fraction over allocated query budget
-- Extended MK-PrivateID ($\mathcal{F}_{\textsf{L-MKPM}}$)
-	- VIR Attack (MKPM-Searchtree):
-		- Queries over input size
-		- Queries over intersection size / match rate
-		- Recovered fraction over allocated query budget
-	- T-Reconstruction attacks (BaseAttack, EnumAttack, SnakeAttack)
-		- See "All functionalities"
-
-The artifacts broadly has three stages: Data generation for attacks against MK-PrivateID, measurements, and formatting data, with the goal of generating CSV files for each of the measurements listed above.	
+The artifact broadly has three stages: Data generation for the attacks against MK-PrivateID, performing measurements, and formatting data.
+The final output of this artifact is a set of CSV files which contain the measurements which we plot in our paper.
 
 ### Security/Privacy Issues and Ethical Concerns
 Our artifact consists of simple measurements run locally on a single core (per experiment).
 No security features are disabled and no sensitive data is used.
 
 ## Basic Requirements (Required for Functional and Reproduced badges)
-
-For both sections below, if you are giving reviewers remote access to special
-hardware (e.g., Intel SGX v2.0) or proprietary software (e.g., Matlab R2025a)
-for the purpose of the artifact evaluation, do not provide these instructions
-here but rather in the corresponding submission field on HotCRP.
 
 ### Hardware Requirements
 While our experiments could in principle be carried out on a laptop,
@@ -73,15 +52,19 @@ We therefore ran our experiments on a server with the following specifications:
 
 Our test suite requires 61 cores and used roughly 10GB of memory.
 The AMD EPYC 7742 processor has 64 physical and 128 logical cores, 
-where the logical cores $i$ and $i+64$ are mapped to the same physical core.
-We use this when assigning experiments to physical cores.
+where the logical cores $i$ and $(i+64)$ are mapped to the same physical core.
+We use this when assigning experiments to physical cores. 
+Concretely, our measurement scripts bind different experiments to the (logical) cores $i$ and $i+64$ for $0\leq i\leq 60$ using `taskset`.
 
 ### Software Requirements (Required for Functional and Reproduced badges)
 1. **OS**: Our server has Ubuntu 24.04.4 LTS installed, although our experiment suite should run on other Linux installations as well.
+The docker file we provide is based on Debian 13.5 "Trixie". 
 2. **OS Packages**: We use `taskset` and `tmux` to assign the experiments to cores and keep sessions alive.
-3. 
+3. TODO
 4. **Programming language**: Our experiments are implemented in Python. We use Python 3.12.3.
-5. **Packages**: We only require the `Faker` package for generating synthetic data
+5. **Packages**: We require the `Faker` package for generating synthetic data
+6. **ML Models**: Our artifact requires no machine learning models.
+7. **Data Sets**: Our data sets are generated synthetically and the script for doing so is contained in this artifact. However, since the generation takes some time, we include the data sets we used for our measurements in the artifact as well. They are located under `experiment_data/paper`.
 
 
 
@@ -121,14 +104,11 @@ as follows.
 
 ### Estimated Time and Storage Consumption (Required for Functional and Reproduced badges)
 
-Replace the following with estimated values for:
+The artifact should consume no more than 1GB of disk space.
+Once access to adequate hardware is secured, the environment can be set up and verified in roughly 30 minutes.
 
-- The overall human and compute times required to run the artifact.
-- The overall disk space consumed by the artifact.
-
-This helps reviewers schedule the evaluation in their time plan and others in
-general to see if everything is running as intended. This should also be
-specified at a finer granularity for each experiment (see below).
+Running the full measurement suite with the same number of iterations as we did in our paper takes toughly 250 compute-hours.
+Formatting the measured data to obtain the desired CSV files can also be done with a single command and is very fast.
 
 ## Environment (Required for all badges)
 
@@ -167,25 +147,25 @@ code segments to simplify the workflow, e.g.,
 git clone git@github.com:PoPETS-AEC/example-docker-python-pip.git
 docker build -t example-docker-python-pip:main .
 ```
+This artifact is obtainable from the following public github repository: TBD.
+Please change your working directory into the artifact repository.
+We provide a docker file with the necessary software dependencies, which should be built first.
 
-Describe the expected results where it makes sense to do so.
+```bash
+git clone git@github.com:PoPETS-AEC/example-docker-python-pip.git
+cd <FOLDER NAME>
+docker build -t artifact_image .
+```
 
-### Testing the Environment (Required for Functional and Reproduced badges)
+### Testing the Environment
 
-Replace the following by a description of the basic functionality tests to check
-if the environment is set up correctly. These tests could be unit tests,
-training an ML model on very low training data, etc. If these tests succeed, all
-required software should be functioning correctly. Use code segments to simplify
-the workflow, e.g.,
-
-Launch the Docker container, attach the current working directory (i.e., run
-from the root of the cloned git repository) as a volume, set the context to be
+The environment can be tested by running the experiment suite on very small test data sets. To this end, launch the Docker container, attach the current working directory as a volume, set the context to be
 that volume, and provide an interactive bash terminal:
 
 ```bash
-docker run --rm -it -v ${PWD}:/workspaces/example-docker-python-pip \
-    -w /workspaces/example-docker-python-pip \
-    --entrypoint bash example-docker-python-pip:main
+docker run --rm -it -v $.:/workspaces/artifact \
+    -w /workspaces/artifact \
+    --entrypoint bash artifact_image
 ```
 
 Then within the Docker container, run:
@@ -193,22 +173,30 @@ Then within the Docker container, run:
 ```bash
 ./test.sh
 ```
+The test script will first check that the logical CPUs 0-60 and 64-124 are available and that processes can be bound to them.
+It then generates a range of small data sets, which are stored under `experiment_data/small`. Finally, our measurement suite in run on said data sets. This should take a few minutes at most.
+If the command `tmux ls` (within the docker container) shows no sessions of the format `mpmc-chunk<i>` or `PSU<i>`, all experiments have been carried out.
 
-Include the expected output.
+The measurements are stored under `measurements/small`. There should be six files, corresponding to the six attacks shown in the evaluation section of the paper, see the outline below.
+
+
+Next format the data with:
+
+```bash
+python3 format_measurements.py measurements/small
+```
+This should result in the following file tree:
+TODO
 
 ## Artifact Evaluation (Required for Functional and Reproduced badges)
 
-This section should include all the steps required to evaluate your artifact's
-functionality and validate your paper's key results and claims. Therefore,
-highlight your paper's main results and claims in the first subsection. And
-describe the experiments that support your claims in the subsection after that.
+Our artifact should confirm the time and query measurements presented in Section 8 ("Experimental Evaluation") in our paper. 
+Since all experiments are executed simultaneously, we present this as one claim and describe our measurement suite as one large experiment.
 
 ### Main Results and Claims
 
-List all your paper's results and claims that are supported by your submitted
-artifacts.
+#### Main Result: Attack Efficiency
 
-#### Main Result 1: Name
 
 Describe the results in 1 to 3 sentences. Mention what the independent and
 dependent variables are; independent variables are the ones on the x-axes of
@@ -219,35 +207,35 @@ overhead) vary in another manner (e.g., exponentially). Refer to the related
 sections, figures, and/or tables in your paper and reference the experiments
 that support this result/claim. See example below.
 
-#### Main Result 2: Example Name
 
-Our paper claims that when varying the file size linearly, the runtime also
-increases linearly. This claim is reproducible by executing our
-[Experiment 2](#experiment-2-example-name). In this experiment, we change the
-file size linearly, from 2KB to 24KB, at intervals of 2KB each, and we show that
-the runtime also increases linearly, reaching at most 1ms. We report these
-results in "Figure 1a" and "Table 3" (Column 3 or Row 2) of our paper.
+#### Experiment: Run Measurement Suite
+- Time: 20 human-minutes + 250 compute-hours
 
-### Experiments
-List each experiment to execute to reproduce your results. Describe:
- - How to execute it in detailed steps.
- - What the expected result is.
- - How long it takes to execute in human and compute times (approximately).
- - How much space it consumes on disk (approximately) (omit if <10GB).
- - Which claim and results does it support, and how.
+The experiment runs our measurement suite as described above on data described in the paper.
+For our attacks against the PSU and PSU-CA functionalities, the experiment data consists of a victim set $Y$ of a fixed size and
+a target set $T$ whose size we vary from $50\%$ to $150\%$ of $|Y|$. Both sets contain randomly sampled integers.
+Furthermore, we vary the intersection ratio $\rho := |T \cap Y|/|T|$ from $0\%$ to $100\%$. For the attack against PSU-CA, we further vary the allocated query budget from $10\%$ to $100\%$ of the theoretical upper bound of queries. This is not necessary for the attack against PSU, since it always performs two queries.
+We set $|Y|=10^6$ for the attack against PSU and $|Y|=10^4$ for the attack against PSU-CA.
 
-#### Experiment 1: Name
-- Time: replace with estimate in human-minutes/hours + compute-minutes/hours.
-- Storage: replace with estimate for disk space used (omit if <10GB).
+The data for the attacks against $\mathcal{F}_{\textsf{L-MKPM}}$ is generated very similarly, with the exception that instead of simple sets, we now consider the sets of records located under `experiment_data/paper`. 
+Correspondingly, we vary the slightly more complicated match rate $\eta$ instead of the intersection ratio $\rho$, see Section 8 of the paper.
+We set $|Y| = 10^4$.
 
-Provide a short explanation of the experiment and expected results. Describe
-thoroughly the steps to perform the experiment and to collect and organize the
-results as expected from your paper (see example below). Use code segments to
-simplify the workflow, as follows.
+To start the experiments, run:
+```bash
+./run_experiments.sh
+```
+
+The measurement scripts repeat each experiment $50$ times. The raw measurements are stored in `measurements/large`.
+This will take a long time. Once the command `tmux ls` shows no sessions of the form `mpmc-chunk<i>` or `PSU<i>`, all individual experiments are completed.
+You can then format the measured data.
 
 ```bash
-python3 experiment_1.py
+python3 format_measurements.py measurements/large
 ```
+
+The result is a similar file tree as shown in [Testing the Environment](#testing-the-environment).
+The measurement data reported within those (formatted) files (in `measurements/large/formatted`) can be directly compared to the measurement data we use for the plots in our paper, which we provide in `measurements/paper`.
 
 #### Experiment 2: Example Name
 
@@ -271,12 +259,8 @@ format. These can be directly compared to the results reported in the paper, and
 should not quantitatively vary by more than 5% from expected results.
 
 
-## Limitations (Required for Functional and Reproduced badges)
-
-Describe which steps, experiments, results, graphs, tables, etc. are _not
-reproducible_ with the provided artifact. Explain why this is not
-included/possible and argue why the artifact should _still_ be evaluated for the
-respective badges.
+## Limitations
+For measurements reported in the paper, we did not run our experiments in a docker container, but on the server's OS (Ubuntu 24.04.4 LTS) directly. While we do not expect it, this may result in differences in the runtime measurements, which is hard estimate without re-running the experiments.
 
 ## Notes on Reusability (Encouraged for all badges)
 
