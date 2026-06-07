@@ -1,17 +1,17 @@
 #! /bin/bash
 
 # check that relevant cores exist and processes can be assigned to them
-cores_available=1
+all_cores_available=1
 for i in {0..60}
 do
 	l2=$((i + 64));
 	if ! taskset -c ${i},${l2} echo "testing cores ${i}, ${l2}"; then
 		echo "failed for cores ${i}, ${l2}";	
-		cores_available=0;
+		all_cores_available=0;
 	fi
 done
 
-if [ $cores_available -eq 1 ]; then
+if [ $all_cores_available -eq 1 ]; then
 	echo "All cores available";
 else
 	echo "The command 'taskset -c <i>, <i+64> echo \"testing cores <i>, <i+64>\"' has failed for some cores. Please make sure this succeeds for i=0..60";
@@ -24,7 +24,7 @@ echo 'generating small data sets'
 
 rm -r experiment_data/small > /dev/null 2>&1
 if ! python3 gen_MKPID_data.py --silent experiment_data/small 2 100; then
-	echo "data set generation failed, are the right packages installed?"
+	echo "data set generation failed, are is the Faker package installed?"
 fi
 
 # do test run with one iteration on small data sets, this should not take long.
@@ -38,7 +38,6 @@ done
 for i in {50..60}
 do
 	l2=$((i + 64))
-	tmux new-session -d -s PSU$i "echo '${i} ${l2}' && taskset -c ${i},${l2} python3 measure_PSU.py measurements/small 100 1 ${i}"
+	cid=$((i - 50))
+	tmux new-session -d -s PSU$i "echo '${i} ${l2}' && taskset -c ${i},${l2} python3 measure_PSU.py measurements/small 100 1 ${cid}"
 done
-
-echo 'tests complete'

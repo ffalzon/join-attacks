@@ -150,5 +150,5 @@ if __name__ == "__main__":
 			
 			T, V = gen_sets(n, m, frac)
 			
-			print("running tests")
+			print("running measurements")
 			measure_PSU(T, V, frac, repetitions, out_directory)
