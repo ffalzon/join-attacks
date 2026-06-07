@@ -21,7 +21,7 @@ def get_unique_id(idx, faker, ID_store):
 			id = faker.unique.ipv4_public()
 	return id
 
-def GenDataSet(exp: dict, directory, match_frac_T=True):
+def GenDataSet(exp: dict, directory, match_frac_T=True, silent=False):
 	
 	name = exp[EXP_NAME]
 	n = exp[EXP_LEN_T]
@@ -31,11 +31,12 @@ def GenDataSet(exp: dict, directory, match_frac_T=True):
 
 	#TODO: fix this
 	if (not match_frac_T and max_id_replication * m * match_V_fraction > n) or (match_frac_T and max_id_replication * n * match_V_fraction > m):
-		print(f"Choice of n, m, match rate and max_id_replication not permissible for achieving the match rate in {'T' if match_frac_T else 'V'}:")
-		print(f"""n:{n},
-					m:{m},
-					match rate: {match_V_fraction},
-					max_id_replication: {max_id_replication}""")
+		if not silent:
+			print(f"Choice of n, m, match rate and max_id_replication not permissible for achieving the match rate in {'T' if match_frac_T else 'V'}:")
+			print(f"""n:{n},
+						m:{m},
+						match rate: {match_V_fraction},
+						max_id_replication: {max_id_replication}""")
 		raise ValueError()
 
 	if not exists(directory):
@@ -149,7 +150,7 @@ def GenDataSet(exp: dict, directory, match_frac_T=True):
 						c += 1
 					if c == num:
 						break
-	check_match_rates(V, T, match_V_fraction)
+	check_match_rates(V, T, match_V_fraction, silent=silent)
 	
 
 	random.shuffle(T)
@@ -170,7 +171,7 @@ def GenDataSet(exp: dict, directory, match_frac_T=True):
 	exp[EXP_V_PATH] = V_name
 
 # Checks that the percentage of matched records in <primary> is mr
-def check_match_rates(primary, secondary, mr):
+def check_match_rates(primary, secondary, mr, silent=False):
 	IDS = IDs(secondary)
 
 	pos = 0
@@ -181,7 +182,7 @@ def check_match_rates(primary, secondary, mr):
 			if id in IDS:
 				pos +=1
 	ok = pos / tot == mr
-	if not ok:
+	if not ok and not silent:
 		print(f"Sanity check failed for |V|={len(secondary)}, |T|={len(primary)}")
 		print(f"Expected: {mr}, measured: {pos/tot}")
 	return ok
@@ -199,11 +200,13 @@ if __name__ == '__main__':
 	parser.add_argument("directory")
 	parser.add_argument("max_id_replication")
 	parser.add_argument("V_size")
+	parser.add_argument("-s", "--silent", action="store_true")
 
 	args = parser.parse_args()
 	directory = args.directory
 	max_id_replication = int(args.max_id_replication)
 	V_size = int(args.V_size)
+	silent = args.silent
 	
 	if not exists(directory):
 		makedirs(directory)
@@ -213,16 +216,18 @@ if __name__ == '__main__':
 	for frac in t_fracs:
 		t_size = int(V_size * frac)
 		for mr in [i / 10 for i in range(0, 11)]:
-			print(f"Generating: |V| = {V_size}, |T| = {t_size}, MR = {mr}")
+			if not silent: 
+				print(f"Generating: |V| = {V_size}, |T| = {t_size}, MR = {mr}")
 			exp_params = {	EXP_NAME : f"T{t_size}V{V_size}_{mr}", 
 							EXP_LEN_T: t_size, 
 							EXP_LEN_V: V_size, 
 							EXP_MAX_ID_REPL: max_id_replication, 
 							EXP_MATCH_V_FRACTION: mr}
 			try:
-				GenDataSet(exp_params, directory)
+				GenDataSet(exp_params, directory, silent=silent)
 			except ValueError:
-				print(f"skipping |V|={V_size}, |T|={t_size}, MR={mr}")
+				if not silent:
+					print(f"skipping |V|={V_size}, |T|={t_size}, MR={mr}")
 				continue
 			experiments.append(exp_params)
 

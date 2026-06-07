@@ -116,19 +116,20 @@ def gen_sets(n, m, intersection_ratio):
 	assert len(T) == n and len(V) == m
 	return T, V
 
-V_size_PSU = 1_000_000
-V_size_PSUCA = 10_000
+V_size = 1_000_000
 
 if __name__ == "__main__":
 	
 	parser = argparse.ArgumentParser()
 	parser.add_argument("out_directory")
+	parser.add_argument("V_size")
 	parser.add_argument("repetitions")
 	parser.add_argument("core_id")
 	args = parser.parse_args()
 
 	out_directory = args.out_directory
 	repetitions = int(args.repetitions)
+	V_size = int(args.V_size)
 	core_id = int(args.core_id)
 
 	seed(0xCAFEBABE)
@@ -137,7 +138,7 @@ if __name__ == "__main__":
 	
 	ranges = [(i, i+1) for i in range(5,16)]
 	
-	m = V_size_PSU
+	m = V_size
 	for frac in [i / 10 for i in range(0, 11)]:
 		for t_frac in [i/10 for i in range(ranges[core_id][0], ranges[core_id][1])]:
 			n = int(t_frac * m)
@@ -151,18 +152,3 @@ if __name__ == "__main__":
 			
 			print("running tests")
 			measure_PSU(T, V, frac, repetitions, out_directory)
-
-		m = V_size_PSUCA
-		for frac in [i / 10 for i in range(0, 11)]:
-			for t_frac in [i/10 for i in range(ranges[core_id][0], ranges[core_id][1])]:
-				n = int(t_frac * m)
-				if n * frac > m:
-					break
-
-				print(f"Experiment: PSU-CA, n={n}, m={m}, intersection ratio={frac}")
-				print("generating data")
-				
-				T, V = gen_sets(n, m, frac)
-				
-				print("running tests")
-				measure_PSUCA(T, V, frac, repetitions, out_directory)

@@ -7,12 +7,11 @@ import argparse
 import traceback
 import helper
 
-from measure_recon_attacks import MeasureReconAttacks, MeasureReconAttacksSingle
-from mkpsi_querybudget import MeasureMkpsiRecovery, MeasureMKPSISingle
-from format_measurements import FormatTimingData, FormatMKPSITimingData, FormatMKPSIQueryData
+from measure_recon_attacks import MeasureReconAttacksSingle
+from mkpsi_querybudget import MeasureMKPSISingle
  
 
-def do_run(experiments, out_directory, repetitions, format_data=False):
+def do_run(experiments, out_directory, repetitions):
 	for experiment in experiments:
 		print(f"running experiment: {experiment[EXP_NAME]}")
 		T = helper.csv_to_2Dlist(experiment[EXP_T_PATH])
@@ -26,16 +25,7 @@ def do_run(experiments, out_directory, repetitions, format_data=False):
 		unmatched_ids_T = len(ID_T) - len(intersection)
 		MeasureMKPSISingle(experiment, V, T, ID_T, ID_V, intersection, unmatched_ids_T, out_directory, repetitions, time_func=time.time_ns, query_budget_increment_fraction=0.1)
 	
-	# MeasureReconAttacks(experiments, out_directory, repetitions=repetitions, time_func=time.time_ns)
-	# MeasureMkpsiRecovery(experiments, out_directory, repetitions=repetitions, time_func=time.time_ns)
-
-	if format_data:
-		print("Formatting measurement data")
-		formatted_directory = join(out_directory, "formatted")
-		FormatTimingData(out_directory, formatted_directory)
-		FormatMKPSITimingData(out_directory, formatted_directory)
-		FormatMKPSIQueryData(out_directory, formatted_directory)
-
+# assign experiments to cores 0..50 in a way that should distribute the load more or less evenly
 def assign_experiments(experiments, core_id):
 	if 45 <= core_id <= 48:
 		idx1 = core_id % 45 + 1
@@ -102,9 +92,9 @@ if __name__ == '__main__':
 	core_id = int(args.core_id)
 	assert  0 <= core_id <= 60
 
-	out_directory = join(out_directory, f"core{core_id}")
-	if not exists(out_directory):
-		makedirs(out_directory)
+	# out_directory = join(out_directory, f"core{core_id}")
+	# if not exists(out_directory):
+	# 	makedirs(out_directory)
 		
 	experiments = assign_experiments(experiments, core_id)
 	print(f"Core {core_id} running experiments: ", [e[EXP_NAME] for e in experiments])
