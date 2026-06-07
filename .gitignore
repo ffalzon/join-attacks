@@ -52,4 +52,6 @@ revision/pre_revision
 
 # artifacts
 __pycache__
-measurements
+artifact/measurements
+artifact/experiment_data/*
+!artifact/experiment_data/paper/

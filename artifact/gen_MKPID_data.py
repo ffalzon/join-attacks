@@ -29,14 +29,13 @@ def GenDataSet(exp: dict, directory, match_frac_T=True, silent=False):
 	match_V_fraction = exp[EXP_MATCH_V_FRACTION]
 	max_id_replication = exp[EXP_MAX_ID_REPL]
 
-	#TODO: fix this
-	if (not match_frac_T and max_id_replication * m * match_V_fraction > n) or (match_frac_T and max_id_replication * n * match_V_fraction > m):
-		if not silent:
-			print(f"Choice of n, m, match rate and max_id_replication not permissible for achieving the match rate in {'T' if match_frac_T else 'V'}:")
-			print(f"""n:{n},
-						m:{m},
-						match rate: {match_V_fraction},
-						max_id_replication: {max_id_replication}""")
+	if (not match_frac_T and max_id_replication * n < m) or (match_frac_T and max_id_replication * m < n):
+		print(f"Choice of n, m, match rate and max_id_replication not permissible for achieving the match rate in {'T' if match_frac_T else 'V'}:")
+		print(f"""n:{n},
+					m:{m},
+					match rate: {match_V_fraction},
+					max_id_replication: {max_id_replication}""")
+
 		raise ValueError()
 
 	if not exists(directory):
