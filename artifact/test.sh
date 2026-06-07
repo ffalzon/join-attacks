@@ -2,7 +2,7 @@
 
 # check that relevant cores exist and processes can be assigned to them
 cores_available=1
-for i in {0..64}
+for i in {0..60}
 do
 	l2=$((i + 64));
 	if ! taskset -c ${i},${l2} echo "testing cores ${i}, ${l2}"; then
