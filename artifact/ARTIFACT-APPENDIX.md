@@ -1,6 +1,6 @@
 # Artifact Appendix
 
-Paper title: Beyond the Output: Inference Attacks on Private Set Union and
+**Paper title:** Beyond the Output: Inference Attacks on Private Set Union and
 Multi-Key Private Matching
 
 Requested Badge(s):
@@ -54,13 +54,13 @@ Our test suite requires 61 cores and used roughly 10GB of memory.
 The AMD EPYC 7742 processor has 64 physical and 128 logical cores, 
 where the logical cores $i$ and $(i+64)$ are mapped to the same physical core.
 We use this when assigning experiments to physical cores. 
-Concretely, our measurement scripts bind different experiments to the (logical) cores $i$ and $i+64$ for $0\leq i\leq 60$ using `taskset`.
+Concretely, any given experiment is assigned to one physical core, i.e., the logical cores $i$ and $(i+64)$ for some $0\leq i\leq 60$ with `taskset -c <i>, <i+64> <command>`.
 
-### Software Requirements (Required for Functional and Reproduced badges)
+### Software Requirements
 1. **OS**: Our server has Ubuntu 24.04.4 LTS installed, although our experiment suite should run on other Linux installations as well.
 The docker file we provide is based on Debian 13.5 "Trixie". 
 2. **OS Packages**: We use `taskset` and `tmux` to assign the experiments to cores and keep sessions alive.
-3. **Packaging**: We provide a Docker file with the necessary OS and Python packages installed. We use docker version 29.5.2.
+3. **Packaging**: We provide a Docker file with the necessary OS and Python packages installed. We use docker version 29.5.3.
 4. **Programming language**: Our experiments are implemented in Python. We use Python 3.12.3.
 5. **Packages**: We require the `Faker` package for generating synthetic data
 6. **ML Models**: Our artifact requires no machine learning models.
@@ -101,7 +101,7 @@ The environment can be tested by running the experiment suite on very small test
 that volume, and provide an interactive bash terminal:
 
 ```bash
-docker run --rm -it -v $.:/workspaces/artifact \
+docker run --rm -it -v ${PWD}:/workspaces/artifact \
     -w /workspaces/artifact \
     --entrypoint bash artifact_image
 ```
@@ -112,10 +112,10 @@ Then within the Docker container, run:
 ./test.sh
 ```
 The test script will first check that the logical CPUs 0-60 and 64-124 are available and that processes can be bound to them.
-Next, it checks that tmux is functional by starting a dummy tmux session.
+Next, it checks that tmux is functional by starting a dummy session that terminates instantly.
 It then generates a range of small data sets, which are stored under `experiment_data/small`. Finally, our measurement suite is run on said data sets. 
 The experiments are run sequentially, but each experiment is bound to the same processor as it's real (large) counterpart.
-To ensure that any Python exceptions are clearly visible, we run the experiments without any informational console outputs apart from showing, which cores are being tested. 
+To ensure that any Python exceptions are clearly visible, we run the experiments without any informational console outputs apart from some rudimentary progress indicators. 
 This should only take a few minutes, and you should see no error messages or exceptions.
 
 The measurements are stored under `measurements/small`. There should be six files, corresponding to the six attacks shown in the evaluation section of the paper, see the outline below.
@@ -124,7 +124,7 @@ Finally, format the data with:
 ```bash
 python3 format_measurements.py measurements/small
 ```
-This should result in the file tree shown below. The directory `measureements/small` should contain 100 CSV files. If all files are present, the test was successful.
+This should result in the file tree shown below. The directory `measureements/small` should contain 160 CSV files. If all files are present, the test was successful.
 
 ```
 measurements/small
@@ -216,42 +216,51 @@ Since all experiments are executed simultaneously, we present this as one claim 
 
 #### Main Result: Attack Efficiency
 
-The main result we show with this artifact is that our attacks can be carried out efficiently, i.e., with only a small overhead on top of the normal protocol executions. For all attacks, we measure the runtime.
-For the attacks which perform an adaptive number of queries, 
-we additionally measure the number of queries (ideal functionality evaluations) performed by the attack, as well as the performance of the attack under limited query budgets.
+The main result we show with this artifact is that our attacks can be carried out efficiently, i.e., with only a small overhead on top of the normal protocol executions. For all attacks, we measure the runtime for varying parameters, see the experiment description below for more details.
+For the attacks that perform an adaptive number of queries (ideal functionality evaluations), 
+we additionally measure the number of queries, as well as the performance of the attack under limited query budgets.
 
 In our work, we show the following plots, which we group by attack for this document. 
 
 1. **PSU-Diff**: Runtimes largely follow from Python's implementation of set operations.
-   1. Runtime over intersection ratio $\rho = |T\cap Y| / |T|$ (Figure 9a)
-   2. Runtime over target set size $|T|$ (Figure 9b). 
+   1. Runtime over intersection ratio $\rho = |T\cap Y| / |T|$ (Figure 9a).
+   2. Runtime over target set size $|T|$ (Figure 9b).
 2. **PSU-CA-SearchTree**
    1. Number of queries over target set size $|T|$ (Figure 10a). Grows linearly.
-   2. Runtime over intersection ratio $\rho$ (Figure 11a). Symmetric w.r.t. values of $\rho$: values of $\rho$ close to $0$ or $1$ yield smaller runtime measurements, values close to $0.5$ yield the highest measurements.
+   2. Runtime over intersection ratio $\rho$ (Figure 11a). Symmetric w.r.t. values of $\rho$: values of $\rho$ close to $0$ or $1$ yield smaller runtime measurements, values close to $0.5$ yield higher measurements.
    3. Runtime over target set size $|T|$ (Figure 11c). Grows linearly.
    4. Number of queries over intersection ratio $\rho$ (Figure 18a). Same behavior as in point 2.2.
-   5. Recovered fraction of the intersection and set difference, and total inferred membership information over allocated query budget (Figure 19) 
-3. **MKPM-SearchTree**
+   5. Recovered fraction of the intersection, difference, and total inferred membership information over allocated query budget (Figure 19) 
+3. **MKPM-SearchTree** (called MKPSI in this artifact)
    1. Number of queries over target set size $|T|$ (Figure 10b). Grows linearly. 
    2. Runtime over match rate $\eta$ (Figure 11b). See PSU-CA-SearchTree, point 2.2.
    3. Runtime over target set size $|T|$ (Figure 11d). Grows linearly.
    4. Number of queries over match rate $\eta$ (Figure 18b). Same behavior as in points 2.2, 2.4, and 3.2.
 4. **$T$-Reconstruction attacks** (Baseline, EnumAttack, SnakeAttack)
-   1. Runtime over match rate $\eta$ (Figure 10a). Runtimes remain roughly constant and are thus largely independent of $\eta$.
+   1. Runtime over match rate $\eta$ (Figure 10a). Runtimes remain roughly constant.
    2. Runtime over target set size $|T|$ (Figure 10b). Grows linearly.
 
 #### Experiment: Run Measurement Suite
-- Time: 20 human-minutes + 250 compute-hours
+- Time: 20 human-minutes + 250 compute-hours. To shorten the compute-time, reduce the number of iterations (currently 50) in lines 6 and 13 in `run_experiments.sh`.
 
-The experiment runs our measurement suite as described above on data described in the paper.
+The experiment runs our measurement suite as described above on the data sets described in the paper.
 For our attacks against the PSU and PSU-CA functionalities, the experiment data consists of a recovery set $Y$ of a fixed size and
-a target set $T$ whose size we vary from $50\%$ to $150\%$ of $|Y|$. Both sets contain randomly sampled integers.
-Furthermore, we vary the intersection ratio $\rho := |T \cap Y|/|T|$ from $0\%$ to $100\%$. For the attack against PSU-CA, we further vary the allocated query budget from $10\%$ to $100\%$ of the theoretical upper bound of queries. This is not necessary for the attack against PSU, since it always performs two queries.
+a target set $T$ whose size we vary from $50\%$ to $150\%$ of $|Y|$ in $10\%$ increments. Both sets contain randomly sampled integers (without replacement).
+Furthermore, we vary the intersection ratio $\rho := |T \cap Y|/|T|$ from $0\%$ to $100\%$, also in $10\%$ increments. For the attack against PSU-CA, we further vary the allocated query budget from $10\%$ to $100\%$ of the theoretical upper bound of queries in $10\%$ increments. This is not necessary for the attack against PSU, since it always performs two queries.
 We set $|Y|=10^6$ for the attack against PSU and $|Y|=10^4$ for the attack against PSU-CA.
 
-The data for the attacks against $\mathcal{F}_{\textsf{L-MKPM}}$ is generated very similarly, with the exception that instead of simple sets, we now consider the sets of records located under `experiment_data/paper`. 
+The data for the attacks against $\mathcal{F}_{\textsf{L-MKPM}}$ is generated very similarly, with the exception that instead of simple sets, we now consider the sets of records located under `experiment_data/paper`. They were generated using
+
+```bash
+python3 gen_MKPID_data.py <destination_directory> 2 10000
+```
+
 Correspondingly, we vary the slightly more complicated match rate $\eta$ instead of the intersection ratio $\rho$, see Section 8 of the paper.
 We set $|Y| = 10^4$.
+For the MKPM-SearchTree attack (called MKPSI in this artifact),
+we again vary the allocated query budget as described above.
+Since the reconstruction attacks all only make a single query,
+there is no need to limit their query budgets.
 
 To start the experiments, run:
 ```bash
@@ -268,8 +277,36 @@ python3 format_measurements.py measurements/large
 
 The result is a similar file tree as shown in [Testing the Environment](#testing-the-environment).
 The measurement data reported within those (formatted) files (in `measurements/large/formatted`) can be directly compared to the measurement data we use for the plots in our paper, which we provide in `measurements/paper`. 
+However, this is a superset of the relevant data, as not all CSV files have a corresponding plot in the paper. The relevant files that do are the following:
+
+```
+measurements/paper/
+   └── PSUCA_queries_over_mr, MKPSI_queries_over_mr (Figure in Appendix)
+      ├── V10000T5000.csv
+      ├── V10000T10000.csv
+      └── V10000T15000.csv
+   └── PSUCA_queries_over_n, MKPSI_queries_over_n
+      ├── V10000MR0.0.csv
+      ├── V10000MR0.1.csv
+         ...
+      └── V10000MR0.5.csv
+   └── PSU_time_over_MR, PSUCA_time_over_MR, MKPSI_time_over_MR, recon_time_over_MR
+      ├── V10000T5000.csv
+      ├── V10000T10000.csv
+      └── V10000T15000.csv
+   └── PSU_time_over_n, PSUCA_time_over_n, MKPSI_time_over_n, recon_time_over_n
+      ├── V10000MR0.0.csv
+      ├── V10000MR0.1.csv
+         ...
+      └── V10000MR0.5.csv
+   └── PSUCA_recovery_over_QB (Figure in Appendix)
+      ├── V10000T5000.csv
+      ├── V10000T10000.csv
+      └── V10000T15000.csv
+```
+
 Since each experiment is repeated $50$ times and we report the average, we do not expect any large deviations from the provided results.
-However, we did not run our experiments within a docker container, which may cause some differences in time measurements. 
+However, we did not run our experiments within a docker container, see the [Limitations](#limitations)
 
 
 ## Limitations
