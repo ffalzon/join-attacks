@@ -5,18 +5,20 @@ from constants import *
 import helper
 import time
 
-def MeasureMKPSISingle(experiment, V, T, ID_T, ID_V, intersection, unmatched_ids_T, out_directory, repetitions=100, time_func=time.time, query_budget_increment_fraction=0.05):
+def MeasureMKPSISingle(experiment, V, T, ID_T, ID_V, intersection, unmatched_ids_T, out_directory, repetitions=100, time_func=time.time, query_budget_increment_fraction=0.05, silent=False):
 	priorities = [(PRIO_TOT, PriorityTotal), (PRIO_POS, PriorityPos), (PRIO_NEG, PriorityNeg)]
 	
 	MPMC = MPMCFunctionality(V)
 	
 	for (prio_name, prio) in priorities:
-		print(f"Priority: ", prio_name)
+		if not silent:
+			print(f"Priority: ", prio_name)
 		theoretical_max_queries = len(T)
 		inc = max(1, floor(theoretical_max_queries * query_budget_increment_fraction))
 
 		for qb in range(inc, len(T) + inc, inc):
-			print(f"query budget: {qb}")
+			if not silent:
+				print(f"query budget: {qb}")
 			MPMC.set_query_budget(qb)
 
 			data = {TIME_ALL : [],
@@ -48,7 +50,6 @@ def MeasureMKPSISingle(experiment, V, T, ID_T, ID_V, intersection, unmatched_ids
 					LEN_NEG_TRUE: unmatched_ids_T,					
 					**data }
 
-			#measurements.append(m)
 			helper.append_dicts_to_csv(m, out_directory, f"{MKPSI_NAME}.csv")
 
 def MeasureMkpsiRecovery(data_path, out_path, repetitions=100, query_budget_increment_fraction=0.05, time_func=time.time):

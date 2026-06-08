@@ -4,26 +4,26 @@ from constants import *
 from math import ceil
 import time
 import argparse
-import traceback
 import helper
 
 from measure_recon_attacks import MeasureReconAttacksSingle
 from mkpsi_querybudget import MeasureMKPSISingle
  
 
-def do_run(experiments, out_directory, repetitions):
+def do_run(experiments, out_directory, repetitions, silent):
 	for experiment in experiments:
-		print(f"running experiment: {experiment[EXP_NAME]}")
+		if not silent:
+			print(f"running experiment: {experiment[EXP_NAME]}")
 		T = helper.csv_to_2Dlist(experiment[EXP_T_PATH])
 		V = helper.csv_to_2Dlist(experiment[EXP_V_PATH])
 
-		MeasureReconAttacksSingle(experiment, V, T, out_directory, repetitions, time_func=time.time_ns)
+		MeasureReconAttacksSingle(experiment, V, T, out_directory, repetitions, time_func=time.time_ns, silent=silent)
 		
 		ID_T = helper.IDs(T)
 		ID_V = helper.IDs(V)
 		intersection = ID_T.intersection(ID_V)
 		unmatched_ids_T = len(ID_T) - len(intersection)
-		MeasureMKPSISingle(experiment, V, T, ID_T, ID_V, intersection, unmatched_ids_T, out_directory, repetitions, time_func=time.time_ns, query_budget_increment_fraction=0.1)
+		MeasureMKPSISingle(experiment, V, T, ID_T, ID_V, intersection, unmatched_ids_T, out_directory, repetitions, time_func=time.time_ns, query_budget_increment_fraction=0.1, silent=silent)
 	
 # assign experiments to cores 0..50 in a way that should distribute the load more or less evenly
 def assign_experiments(experiments, core_id):
@@ -62,11 +62,13 @@ if __name__ == '__main__':
 	parser.add_argument("repetitions")
 	parser.add_argument("core_id")
 	parser.add_argument("-e", "--experiment", required=False)
+	parser.add_argument("-s", "--silent", action="store_true")
 
 	args = parser.parse_args()
 	experiments_directory = args.experiments_directory
 	out_directory = args.out_directory
 	repetitions = int(args.repetitions)
+	silent = args.silent
 	
 	experiments = helper.get_experiments(experiments_directory)
 	
@@ -97,8 +99,9 @@ if __name__ == '__main__':
 	# 	makedirs(out_directory)
 		
 	experiments = assign_experiments(experiments, core_id)
-	print(f"Core {core_id} running experiments: ", [e[EXP_NAME] for e in experiments])
-	do_run(experiments, out_directory, repetitions)
+	if not silent:
+		print(f"Core {core_id} running experiments: ", [e[EXP_NAME] for e in experiments])
+	do_run(experiments, out_directory, repetitions, silent)
 
 
 

@@ -20,7 +20,7 @@ def PriorityNeg(c, n):
 	s = sum([n - x for x in c])
 	return s / (len(c) * n)
 
-# leakage is leakage function, not full MPMC functionality
+# leakage is leakage function, not full MKPM functionality
 def MK_PSI(leakage, T, p=PriorityTotal, qb=None, get_time=time):
 	T = copy.deepcopy(T) 
 	shuffle(T)
@@ -45,7 +45,6 @@ def MK_PSI(leakage, T, p=PriorityTotal, qb=None, get_time=time):
 		(_, cX, X) = q.get()
 		while not all([(c == 0 or c == len(X)) for c in cX]) and len(neg) + len(pos) < I:
 			mid = len(X) // 2
-			# shuffle(X)
 			L = X[:mid]
 			R = X[mid:]
 			

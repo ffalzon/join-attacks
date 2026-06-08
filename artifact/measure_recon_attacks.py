@@ -53,11 +53,12 @@ def MeasureReconAttacks(experiments, out_directory, chunk_index, repetitions=100
 			out_directory = join(out_directory, f"chunk{chunk_index}")
 			helper.append_dicts_to_csv(m, out_directory, f"{attack_name}.csv")
 	
-def MeasureReconAttacksSingle(experiment, V, T, out_directory, repetitions=100, time_func=time.time):
+def MeasureReconAttacksSingle(experiment, V, T, out_directory, repetitions=100, time_func=time.time, silent=False):
 	attacks = [(SNAKE_NAME, Snake), (RECENUM_NAME, RecordEnumeration), (BASELINE_NAME, BaselineAttack)]
 	
 	for (attack_name, attack) in attacks:
-		print(f"Attack: {attack_name}")
+		if not silent:
+			print(f"Attack: {attack_name}")
 
 		#measurements = []
 

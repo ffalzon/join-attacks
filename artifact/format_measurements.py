@@ -152,12 +152,12 @@ def format_mkpsi_psuca_time_over_n(mkpsi_data, out_directory, subdir_prefix):
 		   		all_data,
 				inner_key_name=EXP_LEN_T,
 				data_key=TIME_ALL,
-				outer_key_func=lambda r: r[EXP_LEN_V],
+				outer_key_func=lambda r: (r[EXP_LEN_V], r[EXP_MATCH_V_FRACTION]),
 				col_header_func=lambda r: f"time{r[EXP_MATCH_V_FRACTION]}_{r[ATTACK_PRIORITY]}")
 
-	for (m, data) in all_data.items():
+	for ((m, mr), data) in all_data.items():
 		data = dict_to_list(data, EXP_LEN_T, sort=True)
-		filename = f"V{m}.csv"
+		filename = f"V{m}MR{mr}.csv"
 		out_path = join(out_directory, f"{subdir_prefix}_time_over_n")
 		helper.dicts_to_csv(data, out_path, filename)
 
@@ -167,12 +167,12 @@ def format_mkpsi_psuca_time_over_MR(mkpsi_data, out_directory, subdir_prefix):
 		   		all_data,
 				inner_key_name=EXP_MATCH_V_FRACTION,
 				data_key=TIME_ALL,
-				outer_key_func=lambda r: r[EXP_LEN_V],
+				outer_key_func=lambda r: (r[EXP_LEN_V],r[EXP_LEN_T]),
 				col_header_func=lambda r: f"time{r[EXP_LEN_T]}_{r[ATTACK_PRIORITY]}")
 	
-	for (m, data) in all_data.items():
+	for ((m, n), data) in all_data.items():
 		data = dict_to_list(data, EXP_MATCH_V_FRACTION, sort=True)
-		filename = f"V{m}.csv"
+		filename = f"V{m}T{n}.csv"
 		out_path = join(out_directory, f"{subdir_prefix}_time_over_MR")
 		helper.dicts_to_csv(data, out_path, filename)
 
@@ -214,9 +214,9 @@ def format_mkpsi_psuca_queries_over_n(mkpsi_max_qb_data, out_directory, subdir_p
 	all_data = {}
 	fill_mkpsi_psuca_queries_n_dict(mkpsi_max_qb_data, all_data)
 	
-	for (m, data) in all_data.items():
+	for ((m, mr), data) in all_data.items():
 		data = dict_to_list(data, EXP_LEN_T, sort=True)
-		filename = f"V{m}.csv"
+		filename = f"V{m}MR{mr}.csv"
 		out_path = join(out_directory, f"{subdir_prefix}_queries_over_n")
 		helper.dicts_to_csv(data, out_path, filename)
 
@@ -248,7 +248,7 @@ def fill_mkpsi_psuca_queries_n_dict(data, dict):
 		   		dict,
 				inner_key_name=EXP_LEN_T,
 				data_key=NUM_QUERIES,
-				outer_key_func=lambda r: r[EXP_LEN_V],
+				outer_key_func=lambda r: (r[EXP_LEN_V], r[EXP_MATCH_V_FRACTION]),
 				col_header_func= lambda r: f"queries{r[EXP_MATCH_V_FRACTION]}_{r[ATTACK_PRIORITY]}")
 
 def fill_time_MR_dict(data, dict):

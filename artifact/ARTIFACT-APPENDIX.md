@@ -5,8 +5,8 @@ Multi-Key Private Matching
 
 Requested Badge(s):
   - [x] **Available**
-  - [ ] **Functional**
-  - [ ] **Reproduced**
+  - [x] **Functional**
+  - [x] **Reproduced**
 
 Authors can provide this content _either_ as a separate file in their artifact
 _or_ as part of their existing documentation (e.g., `README.md`). In the latter
@@ -32,16 +32,16 @@ an artifact reviewer).
 This repository contains the artifacts accompanying the paper "Beyond the Output: Inference Attacks on Private Set Union and Multi-Key Private Matching" by Andrea Raguso, Francesca Falzon, Tianxin Tang, and Kenneth Paterson, published at PETs 2026.
 In the paper, we present several inference attacks, which allows an adversary that is allowed to interact with an ideal functionality to gain information about the non-adversarial inputs. We present attacks against the following functionalities: PSU, PSU-CA, the ideal functionality of Meta's multi-key PrivateID protocol (MK-PrivateID) $\mathcal{F}_{\textsf{MKPM}}$, and the extended functionality of MK-PrivateID that includes additional protocol leakage $\mathcal{F}_{\textsf{L-MKPM}}$.
 
-This artifact repository contains implementations of said attacks and the corresponding functionalities, as well as a measurement infrastructure to evaluate the efficiency of our attacks. 
+This artifact repository contains implementations of said attacks and the corresponding functionalities, as well as a measurement infrastructure to evaluate the efficiency of our attacks. We measure both the attack runtimes, as well as the number of queries (ideal functionality evaluations) performed by the attack.
 
 The artifact broadly has three stages: Data generation for the attacks against MK-PrivateID, performing measurements, and formatting data.
 The final output of this artifact is a set of CSV files which contain the measurements which we plot in our paper.
 
 ### Security/Privacy Issues and Ethical Concerns
-Our artifact consists of simple measurements run locally on a single core (per experiment).
-No security features are disabled and no sensitive data is used.
+Our artifact consists of simple measurements run locally on a single core (per experiment). Our attacks are run on synthetically generated data.
+No security features are disabled and no sensitive data is being used.
 
-## Basic Requirements (Required for Functional and Reproduced badges)
+## Basic Requirements
 
 ### Hardware Requirements
 While our experiments could in principle be carried out on a laptop,
@@ -60,100 +60,38 @@ Concretely, our measurement scripts bind different experiments to the (logical) 
 1. **OS**: Our server has Ubuntu 24.04.4 LTS installed, although our experiment suite should run on other Linux installations as well.
 The docker file we provide is based on Debian 13.5 "Trixie". 
 2. **OS Packages**: We use `taskset` and `tmux` to assign the experiments to cores and keep sessions alive.
-3. TODO
+3. **Packaging**: We provide a Docker file with the necessary OS and Python packages installed. We use docker version 29.5.2.
 4. **Programming language**: Our experiments are implemented in Python. We use Python 3.12.3.
 5. **Packages**: We require the `Faker` package for generating synthetic data
 6. **ML Models**: Our artifact requires no machine learning models.
 7. **Data Sets**: Our data sets are generated synthetically and the script for doing so is contained in this artifact. However, since the generation takes some time, we include the data sets we used for our measurements in the artifact as well. They are located under `experiment_data/paper`.
 
-
-
-
-
-Replace this with the software required to run your artifact and its versions,
-as follows.
-
-1. List the OS you used to run your artifact, along with its version (e.g.,
-   Ubuntu 22.04). If your artifact can only run on a specific OS or a specific
-   OS version, list it and explain why here. In general, your artifact reviewers
-   will probably have access to a machine with a different OS or different OS
-   version than yours; they should still be able to run appropriately packaged
-   artifacts.
-2. List the OS packages that your artifact requires, along with their versions.
-3. Artifact packaging: If you use a container runtime (e.g., Docker) to run the
-   artifact, list the container runtime and its version (e.g., Docker 23.0.3).
-   If you use VMs, list the hypervisor (e.g., VirtualBox) to run the artifact.
-4. List the programming language compiler or interpreter you used to run your
-   artifact (e.g., Python 3.13.7). Your Docker image or VM image should have
-   this version of the programming languages installed already. Your Dockerfile
-   should start from a base image with this programming language version.
-5. List packages that your artifact depends on, along with their versions. For
-   example, Python-based privacy-preserving machine learning artifacts typically
-   require `numpy`, `scipy`, etc. You may point to a file in your artifact with
-   this list, such as a `requirements.txt` file. If you rely on proprietary
-   software (e.g. Matlab R2025a), list this here and consider providing access
-   to reviewers through HotCRP.
-6. List any Machine Learning Models required to run your artifact, along with
-   their versions. If your model is hosted on a different repository, such as on
-   Zenodo, then your artifact should download it automatically (same for
-   datasets). If a required ML model is _not_ in your artifact, provide a dummy
-   model to demonstrate the functionality of the rest of your artifact.
-7. List any datasets required to run your artifact. If any required dataset is
-   not in your artifact, you should provide a synthetic dataset that showcases
-   the expected data format.
-
-### Estimated Time and Storage Consumption (Required for Functional and Reproduced badges)
-
+### Estimated Time and Storage Consumption 
 The artifact should consume no more than 1GB of disk space.
-Once access to adequate hardware is secured, the environment can be set up and verified in roughly 30 minutes.
+Assuming Docker is installed, the environment can be set up and verified in under 30 minutes.
 
-Running the full measurement suite with the same number of iterations as we did in our paper takes toughly 250 compute-hours.
-Formatting the measured data to obtain the desired CSV files can also be done with a single command and is very fast.
+Running the full measurement suite with the same number of iterations as we did in our paper takes 30 human-minutes and roughly 250 compute-hours.
 
-## Environment (Required for all badges)
+## Environment
 
-In the following, describe how to access your artifact and all related and
-necessary data and software components. Afterward, describe how to set up
-everything and how to verify that everything is set up correctly.
+### Accessibility
 
-### Accessibility (Required for all badges)
+This artifact is accessible from the public Github repository 
+[https://github.com/deRaguso/mkpid-attacks-artifact](
+https://github.com/deRaguso/mkpid-attacks-artifact/tree/main).
 
-Replace the following by a description of how to access your artifact via
-persistent sources. Valid hosting options are institutional and third-party
-digital repositories (e.g., GitHub, Gitlab, BitBucket, Zenodo, Figshare, etc.).
-Please do not use personal web pages or cloud storage services like Google
-Drive, Dropbox, etc.
+### Set up the environment
 
-Note that once your artifact evaluation is finalized and a badge decision has
-been made, artifact chairs will collect a stable and persistent reference to
-your artifact to list on the website. For version-controlled repositories (e.g.,
-Git repositories), this will be a specific commit-id or tag.
-
-You _should not_ link to a specific commit here at submission time, as changes
-will likely happen during the evaluation process to address the reviewers'
-feedback, resulting in the link being out-of-date. Instead, you may link to the
-latest commit in your branch (e.g. main) as follows:
-https://github.com/PoPETS-AEC/example-docker-python-pip/tree/main
-
-### Set up the environment (Required for Functional and Reproduced badges)
-
-Replace the following by a description of how one should set up the environment
-for your artifact, including downloading and installing dependencies and the
-installation of the artifact itself (i.e., from the very first download or clone
-command one should perform). Be as specific as possible here. If possible, use
-code segments to simplify the workflow, e.g.,
+Start by cloning the repository and changing your current working directory to the repository.
 
 ```bash
-git clone git@github.com:PoPETS-AEC/example-docker-python-pip.git
-docker build -t example-docker-python-pip:main .
+git clone git@github.com:deRaguso/mkpid-attacks-artifact.git
+cd mkpid-attacks-artifact
 ```
-This artifact is obtainable from the following public github repository: TBD.
-Please change your working directory into the artifact repository.
-We provide a docker file with the necessary software dependencies, which should be built first.
+
+We provide a docker file with the necessary software dependencies, which should be built first. Please make sure that Docker is installed on your system.
 
 ```bash
-git clone git@github.com:PoPETS-AEC/example-docker-python-pip.git
-cd <FOLDER NAME>
 docker build -t artifact_image .
 ```
 
@@ -174,44 +112,139 @@ Then within the Docker container, run:
 ./test.sh
 ```
 The test script will first check that the logical CPUs 0-60 and 64-124 are available and that processes can be bound to them.
-It then generates a range of small data sets, which are stored under `experiment_data/small`. Finally, our measurement suite in run on said data sets. This should take a few minutes at most.
-If the command `tmux ls` (within the docker container) shows no sessions of the format `mpmc-chunk<i>` or `PSU<i>`, all experiments have been carried out.
+Next, it checks that tmux is functional by starting a dummy tmux session.
+It then generates a range of small data sets, which are stored under `experiment_data/small`. Finally, our measurement suite is run on said data sets. 
+The experiments are run sequentially, but each experiment is bound to the same processor as it's real (large) counterpart.
+To ensure that any Python exceptions are clearly visible, we run the experiments without any informational console outputs apart from showing, which cores are being tested. 
+This should only take a few minutes, and you should see no error messages or exceptions.
 
 The measurements are stored under `measurements/small`. There should be six files, corresponding to the six attacks shown in the evaluation section of the paper, see the outline below.
-
-
-Next format the data with:
+Finally, format the data with:
 
 ```bash
 python3 format_measurements.py measurements/small
 ```
-This should result in the following file tree:
-TODO
+This should result in the file tree shown below. The directory `measureements/small` should contain 100 CSV files. If all files are present, the test was successful.
 
-## Artifact Evaluation (Required for Functional and Reproduced badges)
+```
+measurements/small
+├── Baseline.csv
+├── MKPSI.csv
+├── PSU.csv
+├── PSUCA.csv
+├── RecordEnumeration.csv
+├── Snake.csv
+└── formatted
+    └── MKPSI_queries_over_mr
+        ├── V100T50.csv
+        ├── V100T60.csv
+            ...
+        └── V100T150.csv
+    └── MKPSI_queries_over_n
+        ├── V100MR0.0.csv
+        ├── V100MR0.1.csv
+            ...
+        └── V100MR1.0.csv
+    └── MKPSI_recovery_over_QB
+        ├── V100T50.csv
+        ├── V100T60.csv
+            ...
+        └── V100T150.csv
+    └── MKPSI_time_over_MR
+        ├── V100T50.csv
+        ├── V100T60.csv
+            ...
+        └── V100T150.csv
+    └── MKPSI_time_over_n
+        ├── V100MR0.0.csv
+        ├── V100MR0.1.csv
+            ...
+        └── V100MR1.0.csv
+    └── PSUCA_queries_over_mr
+        ├── V100T50.csv
+        ├── V100T60.csv
+            ...
+        └── V100T150.csv
+    └── PSUCA_queries_over_n
+        ├── V100MR0.0.csv
+        ├── V100MR0.1.csv
+            ...
+        └── V100MR1.0.csv
+    └── PSUCA_recovery_over_QB
+        ├── V100T50.csv
+        ├── V100T60.csv
+            ...
+        └── V100T150.csv
+    └── PSUCA_time_over_MR
+        ├── V100T50.csv
+        ├── V100T60.csv
+            ...
+        └── V100T150.csv
+    └── PSUCA_time_over_n
+        ├── V100MR0.0.csv
+        ├── V100MR0.1.csv
+            ...
+        └── V100MR1.0.csv
+    └── PSU_time_over_mr
+        ├── V100T50.csv
+        ├── V100T60.csv
+            ...
+        └── V100T150.csv
+    └── PSU_time_over_n
+        ├── V100MR0.0.csv
+        ├── V100MR0.1.csv
+            ...
+        └── V100MR1.0.csv
+    └── recon_time_over_MR
+        ├── V100T50.csv
+        ├── V100T60.csv
+            ...
+        └── V100T150.csv
+    └── recon_time_over_n
+        ├── V100MR0.0.csv
+        ├── V100MR0.1.csv
+            ...
+        └── V100MR1.0.csv
+```
 
-Our artifact should confirm the time and query measurements presented in Section 8 ("Experimental Evaluation") in our paper. 
+## Artifact Evaluation 
+
+Our artifact should confirm the time and query measurements presented in Section 8 ("Experimental Evaluation") and Appendix H ("Additional Evaluation Results") in our paper. 
 Since all experiments are executed simultaneously, we present this as one claim and describe our measurement suite as one large experiment.
 
 ### Main Results and Claims
 
 #### Main Result: Attack Efficiency
 
+The main result we show with this artifact is that our attacks can be carried out efficiently, i.e., with only a small overhead on top of the normal protocol executions. For all attacks, we measure the runtime.
+For the attacks which perform an adaptive number of queries, 
+we additionally measure the number of queries (ideal functionality evaluations) performed by the attack, as well as the performance of the attack under limited query budgets.
 
-Describe the results in 1 to 3 sentences. Mention what the independent and
-dependent variables are; independent variables are the ones on the x-axes of
-your figures, whereas the dependent ones are on the y-axes. By varying the
-independent variable (e.g., file size) in a given manner (e.g., linearly), we
-expect to see trends in the dependent variable (e.g., runtime, communication
-overhead) vary in another manner (e.g., exponentially). Refer to the related
-sections, figures, and/or tables in your paper and reference the experiments
-that support this result/claim. See example below.
+In our work, we show the following plots, which we group by attack for this document. 
+
+1. **PSU-Diff**: Runtimes largely follow from Python's implementation of set operations.
+   1. Runtime over intersection ratio $\rho = |T\cap Y| / |T|$ (Figure 9a)
+   2. Runtime over target set size $|T|$ (Figure 9b). 
+2. **PSU-CA-SearchTree**
+   1. Number of queries over target set size $|T|$ (Figure 10a). Grows linearly.
+   2. Runtime over intersection ratio $\rho$ (Figure 11a). Symmetric w.r.t. values of $\rho$: values of $\rho$ close to $0$ or $1$ yield smaller runtime measurements, values close to $0.5$ yield the highest measurements.
+   3. Runtime over target set size $|T|$ (Figure 11c). Grows linearly.
+   4. Number of queries over intersection ratio $\rho$ (Figure 18a). Same behavior as in point 2.2.
+   5. Recovered fraction of the intersection and set difference, and total inferred membership information over allocated query budget (Figure 19) 
+3. **MKPM-SearchTree**
+   1. Number of queries over target set size $|T|$ (Figure 10b). Grows linearly. 
+   2. Runtime over match rate $\eta$ (Figure 11b). See PSU-CA-SearchTree, point 2.2.
+   3. Runtime over target set size $|T|$ (Figure 11d). Grows linearly.
+   4. Number of queries over match rate $\eta$ (Figure 18b). Same behavior as in points 2.2, 2.4, and 3.2.
+4. **$T$-Reconstruction attacks** (Baseline, EnumAttack, SnakeAttack)
+   1. Runtime over match rate $\eta$ (Figure 10a). Runtimes remain roughly constant and are thus largely independent of $\eta$.
+   2. Runtime over target set size $|T|$ (Figure 10b). Grows linearly.
 
 #### Experiment: Run Measurement Suite
 - Time: 20 human-minutes + 250 compute-hours
 
 The experiment runs our measurement suite as described above on data described in the paper.
-For our attacks against the PSU and PSU-CA functionalities, the experiment data consists of a victim set $Y$ of a fixed size and
+For our attacks against the PSU and PSU-CA functionalities, the experiment data consists of a recovery set $Y$ of a fixed size and
 a target set $T$ whose size we vary from $50\%$ to $150\%$ of $|Y|$. Both sets contain randomly sampled integers.
 Furthermore, we vary the intersection ratio $\rho := |T \cap Y|/|T|$ from $0\%$ to $100\%$. For the attack against PSU-CA, we further vary the allocated query budget from $10\%$ to $100\%$ of the theoretical upper bound of queries. This is not necessary for the attack against PSU, since it always performs two queries.
 We set $|Y|=10^6$ for the attack against PSU and $|Y|=10^4$ for the attack against PSU-CA.
@@ -226,7 +259,7 @@ To start the experiments, run:
 ```
 
 The measurement scripts repeat each experiment $50$ times. The raw measurements are stored in `measurements/large`.
-This will take a long time. Once the command `tmux ls` shows no sessions of the form `mpmc-chunk<i>` or `PSU<i>`, all individual experiments are completed.
+This will take a long time. Once the command `tmux ls` shows no sessions of the form `mpmc-chunk<i>` or `PSU<i>`, all individual experiments are completed. 
 You can then format the measured data.
 
 ```bash
@@ -234,39 +267,15 @@ python3 format_measurements.py measurements/large
 ```
 
 The result is a similar file tree as shown in [Testing the Environment](#testing-the-environment).
-The measurement data reported within those (formatted) files (in `measurements/large/formatted`) can be directly compared to the measurement data we use for the plots in our paper, which we provide in `measurements/paper`.
-
-#### Experiment 2: Example Name
-
-- Time: 10 human-minutes + 3 compute-hours
-- Storage: 20GB
-
-This example experiment reproduces
-[Main Result 2: Example Name](#main-result-2-example-name), the following script
-will run the simulation automatically with the different parameters specified in
-the paper. (You may run the following command from the example Docker image.)
-
-```bash
-python3 main.py
-```
-
-Results from this example experiment will be aggregated over several iterations
-by the script and output directly in raw format along with variances and
-standard deviations in the `output-folder/` directory. You will also find there
-the plots for "Figure 1a" in `.pdf` format and the table for "Table 3" in `.tex`
-format. These can be directly compared to the results reported in the paper, and
-should not quantitatively vary by more than 5% from expected results.
+The measurement data reported within those (formatted) files (in `measurements/large/formatted`) can be directly compared to the measurement data we use for the plots in our paper, which we provide in `measurements/paper`. 
+Since each experiment is repeated $50$ times and we report the average, we do not expect any large deviations from the provided results.
+However, we did not run our experiments within a docker container, which may cause some differences in time measurements. 
 
 
 ## Limitations
-For measurements reported in the paper, we did not run our experiments in a docker container, but on the server's OS (Ubuntu 24.04.4 LTS) directly. While we do not expect it, this may result in differences in the runtime measurements, which is hard estimate without re-running the experiments.
+For the measurements reported in the paper, we did not run our experiments in a docker container, but on the server's OS (Ubuntu 24.04.4 LTS) directly. While we do not expect it, this may result in differences in the runtime measurements. These are hard to estimate without re-running the experiments.
 
-## Notes on Reusability (Encouraged for all badges)
+## Notes on Reusability
 
-First, this section might not apply to your artifacts. Describe how your
-artifact can be used beyond your research paper, e.g., as a general framework.
-The overall goal of artifact evaluation is not only to reproduce and verify your
-research but also to help other researchers to re-use and extend your artifacts.
-Discuss how your artifacts can be adapted to other settings, e.g., more input
-dimensions, other datasets, and other behavior, through replacing individual
-modules and functionality or running more iterations of a specific module.
+Our measurement infrastructure is flexible with respect to the considered input sizes. Running the attacks against MK-PrivateID with larger inputs can be done by generating larger data sets using `gen_MKPID_data.py`. The input sizes for the attacks against PSU and PSU-CA can be changed by modifying the parameters for `measure_PSU.py` in `run_experiments.sh`.
+Our infrastructure includes code to measure the runtime and required number of queries for any attack, as well as re-usable implementations of the relevant ideal functionalities we consider in the paper. New attacks can therefore be added by placing their implementation in the `attacks` folder and extending the measurement scripts accordingly. 

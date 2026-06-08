@@ -10,7 +10,7 @@ import helper
 priorities = [(PRIO_POS, prio_PSI_pos), (PRIO_NEG, prio_PSI_neg), (PRIO_TOT, prio_PSI_tot)]
 
 
-def measure_PSUCA(T, V, match_rate, repetitions, out_directory, qb_increment=0.1):
+def measure_PSUCA(T, V, match_rate, repetitions, out_directory, qb_increment=0.1, silent=False):
 	
 	theoretical_upper = len(T) + 1
 	inc = int(theoretical_upper * qb_increment)
@@ -19,7 +19,8 @@ def measure_PSUCA(T, V, match_rate, repetitions, out_directory, qb_increment=0.1
 	unmatched_T = set(T).difference(set(V))
 
 	for qb in range(inc, theoretical_upper + inc, inc):
-		print(f"QB: {qb}")
+		if not silent:
+			print(f"QB: {qb}")
 		for (prio_name, prio_func) in priorities:
 			data = {
 				TIME_ALL: [],
@@ -127,6 +128,7 @@ if __name__ == "__main__":
 	parser.add_argument("V_size_PSUCA")
 	parser.add_argument("repetitions")
 	parser.add_argument("core_id")
+	parser.add_argument("-s", "--silent", action="store_true")
 	args = parser.parse_args()
 
 	out_directory = args.out_directory
@@ -134,6 +136,7 @@ if __name__ == "__main__":
 	V_size_PSU = int(args.V_size_PSU)
 	V_size_PSUCA = int(args.V_size_PSUCA)
 	core_id = int(args.core_id)
+	silent = args.silent
 
 	seed(0xCAFEBABE)
 
@@ -147,13 +150,16 @@ if __name__ == "__main__":
 			n = int(t_frac * m)
 			if n * frac > m:
 				break
-
-			print(f"Experiment: PSU, n={n}, m={m}, intersection ratio={frac}")
-			print("generating data")
+			
+			if not silent:
+				print(f"Experiment: PSU, n={n}, m={m}, intersection ratio={frac}")
+				print("generating data")
 			
 			T, V = gen_sets(n, m, frac)
 			
-			print("running measurements")
+			if not silent:
+				print("running measurements")
+				
 			measure_PSU(T, V, frac, repetitions, out_directory)
 
 	m = V_size_PSUCA
@@ -162,11 +168,14 @@ if __name__ == "__main__":
 			n = int(t_frac * m)
 			if n * frac > m:
 				break
-
-			print(f"Experiment: PSU-CA, n={n}, m={m}, intersection ratio={frac}")
-			print("generating data")
+			
+			if not silent:
+				print(f"Experiment: PSU-CA, n={n}, m={m}, intersection ratio={frac}")
+				print("generating data")
 			
 			T, V = gen_sets(n, m, frac)
 			
-			print("running measurements")
-			measure_PSUCA(T, V, frac, repetitions, out_directory)
+			if not silent:
+				print("running measurements")
+
+			measure_PSUCA(T, V, frac, repetitions, out_directory, silent=silent)

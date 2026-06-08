@@ -5,6 +5,9 @@ import hashlib
 from secrets import token_bytes
 import helper as h
 
+# Implements the extended functionality of Meta's MK-PrivateID protocol 
+# which includes the protocol leakage. The attacks that do not utilize 
+# the leakage simply ignore the corresponding portion of the output.
 class MPMCFunctionality:
 
 	def __init__(self, P=None, query_budget=None):
@@ -23,7 +26,6 @@ class MPMCFunctionality:
 	def set_query_budget(self, query_budget):
 		self._query_budget = query_budget
 
-	# C should be a list of lists as well
 	def invoke_C(self, C_in):
 		assert(self._P is not None)
 		if self._query_budget is not None and self._invocations >= self._query_budget:
