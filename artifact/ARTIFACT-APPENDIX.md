@@ -207,7 +207,6 @@ overhead) vary in another manner (e.g., exponentially). Refer to the related
 sections, figures, and/or tables in your paper and reference the experiments
 that support this result/claim. See example below.
 
-
 #### Experiment: Run Measurement Suite
 - Time: 20 human-minutes + 250 compute-hours
 

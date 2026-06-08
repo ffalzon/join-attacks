@@ -10,5 +10,5 @@ for i in {50..60}
 do
 	l2=$((i + 64))
 	cid=$((i - 50))
-	tmux new-session -d -s PSU$i "echo '${i} ${l2}' && taskset -c ${i},${l2} python3 measure_PSU.py measurements/large 50 ${cid}"
+	tmux new-session -d -s PSU$i "echo '${i} ${l2}' && taskset -c ${i},${l2} python3 measure_PSU.py measurements/large 1000000 10000 50 ${cid}"
 done

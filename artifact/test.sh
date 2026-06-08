@@ -25,6 +25,7 @@ echo 'generating small data sets'
 rm -r experiment_data/small > /dev/null 2>&1
 if ! python3 gen_MKPID_data.py --silent experiment_data/small 2 100; then
 	echo "data set generation failed, are is the Faker package installed?"
+	exit 0
 fi
 
 # do test run with one iteration on small data sets, this should not take long.
@@ -39,5 +40,5 @@ for i in {50..60}
 do
 	l2=$((i + 64))
 	cid=$((i - 50))
-	tmux new-session -d -s PSU$i "echo '${i} ${l2}' && taskset -c ${i},${l2} python3 measure_PSU.py measurements/small 100 1 ${cid}"
+	tmux new-session -d -s PSU$i "echo '${i} ${l2}' && taskset -c ${i},${l2} python3 measure_PSU.py measurements/small 100 100 1 ${cid}"
 done
