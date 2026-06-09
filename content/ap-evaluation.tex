@@ -71,9 +71,9 @@ We also evaluated the performance of our search tree-based attacks under constra
 
 Our goal was to measure how much of the original recovery goal the attacks managed to achieve.
 Recall that with enough queries, both \PSUCAattack{} and \mkpsiattack{} output two sets $\posSet = A \cap B$ and $\negSet = A \setminus B$,
-where $A = X$, $B = Y$ for \PSUCAattack{} and $A = \Ispace[T]$, $B = \Ispace[Y]$ for \mkpsiattack{} accordingly.
-Limiting the allowed number of queries, we now have $\posSet \subseteq A \cap B$ and $\negSet \subseteq A \setminus B$.
-We discuss three metrics, namely, 
+where $A = X$, $B = Y$ for the \PSUCAattack{} attack and $A = \Ispace[T]$, $B = \Ispace[Y]$ for the \mkpsiattack{} attack.
+Limiting the number of queries, we now have $\posSet \subseteq A \cap B$ and $\negSet \subseteq A \setminus B$.
+We discuss three metrics: 
 (1) the recovered fraction of the intersection $|\posSet| / |A \cap B|$,
 (2) the recovered fraction of the set difference $|\negSet| / |A \setminus B|$, and
 (3) the fraction of elements whose membership status was decided $(|\posSet| + |\negSet|) / |A|$.

@@ -189,7 +189,7 @@ The pseudocode of $\recenumattack$ can be found in Figure~\ref{fig:snakeattack}.
 	$\hbx_1$ is therefore the only record in $X$ whose $j^*$-th value is not contained in the last column, 
 	i.e., $\hbx_1[j^*] \not \in \{\hbx_{i'}[k'] \setdsc i'\in[n]\}$.
 	By the definition of $\calF_\LMKPM$, this property is preserved in the leakage $\hXone$.
-	That is, the corresponding record in the leakage $h = (f_1(\hbx_1[1]), \dots, f_1(\hbx_1[k']))$
+	That is, the corresponding record in $h = (f_1(\hbx_1[1]), \dots, f_1(\hbx_1[k']))$
 	is the only record in $\hXone$ such that $h[j^*]\not\in\{h_{i'}[k'] \setdsc i' \in [n]\}$.
 	In line~\ref{lin:snake_recover_c} in \snakerecoverUnique{} we pick $h_\ind := h$.
 	Thus, for all $j \in [k']$ we have that $h_\ind[j] = f_1(\bx_1[j])$

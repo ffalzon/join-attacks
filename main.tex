@@ -1,5 +1,7 @@
 \PassOptionsToPackage{table,dvipsnames}{xcolor}
-\documentclass[sigconf]{acmart}
+
+\documentclass[sigconf,balance=false]{acmart}
+
 \usepackage{popets}
 
 \input{top-matter/header.tex}
@@ -20,6 +22,7 @@
 \acmISBN{}
 \acmConference{Proceedings on Privacy Enhancing Technologies}
 \settopmatter{printacmref=false,printccs=false,printfolios=true}
+
 \settopmatter{authorsperrow=4}
 
 \begin{document}
@@ -31,24 +34,28 @@
 \affiliation{%
   \institution{ETH Zurich}
   \city{Zurich}
+  \state{}
   \country{Switzerland}}
 
 \author{Francesca Falzon}
 \affiliation{%
   \institution{ETH Zurich}
   \city{Zurich}
+  \state{}
   \country{Switzerland}}
 
 \author{Tianxin Tang}
 \affiliation{%
   \institution{University of Glasgow}
   \city{Glasgow}
+  \state{}
   \country{UK}}
 
 \author{Kenneth G. Paterson}
 \affiliation{%
   \institution{ETH Zurich}
   \city{Zurich}
+  \state{}
   \country{Switzerland}}
 
 \renewcommand{\shortauthors}{Raguso et al.}
@@ -86,13 +93,13 @@ Our analysis was thus conducted on the functionality of a protocol that, at the 
 In accordance with the open science policy, our code base has undergone artifact evaluation. Our artifact contains the code for our attacks and for generating the synthetic data, as well as instructions on how to run the code. The open source respository can be found here: \href{https://github.com/deRaguso/mkpid-attacks-artifact}{https://github.com/deRaguso/mkpid-attacks-artifact}.
 
 
-\section*{Acknowledgements}
+\begin{acks}
 Francesca Falzon was supported by the Zurich Information Security and Privacy Center (ZISC).
 Tianxin Tang was partially supported by an NWO VIDI grant (Project No. VI.Vidi.193.066).
 The authors would also like to thank the reviewers for their helpful feedback, including their suggestion for simplifying the PSU attack.
 The authors acknowledge the use of generative AI tools solely for basic editing
 of the text and grammar. 
-
+\end{acks}
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{cryptobib/abbrev3,cryptobib/crypto,references}
