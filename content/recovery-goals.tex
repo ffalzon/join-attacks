@@ -43,10 +43,6 @@ records in the target set $T$ that share values with records in $Y$.
 
 The matching logic of MK-PrivateID (see Figure~\ref{fig:match_logic} for a definition and Figure~\ref{fig:matching-logic-example} for an example) assigns the same UID to matched pairs of records and distinct UIDs to unmatched ones. One can view $\match$ as computing a pseudo-union of records, where a record in the target set and one in the recovery set are considered ``equal'' if they are assigned the same UID. A natural generalization of set intersection is to recover the records in the adversary’s target set that are matched with some record in the recovery set.
 
-%% However, because $T$ and $Y$ are shuffled prior to matching, identical inputs
-%% across different executions are not consistently paired, and even the number
-%% of matches may vary.
-
 Since the adversary's goal is to learn as much as information about the target
 set, which may contain sensitive information, we define the recovery goal as
 outputting all records in the target set that share at least one value with a
@@ -61,19 +57,10 @@ records that could \emph{potentially} be matched by the protocol logic as
   \text{ s.t. } \bt[j] = \by[\ell]\}.
 \]
 
-% For an example, consider the input sets depicted in
-% Figure~\ref{fig:matching-logic-example}. Here $X\sqcap Y = \{\bx_0, \bx_1\}$
-% since both records in $X$ share a value with some record in $Y$.
-
 \begin{definition}\label{def:matchable_records_recovery}
   An adversary $\adv$ achieves \textbf{matchable record recovery (MRR)} if it
   outputs $T\sqcap Y$.
 \end{definition}
-
-%% Note that MRR does not require the adversary to reconstruct values or
-%% records in $Y$. Nevertheless, this information is sensitive and should not be
-%% recoverable, since simply knowing that a user's attribute appears in another
-%% organization's dataset can compromise the privacy of that user.
 
 \subsubsection{Recovery Goals against $\calF_{\LMKPM}$}\label{sec:IRR_MR_goal}
 As discussed in Sec.~\ref{sec:leakage}, $\calF_{\LMKPM}$ is the extended
@@ -109,11 +96,6 @@ target set $T$ that an adversary can obtain from $\tP_1$’s output. We refer to
 this notion as \emph{$T$-reconstruction} of $Y$, and formalize it as
 follows. See Figure~\ref{fig:maximum-reconstruction-example} for an
 illustration.
-
-\iffalse Notably, since $\mathcal{F}_{\LMKPM}$ outputs a map $\MX$ to $\tP_1$
-  that maps UIDs to matched records, the strongest plaintext inference
-  achievable from this output is the recovery of the shared values and how these
-  values are distributed across records in $Y$. \fi
 
 \begin{definition}\label{def:max_recons}
   An adversary $\adv$ achieves \textbf{$T$-reconstruction (TR)} of $Y$ if it

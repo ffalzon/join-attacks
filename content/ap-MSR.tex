@@ -41,9 +41,6 @@
 		But since for all $j \in [k']$ with $d_j \in D$ we have $f_1^{-1}(d_j) = D[d_j]$,
 		we also have that $\br[i] \neq D[d_j]$, i.e., there is no $j$ such that $\br[i] = D[d_j]$. 
 		This is a direct contradiction to $\br[i] = D[d_{j^*}]$.
-		% However, if this holds, then the condition on line \ref{lin:substitute_membership_check} 
-		% would not have been true for any $j\in[k']$ and thus $r[i]$ would not have been added, 
-		% thus resulting in a contradiction. 
 		\item Let $\br\in R$ and $(d_1, \dots, d_{k'}) = d(\br)$ for some $k' \in \N$.
 		Let $v \in \varphi(\br)$, 
 		i.e., there is some $i \in [k']$ such that $v = f_1^{-1}(d_i)$.
@@ -55,29 +52,6 @@
 	\end{enumerate}
 The lemma thus follows.
 \end{proof}
-
-% \begin{lemma}
-% 	For any target set \setT{} and victim set \setV{}, 
-% 	$\toyattack^{\LMKPM(\cdot, \setV)}(\setT)$ from \cref{fig:toy_attack}
-% 	produces a maximum reconstruction of \setV{} with respect to \setT{}.
-% \end{lemma}
-
-% \begin{proof}
-% 	It is easy to see that the record $r$ constructed in lines \ref{lin:baseline_r_start}~-~\ref{lin:baseline_r_end} contains all identifiers from 
-% 	$\Ispace{\setT}$ and therefore $\Ispace{\setT} = \Ispace{\setT'}$. 
-% 	It therefore suffices to show that $\toyattack$ produces a maximum reconstruction of $\setV$ w.r.t. $\setT'$.
-	
-% 	Let $f_C$ be the identifier hiding function sampled during the invocation of 
-% 	\LMKPM{} in line \ref{lin:baseline_eval},  
-% 	let $D$ be the dictionary constructed in lines \ref{lin:baseline_D_start} and \ref{lin:baseline_D_end} 
-% 	and let $k = |r|$.
-% 	By definition of \LMKPM{}, we have $r_e = (f_C(r[1]), \dots, f_C(r[k]))$
-% 	and therefore $D[f_C(r[i])] = D[r_e[i]] = r[i]$ for all $i \in [k]$.
-% 	Since $r$ contains all identifiers from $\Ispace{\setT'}$, the claim follows from \cref{lem:dictinfer_MR}.
-% \end{proof}
-
-%%%%
-
 
 \subsection{Pseudocode of $\recenumattack$}
 \label{sec:recenumattack:pseudocode}

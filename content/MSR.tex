@@ -43,7 +43,6 @@ identifiable in a single invocation of $\calF_{\LMKPM}$.
 Let $\ell_{\rec}$ denote the maximum record length in $T$ and $Y$. Let $n = |T|$ and $m = |Y|$.
 The attack has an asymptotic time complexity of
 $\bigO{\ell_{\rec}(n + m)}$.
-%The membership check can be reduced to constant time by maintaining an auxiliary set of already added identifiers, as set membership can be tested in constant time.
 The attack requires only one query and therefore establishes a tight lower bound on the number of queries needed to achieve TR (Definition~\ref{def:max_recons}).
 
 \begin{figure}
@@ -101,17 +100,13 @@ The attack requires only one query and therefore establishes a tight lower bound
     \definecolor{highlight-blue}{HTML}{4A90E2} 
     % Subfigures
     \subfloat[Target set $T$ (boxed in blue) and input set $X$ (the entire table).\label{subfig:recenum_example_plain}]{
-        %\resizebox{1\columnwidth}{!}{%
         \input{figures/recenum_example_plain.tex}
-        %}
     }
     \quad
     \subfloat[The hidden, shuffled leakage $\hXone$.\label{subfig:recenum_example_leakage}]{
-        %\resizebox{0.48\columnwidth}{!}{%
         \hspace{0.5cm}
         \input{figures/recenum_example_leakage.tex}
         \hspace{0.5cm}
-        %}
     }
     \caption{
     An example of a target set transformation by \recenumattack.
@@ -152,9 +147,6 @@ $i$-th record. Each index $i \in [0,n-1]$ is encoded as a binary string of
 length $\lenc := \lceil \log_2 n\rceil$, where bits $0$ and $1$ are represented
 by $v_0$ and $v_1$, respectively. This binary encoding is prepended to $\bt_i$,
 and we denote by $X$ the resulting set of records. 
-%For example, if $n = 5$, then $\lceil \log_2 5 \rceil = 3$, and the first record $\bt_0$ is augmented as $v_0 \| v_0 \| v_0 \| \bt_0$ and added to $X$.
-
-% See Figure~\ref{subfig:recenum_example_plain} for a small example. The encoding procedure \IdxToSeq{} is given in Figure~\ref{fig:idx_to_seq}.
 
 We now analyze the output to $\tP_1$ when $\calF_{\LMKPM}(\ \cdot\ ; Y)$ is
 invoked on $X$. Recall that $\calF_{\LMKPM}$ hides
@@ -225,19 +217,6 @@ must be taken to avoid encodings that cannot be uniquely recovered e.g.,
 avoiding use of the $(v_i,\dots, v_i)$ for $i>0$. We leave the details for
 future work.
 
-
-% \textbf{Discussion.}
-% Compared to the baseline attack, the records are now much shorter and are of uniform length.
-% Specifically, records are now of length $\lceil \log_2 n\rceil + \lambda$,
-% where $\lambda$ denotes the original record length in the target set.
-% Ignoring the constant $\lambda$, this is an exponential reduction from the maximum record lengths 
-% $|\Ispace{\setT}|$ and $\approx \sqrt{2|\Ispace{\setT}|}$
-% for the baseline attack and its first optimization respectively.
-% At the same time, \recenumattack{} makes considerably weaker assumptions on the set of admissible inputs, thus,
-% resulting in a clear improvement.
-
-
-
 \subsection{Snake Attack}\label{sec:snake_attack}
 
 \begin{figure}
@@ -253,13 +232,6 @@ future work.
         \input{figures/snake_encode1_example.tex}
         }
     }
-    %\quad
-	% \subfloat[\label{subfig:snake_example_general}]{
-    %     \resizebox{0.75\columnwidth}{!}{%
-    %     \input{figures/snake_encode2_example.tex}
-    %     }
-    % }
-	%}
 	\caption{Result of preprocessing a set of records in $\snakeattack$. The first attribute is unique across all records.
 	The original records have black borders. Added values are outlined in green. Arrows indicate the (implicit) linked list.}\label{fig:snake_exmp}
 \end{figure}
@@ -329,30 +301,3 @@ $\Dict$ and $\hYone$ requires time $\bigO{\ell_{\rec} m}$. The overall
 average-case time complexity for \snakeattack{} is
 \(\bigO{\ell_{\rec} (n + m)}\). Similar to the previous attacks, it requires
 only one protocol invocation.
-
-% \heading{Discussion and mitigation.}
-% While requiring the same number of protocol invocations and incurring a comparable computational complexity to the other attacks, \snakeattack{} stands out for requiring only minimal modifications to the target set and is applicable to scenarios where the record length is constrained to a small constant.
-% Meta's Private Computation Solution \cite{FBPCSRepo} serves as a concrete example, where records are limited to at most four identifiers. If the target set already meets the maximum allowed record length, the adversary can always rearrange the target set into shorter records and use the available space for the snake encoding.
-
-% Since records are only extended by a small constant, limiting record lengths to mitigate against attacks, 
-% as proposed previously, is ineffective.
-% However, the chain-like structure of the modified target set, which enables recovering the original order of the identifiers,
-% allows the victim to detect and mitigate the attack.
-% To capture a broader variety of such linking strategies than just the approach we presented above, 
-% we consider a graph $\graph(\setX) = (\vertSet_\setX, \edgeSet_\setX)$ for some set of records \setX{}, which contains one vertex for every record of the target set 
-% and an edge between every pair of vertices whose corresponding records contain at least one common identifier.
-% \begin{equation*}
-% 	\vertSet_\setX := \{v_x \setdsc x \in \setX \}
-% \end{equation*}
-% \begin{equation*}
-% 	\edgeSet_\setX := \{(v_x, v_{x'}) \setdsc \exists i, j. x[i] = x'[j] \}
-% \end{equation*}
-% As depicted in \cref{fig:snake_exmp}, the graph $\graph(\setT')$, which is generated from the modified target set $\setT'$ produced by \snakeencodeUnique{},
-% only has a single connected component. 
-% Furthermore, since the victims protocol leakage $\leak^P_{\setT'}$ (see \cref{fig:MKPM}) simply contains a shuffled and renamed copy of $\setT'$,
-% $\graph(\setT')$ and $\graph(\leak^P_{\setT'})$ are isomorphic and thus have the same number of connected components. 
-% The victim can therefore detect such linkage-based attack strategies and abort the protocol execution.
-% This also defends against the record enumeration attack presented in the last section.
-% However, one needs to be careful not to accidentally reject valid inputs, 
-% as large connected components may occur naturally.
-% The example of IP addresses behind a NAT device we mentioned in the last section also applies here.

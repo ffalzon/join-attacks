@@ -56,3 +56,6 @@ artifact/measurements/*
 !artifact/measurements/paper
 artifact/experiment_data/*
 !artifact/experiment_data/paper/
+
+# camera ready
+popetstools-authors

@@ -58,7 +58,7 @@ def FormatReconTimingData(measurement_directory, out_directory):
 	for ((m, n),data) in all_data.items():
 		data = dict_to_list(data, EXP_MATCH_V_FRACTION, sort=True)
 		filename = f"V{m}T{n}.csv"
-		out_path = join(out_directory, "recon_time_over_MR")
+		out_path = join(out_directory, "recon_time_over_mr")
 		helper.dicts_to_csv(data, out_path, filename)
 
 	all_data = {}
@@ -173,7 +173,7 @@ def format_mkpsi_psuca_time_over_MR(mkpsi_data, out_directory, subdir_prefix):
 	for ((m, n), data) in all_data.items():
 		data = dict_to_list(data, EXP_MATCH_V_FRACTION, sort=True)
 		filename = f"V{m}T{n}.csv"
-		out_path = join(out_directory, f"{subdir_prefix}_time_over_MR")
+		out_path = join(out_directory, f"{subdir_prefix}_time_over_mr")
 		helper.dicts_to_csv(data, out_path, filename)
 
 def format_mkpsi_recovery_over_QB(mkpsi_data, out_directory):

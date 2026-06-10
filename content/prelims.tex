@@ -81,9 +81,6 @@ and party $P_2$ holds
 the lengths of records $\bx_i$ and $\by_k$, respectively, for all $i \in [n]$
 and all $k \in [m]$; all values $x_{i,j}$ and $y_{k,\ell}$ lie in $\Ispace$.
 
-%% Since the positional leakage is not entirely eliminated, we augment the
-%% functionality explicitly specifies operation performed and the leakage profile.
-
 To suppress leakage arising from positional information in the matching
 protocol, the original work \cite{MKPMC} introduces random
 permutations. Specifically, the records in $X$ are permuted while preserving the
@@ -218,21 +215,6 @@ See the definition of $\hXone$ and $\hYone$ in Figure~\ref{fig:MKPM}.
 Also note that the order of indexed values within the records of $X$
 is preserved in $\hXone$. In contrast, the order within the records of $Y$ is shuffled
 to obtain $Y'$ and, thus, the same does not hold for $\hYone$.
-
-% This leakage can alternatively be interpreted as a \emph{bipartite graph}
-% $G = (V_{X'} \cup V_{Y'}, E)$, where $V_{X'}, V_{Y'}$ correspond to the records
-% in $X'$ and $Y'$, respectively. An edge $(\bx_i', \by_k') \in E$ exists if and
-% only if the records $\bx_i' \in X'$ and $\by_k' \in Y'$ share at least one
-% indexed value.
-
-% Note that because the order of indexed values within each record of $X'$ is
-% preserved, the matching process induces a priority ordering over the columns ("attributes"). 
-% This ordering is determined by the position of shared values within the records of
-% $X'$.
-
-% Although $\match$ computes only a partial matching in $G$, such that each vertex
-% is matched to at most one vertex in the other vertex set, party $P_1$ still
-% learns the entire graph $G$.
 
 The leakage observed by $P_2$ is more limited. Party $P_2$ learns only a hidden
 and re-shuffled copy of $X$. Specifically, the records of $X$ are re-shuffled
