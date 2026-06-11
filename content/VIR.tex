@@ -10,7 +10,6 @@ Our adapted attack starts by building a binary search tree $\calT$ over $T$ simi
 $v_L.\treeSet \cup v_R.\treeSet = v.\treeSet$ and $v_L.\treeSet \cap v_R.\treeSet = \emptyset$.
 We use a fixed, deterministic rule to compute the partition (e.g., by index into equal halves) and recurse until leaves are single records. 
 
-
 Starting at the root, the adversary traverses $\calT$ in DFS order, selecting a node at each step and querying $\calF_{\LMKPM}(\cdot; Y)$ on that node’s associated subset of records. Let $X \gets v.\treeSet$ for a non-leaf node $v$, and $X_1 \gets v_L.\treeSet$, $X_2 \gets v_R.\treeSet$ be its children. In Guo et al.'s PSI-CA attack, querying a parent $X$ and one child $X_1$ suffices to infer the sibling’s output: from $|X \cap Y|$ and $|X_1 \cap Y|$ one immediately obtains $|X_2 \cap Y|$ without a third query.
 
 Under $\calF_{\LMKPM}$, this sibling inference is not possible: each query
@@ -22,7 +21,7 @@ number of matched values \emph{per column} in $\leakX{}$ and $\leakX{1}$---and
 use this to guide the DFS traversal. Formally, this metric is defined as:
 \begin{equation*}
   \text{ColCA}(\leakX{}, \leakY) :=
-  \left(\sum_{\bt\in\leakX{}}\mathbbm{1}\{\bt[i] \in
+  \left(\sum_{\bt\in\leakX{}}\mathbb{1}\{\bt[i] \in
     \Ispace[\leakY]\}\right)_{i\in[\ell_{\rec}]}.
 \end{equation*}
 
